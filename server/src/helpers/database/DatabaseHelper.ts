@@ -1,5 +1,7 @@
+import { ENTITIES } from '../../models/Entities';
 import { DataSource } from 'typeorm';
 import { DATABASE_CONFIGS } from './DatabaseConfig';
+
 
 export const DATA_SOURCE = new DataSource({
     type: "postgres",
@@ -10,4 +12,5 @@ export const DATA_SOURCE = new DataSource({
     password: DATABASE_CONFIGS.PASSWORD,
     logging: true,
     synchronize: true,
+    entities: ENTITIES
 })

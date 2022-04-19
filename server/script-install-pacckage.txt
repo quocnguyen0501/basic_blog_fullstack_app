@@ -6,6 +6,7 @@ install for server:
     yarn add express graphql apollo-server-express type-graphql class-validator reflect-metadata --save
     yarn add dotenv --save 
     yarn add typeorm --save 
+    yarn add apollo-server-core --save
     
 Cài đặt services để code TS:
 - yarn add -D @types/node typescript
