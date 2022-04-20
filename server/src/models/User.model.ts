@@ -1,3 +1,4 @@
+import { Field, ID, ObjectType } from "type-graphql";
 import {
     BaseEntity,
     Column,
@@ -7,6 +8,7 @@ import {
     UpdateDateColumn,
 } from "typeorm";
 
+@ObjectType()
 @Entity({
     name: "Users",
 })
@@ -21,11 +23,17 @@ export class User extends BaseEntity {
     private _createdAt!: Date;
     private _updatedAt!: Date;
 
+    @Field(_type => ID)
     @PrimaryGeneratedColumn()
     public get id(): number {
         return this._id;
     }
 
+    public set id(id : number) {
+        this._id = id;
+    }
+
+    @Field(_type => String)
     @Column({
         unique: true,
     })
@@ -46,6 +54,7 @@ export class User extends BaseEntity {
         this._password = password;
     }
 
+    @Field(_type => String)
     @Column()
     public get firstName(): string {
         return this._firstName;
@@ -55,6 +64,7 @@ export class User extends BaseEntity {
         this._firstName = firstName;
     }
 
+    @Field(_type => String)
     @Column()
     public get surname(): string {
         return this._surname;
@@ -64,6 +74,7 @@ export class User extends BaseEntity {
         this._surname = surname;
     }
 
+    @Field(_type => Date)
     @Column()
     public get dateOfBirth(): Date {
         return this._dateOfBirth;
@@ -73,6 +84,7 @@ export class User extends BaseEntity {
         this._dateOfBirth = dateOfBirth;
     }
 
+    @Field(_type => String)
     @Column()
     public get gender(): string {
         return this._gender;
@@ -82,13 +94,23 @@ export class User extends BaseEntity {
         this._gender = gender;
     }
 
+    @Field(_type => Date)
     @CreateDateColumn()
-    public get creactedAt(): Date {
+    public get createdAt(): Date {
         return this._createdAt;
     }
 
+    public set createdAt(createdAt: Date) {
+        this._createdAt = createdAt
+    }
+
+    @Field(_type => Date)
     @UpdateDateColumn()
     public get updatedAt(): Date {
         return this._updatedAt;
+    }
+
+    public set updatedAt(updatedAt: Date) {
+        this._updatedAt = updatedAt
     }
 }
