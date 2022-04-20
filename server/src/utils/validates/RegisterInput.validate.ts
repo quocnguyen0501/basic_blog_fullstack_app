@@ -132,7 +132,7 @@ export const ValidateRegisterInput = ({
         }
     }
 
-    if (!isPositiveInteger(month) && (+month > 1500)) {
+    if (!isPositiveInteger(year) && (+year > 1500)) {
         return {
             message: "Invalid year",
             errors: [
