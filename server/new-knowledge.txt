@@ -1,0 +1,4 @@
+Flow app run:
+resolver (route) => controllers => services => daos
+        |
+    schemas

@@ -9,52 +9,42 @@ import {
 
 @Entity()
 export class Post extends BaseEntity {
+    private _id!: number;
+    private _title!: string;
+    private _content!: string;
+    private _createdAt!: Date;
+    private _updatedAt!: Date;
+
     @PrimaryGeneratedColumn()
-    private id!: number;
+    public get id(): number {
+        return this._id;
+    }
 
     @Column()
-    private title!: string;
+    public get title(): string {
+        return this._title;
+    }
+
+    public set title(title: string) {
+        this._title = title;
+    }
 
     @Column()
-    private content!: string;
+    public get content(): string {
+        return this._content;
+    }
 
+    public set content(content: string) {
+        this._content = content;
+    }
+        
     @CreateDateColumn()
-    private createdAt!: Date;
+    public get creactedAt(): Date {
+        return this._createdAt;
+    }
 
     @UpdateDateColumn()
-    private updatedAt!: Date;
-
-    constructor(title: string, content: string) {
-        super();
-        this.title = title;
-        this.content = content;
-    }
-
-    public getId(): number {
-        return this.id;
-    }
-
-    public getTitle(): string {
-        return this.title;
-    }
-
-    public setTitle(title: string): void {
-        this.title = title;
-    }
-
-    public getContent(): string {
-        return this.content;
-    }
-
-    public setContent(content: string): void {
-        this.content = content;
-    }
-
-    public getCreatedAt(): Date {
-        return this.createdAt;
-    }
-
-    public getUpdatedAt(): Date {
-        return this.updatedAt;
+    public get updatedAt(): Date {
+        return this._updatedAt;
     }
 }
