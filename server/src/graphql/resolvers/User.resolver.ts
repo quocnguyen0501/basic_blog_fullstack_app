@@ -4,7 +4,9 @@ import * as argon2 from "argon2";
 import { User } from "../../models/User.model";
 import { UserMutationResponse } from "../../types/graphql/UserMutaionResponse";
 import { RegisterInput } from "../../types/input/RegisterInput";
+import { LoginInput } from "../../types/input/LoginInput";
 import { ValidateRegisterInput } from "../../utils/validates/RegisterInput.validate";
+import { ValidateLoginInput } from "../../utils/validates/LoginInput.validate";
 
 @Resolver()
 export class UserResolver {
@@ -85,6 +87,68 @@ export class UserResolver {
                     },
                 ],
             };
+        }
+    }
+
+    @Mutation((_return) => UserMutationResponse)
+    async login(
+        @Arg("loginInput")
+        loginInput: LoginInput
+    ): Promise<UserMutationResponse> {
+        const validateLoginInputError = ValidateLoginInput(loginInput);
+        if (validateLoginInputError !== null) {
+            return {
+                code: 400,
+                success: false,
+                ...validateLoginInputError,
+            };
+        } else {
+            try {
+                const { email, password } = loginInput;
+
+                const existingUser = await User.findOneBy({ email });
+
+                if (!existingUser) {
+                    return {
+                        code: 400,
+                        success: false,
+                        message: "User not found",
+                    };
+                }
+
+                const isPwdValid = await argon2.verify(
+                    existingUser.password,
+                    password
+                );
+
+                if (!isPwdValid) {
+                    return {
+                        code: 400,
+                        success: false,
+                        message: "Incorect password",
+                    };
+                }
+
+                return {
+                    code: 200,
+                    success: true,
+                    message: "Login Successfully",
+                    user: existingUser,
+                };
+            } catch (error) {
+                console.log(error);
+                return {
+                    code: 500,
+                    success: false,
+                    message: `>>> Internal Server Error: ${error.message}`,
+                    errors: [
+                        {
+                            field: "email",
+                            message: "Email already taken!",
+                        },
+                    ],
+                };
+            }
         }
     }
 }
