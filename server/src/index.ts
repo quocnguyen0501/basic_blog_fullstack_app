@@ -3,18 +3,17 @@ import express from "express";
 import { createServer } from "http";
 import { ApolloServer, ExpressContext } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
-import { ApolloServerPluginDrainHttpServer, ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
+import {
+    ApolloServerPluginDrainHttpServer,
+    ApolloServerPluginLandingPageGraphQLPlayground,
+} from "apollo-server-core";
 
 import { DATA_SOURCE } from "./helpers/database/DatabaseHelper";
 import { RESOLVERS } from "./graphql/resolvers/Resolvers";
 
 const main = async () => {
-    try {
-        await DATA_SOURCE.initialize();
-    } catch (error) {
-        console.log(">>>ERROR DATABASE: ", error.message);
-        throw new Error(error);
-    }
+    await DATA_SOURCE.initialize();
+    
     const app = express();
 
     const httpServer = createServer(app);
@@ -26,7 +25,7 @@ const main = async () => {
         }),
         plugins: [
             ApolloServerPluginDrainHttpServer({ httpServer }),
-            ApolloServerPluginLandingPageGraphQLPlayground()
+            ApolloServerPluginLandingPageGraphQLPlayground(),
         ],
     });
 

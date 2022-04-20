@@ -7,6 +7,7 @@ install for server:
     yarn add dotenv --save 
     yarn add typeorm --save 
     yarn add apollo-server-core --save
+    yarn add argon2 --save
     
 Cài đặt services để code TS:
 - yarn add -D @types/node typescript
