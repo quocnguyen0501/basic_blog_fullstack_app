@@ -1,5 +1,5 @@
 import { NonEmptyArray } from "type-graphql";
-import { HelloResolver } from "./hello.resolver";
+import { HelloResolver } from "./Hello.resolver";
 import { UserResolver } from "./User.resolver";
 
 export const RESOLVERS: NonEmptyArray<Function> | NonEmptyArray<string> = [
