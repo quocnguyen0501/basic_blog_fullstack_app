@@ -8,10 +8,14 @@ install for server:
     yarn add typeorm --save 
     yarn add apollo-server-core --save
     yarn add argon2 --save
+    yarn add express-session connect-mongo --save
+    yarn add mongoose@6.3.0 --save
     
 Cài đặt services để code TS:
 - yarn add -D @types/node typescript
 - yarn add -D @types/express
+- yarn add -D @types/express-session
+
 - npx tsconfig.js -> compile ts files in src to js files in dist folder
 
 - Install nodemon for auto compile:
