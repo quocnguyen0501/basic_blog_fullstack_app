@@ -9,16 +9,21 @@ import { ValidateRegisterInput } from "../../utils/validates/RegisterInput.valid
 import { ValidateLoginInput } from "../../utils/validates/LoginInput.validate";
 import { Context } from "../../types/graphql/Context";
 import { SESSION_COOKIE_CONFIGS } from "../../helpers/storage/SessionCookieConfig";
+import { ErrorMutationResponse } from "../../types/graphql/ErrorMutationResponse";
+import { getErrorMutationResponse } from "../../helpers/resolvers/ErrorMutationResponseHelper";
+import { HTTP_STATUS_CODE } from "src/utils/constants/constants";
 
 @Resolver()
 export class UserResolver {
-    @Mutation((_return) => UserMutationResponse, { nullable: true })
+    @Mutation((_return) => UserMutationResponse || ErrorMutationResponse, {
+        nullable: true,
+    })
     async register(
         @Arg("registerInput")
         registerInput: RegisterInput,
         @Ctx()
-        {req} : Context
-    ): Promise<UserMutationResponse> {
+        { req }: Context
+    ): Promise<UserMutationResponse | ErrorMutationResponse> {
         const validateRegisterInputError = ValidateRegisterInput(registerInput);
 
         if (validateRegisterInputError !== null) {
@@ -83,28 +88,17 @@ export class UserResolver {
                 };
             }
         } catch (error) {
-            console.log(error);
-            return {
-                code: 500,
-                success: false,
-                message: `>>> Internal Server Error: ${error.message}`,
-                errors: [
-                    {
-                        field: "email",
-                        message: "Email already taken!",
-                    },
-                ],
-            };
+            return getErrorMutationResponse(error, HTTP_STATUS_CODE.INTERNAL_SERVER, "user", "error register in mutation");
         }
     }
 
-    @Mutation((_return) => UserMutationResponse)
+    @Mutation((_return) => UserMutationResponse || ErrorMutationResponse)
     async login(
         @Arg("loginInput")
         loginInput: LoginInput,
         @Ctx()
         { req }: Context
-    ): Promise<UserMutationResponse> {
+    ): Promise<UserMutationResponse | ErrorMutationResponse> {
         const validateLoginInputError = ValidateLoginInput(loginInput);
         if (validateLoginInputError !== null) {
             return {
@@ -152,18 +146,7 @@ export class UserResolver {
                     user: existingUser,
                 };
             } catch (error) {
-                console.log(error);
-                return {
-                    code: 500,
-                    success: false,
-                    message: `>>> Internal Server Error: ${error.message}`,
-                    errors: [
-                        {
-                            field: "email",
-                            message: "Email already taken!",
-                        },
-                    ],
-                };
+                return getErrorMutationResponse(error, HTTP_STATUS_CODE.INTERNAL_SERVER, "user", "error login in mutation");
             }
         }
     }
