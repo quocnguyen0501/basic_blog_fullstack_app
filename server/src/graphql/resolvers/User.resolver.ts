@@ -1,4 +1,4 @@
-import { Arg, Mutation, Resolver } from "type-graphql";
+import { Arg, Ctx, Mutation, Resolver } from "type-graphql";
 import * as argon2 from "argon2";
 
 import { User } from "../../models/User.model";
@@ -7,6 +7,7 @@ import { RegisterInput } from "../../types/input/RegisterInput";
 import { LoginInput } from "../../types/input/LoginInput";
 import { ValidateRegisterInput } from "../../utils/validates/RegisterInput.validate";
 import { ValidateLoginInput } from "../../utils/validates/LoginInput.validate";
+import { Context } from "../../types/graphql/Context";
 
 @Resolver()
 export class UserResolver {
@@ -93,7 +94,9 @@ export class UserResolver {
     @Mutation((_return) => UserMutationResponse)
     async login(
         @Arg("loginInput")
-        loginInput: LoginInput
+        loginInput: LoginInput,
+        @Ctx()
+        { req }: Context
     ): Promise<UserMutationResponse> {
         const validateLoginInputError = ValidateLoginInput(loginInput);
         if (validateLoginInputError !== null) {
@@ -128,6 +131,12 @@ export class UserResolver {
                         message: "Incorect password",
                     };
                 }
+
+                /**
+                 * Create Session and return Cookie
+                 */
+
+                req.session.userId = existingUser.id;
 
                 return {
                     code: 200,
