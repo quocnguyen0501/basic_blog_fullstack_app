@@ -8,13 +8,16 @@ import { LoginInput } from "../../types/input/LoginInput";
 import { ValidateRegisterInput } from "../../utils/validates/RegisterInput.validate";
 import { ValidateLoginInput } from "../../utils/validates/LoginInput.validate";
 import { Context } from "../../types/graphql/Context";
+import { SESSION_COOKIE_CONFIGS } from "../../helpers/storage/SessionCookieConfig";
 
 @Resolver()
 export class UserResolver {
     @Mutation((_return) => UserMutationResponse, { nullable: true })
     async register(
         @Arg("registerInput")
-        registerInput: RegisterInput
+        registerInput: RegisterInput,
+        @Ctx()
+        {req} : Context
     ): Promise<UserMutationResponse> {
         const validateRegisterInputError = ValidateRegisterInput(registerInput);
 
@@ -68,11 +71,15 @@ export class UserResolver {
                     gender: gender,
                 });
 
+                await newUser.save();
+
+                req.session.userId = newUser.id;
+
                 return {
                     code: 200,
                     success: true,
                     message: "Registation successful",
-                    user: await User.save(newUser),
+                    user: newUser,
                 };
             }
         } catch (error) {
@@ -159,5 +166,23 @@ export class UserResolver {
                 };
             }
         }
+    }
+
+    @Mutation((_return) => Boolean)
+    logout(
+        @Ctx()
+        { req, res }: Context
+    ): Promise<Boolean> {
+        return new Promise((resolve, _reject) => {
+            res.clearCookie(SESSION_COOKIE_CONFIGS.COOKIE_NAME);
+            req.session.destroy((error) => {
+                if (error) {
+                    console.log("Destroying Session error: ", error);
+                    resolve(false);
+                } else {
+                    resolve(true);
+                }
+            });
+        });
     }
 }
