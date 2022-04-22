@@ -1,17 +1,17 @@
 import { Field, ObjectType } from "type-graphql";
+import { FieldError } from "./FieldError";
 import { IMutaionResponse } from "./MutationResponse";
-import { Post } from "../../models/Post.model";
 
 @ObjectType({
     implements: IMutaionResponse,
 })
-export class PostMutationResponse implements IMutaionResponse {
+export class ErrorMutationResponse implements IMutaionResponse {
     code: number;
     success: boolean;
     message: string;
 
-    @Field({
+    @Field((_type) => [FieldError], {
         nullable: true,
     })
-    post?: Post;
+    errors: FieldError[];
 }
