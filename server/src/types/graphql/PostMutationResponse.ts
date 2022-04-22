@@ -1,13 +1,12 @@
 import { Field, ObjectType } from "type-graphql";
 import { IMutaionResponse } from "./MutationResponse";
-
-import { User } from "../../models/User.model";
+import { Post } from "../../models/Post.model";
 import { FieldError } from "./FieldError";
 
 @ObjectType({
     implements: IMutaionResponse,
 })
-export class UserMutationResponse implements IMutaionResponse {
+export class PostMutationResponse implements IMutaionResponse {
     code: number;
     success: boolean;
     message: string;
@@ -15,7 +14,7 @@ export class UserMutationResponse implements IMutaionResponse {
     @Field({
         nullable: true,
     })
-    user?: User;
+    post?: Post;
 
     @Field((_type) => [FieldError], {
         nullable: true,
