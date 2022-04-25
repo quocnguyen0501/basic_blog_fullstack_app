@@ -1,0 +1,35 @@
+
+install pg in node:
+yarn add pg --save
+    
+install for server:
+    yarn add express graphql apollo-server-express type-graphql class-validator reflect-metadata --save
+    yarn add dotenv --save 
+    yarn add typeorm --save 
+    yarn add apollo-server-core --save
+    yarn add argon2 --save
+    yarn add express-session connect-mongo --save
+    yarn add mongoose@6.3.0 --save
+    
+Cài đặt services để code TS:
+- yarn add -D @types/node typescript
+- yarn add -D @types/express
+- yarn add -D @types/express-session
+
+- npx tsconfig.js -> compile ts files in src to js files in dist folder
+
+- Install nodemon for auto compile:
+    yarn add -D nodemon
+
+yarn watch -> compile to dist -> yarn server -> lock the change in index.js in dist by nodemon
+-----------------------------------------------------------------------------------
+Set script in package.json:
+"scripts": {
+        "start": "node dist/index.js",
+        "start-ts": "ts-node src/index.ts",
+        "server-ts": "nodemon --exec ts-node src/index.ts",
+        "server": "nodemon dist/index.js",
+        "watch": "tsc -w"
+    },
+-----------------------------------------------------------------------------------
+
