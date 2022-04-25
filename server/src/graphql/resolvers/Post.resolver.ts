@@ -1,4 +1,11 @@
-import { Arg, ID, Mutation, Query, Resolver } from "type-graphql";
+import {
+    Arg,
+    ID,
+    Mutation,
+    Query,
+    Resolver,
+    UseMiddleware,
+} from "type-graphql";
 import { PostMutationResponse } from "../../types/graphql/PostMutationResponse";
 import { CreatePostInput } from "../../types/input/CreatePostInput";
 import { Post } from "../../models/Post.model";
@@ -6,10 +13,13 @@ import { UpdatePostInput } from "../../types/input/UpdatePostInput";
 import { ErrorMutationResponse } from "../../types/graphql/ErrorMutationResponse";
 import { getErrorMutationResponse } from "../../helpers/resolvers/ErrorMutationResponseHelper";
 import { HTTP_STATUS_CODE } from "../../utils/constants/constants";
+import { checkAuth } from "../../middleware/auth/checkAuth";
+import { DATA_SOURCE } from "../../helpers/database/DatabaseHelper";
 
 @Resolver()
 export class PostResolver {
     @Mutation((_return) => PostMutationResponse || ErrorMutationResponse)
+    @UseMiddleware(checkAuth)
     async createPost(
         @Arg("createPostInput")
         { title, content }: CreatePostInput
@@ -39,12 +49,14 @@ export class PostResolver {
     }
 
     @Mutation((_return) => PostMutationResponse || ErrorMutationResponse)
+    @UseMiddleware(checkAuth)
     async updatePost(
         @Arg("updatePostInput")
         { id, title, content }: UpdatePostInput
     ): Promise<PostMutationResponse | ErrorMutationResponse> {
         try {
             const existingPost = await Post.findOneBy({ id });
+
             if (!existingPost) {
                 return {
                     code: HTTP_STATUS_CODE.BAD_REQUEST,
@@ -52,16 +64,20 @@ export class PostResolver {
                     message: "Post not found",
                 };
             } else {
-                existingPost.title = title;
-                existingPost.content = content;
-
-                await existingPost.save();
+                await DATA_SOURCE.createQueryBuilder()
+                    .update(Post)
+                    .set({
+                        title: title,
+                        content: content,
+                    })
+                    .where("id = :id", { id: id })
+                    .execute();
 
                 return {
                     code: HTTP_STATUS_CODE.SUCCESS,
                     success: true,
                     message: "Post updated successfully",
-                    post: existingPost,
+                    post: (await Post.findOneBy({ id })) as Post,
                 };
             }
         } catch (error) {
@@ -98,6 +114,7 @@ export class PostResolver {
     }
 
     @Mutation((_return) => PostMutationResponse)
+    @UseMiddleware(checkAuth)
     async deletePost(
         @Arg("id", (_type) => ID)
         id: number
