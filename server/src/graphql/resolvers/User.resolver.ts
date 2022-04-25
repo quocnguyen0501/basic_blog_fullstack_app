@@ -11,7 +11,7 @@ import { Context } from "../../types/graphql/Context";
 import { SESSION_COOKIE_CONFIGS } from "../../helpers/storage/SessionCookieConfig";
 import { ErrorMutationResponse } from "../../types/graphql/ErrorMutationResponse";
 import { getErrorMutationResponse } from "../../helpers/resolvers/ErrorMutationResponseHelper";
-import { HTTP_STATUS_CODE } from "src/utils/constants/constants";
+import { HTTP_STATUS_CODE } from "../../utils/constants/constants";
 
 @Resolver()
 export class UserResolver {
@@ -28,7 +28,7 @@ export class UserResolver {
 
         if (validateRegisterInputError !== null) {
             return {
-                code: 400,
+                code: HTTP_STATUS_CODE.BAD_REQUEST,
                 success: false,
                 ...validateRegisterInputError,
             };
@@ -54,7 +54,7 @@ export class UserResolver {
 
             if (existingUser) {
                 return {
-                    code: 400,
+                    code: HTTP_STATUS_CODE.BAD_REQUEST,
                     success: false,
                     message: "Duplicated email! Please try again!",
                     errors: [
@@ -81,7 +81,7 @@ export class UserResolver {
                 req.session.userId = newUser.id;
 
                 return {
-                    code: 200,
+                    code: HTTP_STATUS_CODE.SUCCESS,
                     success: true,
                     message: "Registation successful",
                     user: newUser,
@@ -102,7 +102,7 @@ export class UserResolver {
         const validateLoginInputError = ValidateLoginInput(loginInput);
         if (validateLoginInputError !== null) {
             return {
-                code: 400,
+                code: HTTP_STATUS_CODE.BAD_REQUEST,
                 success: false,
                 ...validateLoginInputError,
             };
@@ -114,7 +114,7 @@ export class UserResolver {
 
                 if (!existingUser) {
                     return {
-                        code: 400,
+                        code: HTTP_STATUS_CODE.BAD_REQUEST,
                         success: false,
                         message: "User not found",
                     };
@@ -127,7 +127,7 @@ export class UserResolver {
 
                 if (!isPwdValid) {
                     return {
-                        code: 400,
+                        code: HTTP_STATUS_CODE.BAD_REQUEST,
                         success: false,
                         message: "Incorect password",
                     };
@@ -140,7 +140,7 @@ export class UserResolver {
                 req.session.userId = existingUser.id;
 
                 return {
-                    code: 200,
+                    code: HTTP_STATUS_CODE.SUCCESS,
                     success: true,
                     message: "Login Successfully",
                     user: existingUser,
