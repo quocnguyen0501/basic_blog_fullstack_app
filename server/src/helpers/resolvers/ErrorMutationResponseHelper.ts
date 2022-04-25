@@ -6,7 +6,6 @@ export const getErrorMutationResponse = (
     field: string,
     message: string
 ): ErrorMutationResponse => {
-    console.log(error);
     return {
         code: code,
         success: false,

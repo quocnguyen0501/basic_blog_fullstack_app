@@ -10,8 +10,6 @@ export class ErrorMutationResponse implements IMutaionResponse {
     success: boolean;
     message: string;
 
-    @Field((_type) => [FieldError], {
-        nullable: true,
-    })
+    @Field((_type) => [FieldError])
     errors: FieldError[];
 }
