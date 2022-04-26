@@ -41,9 +41,9 @@ const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    const [months, setMonths] = useState(getMonths());
-    const [years, setYears] = useState(getYears());
-    const [days, setDays] = useState(getDays());
+    const [months, _setMonths] = useState(getMonths());
+    const [years, _setYears] = useState(getYears());
+    const [days, _setDays] = useState(getDays());
 
     return (
         <Wrapper>
