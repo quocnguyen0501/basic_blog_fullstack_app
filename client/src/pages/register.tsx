@@ -15,28 +15,42 @@ import {
     Link,
     RadioGroup,
     Radio,
+    Select,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import Wrapper from "../components/Wrapper";
 import { Form, Formik, useFormik } from "formik";
 import { ILoginInput } from "../types/form/LoginInput";
 import InputTextField from "../components/InputTextField";
+import {
+    getDay,
+    getDaysOfMonth,
+    getMonths,
+    getYears,
+} from "../helpers/DateOfBirthHelper";
 
 const Register = () => {
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const initialValues: ILoginInput = {
         email: "",
         firstName: "",
         surname: "",
         password: "",
         confirmPassword: "",
-        day: "",
-        month: "",
-        year: "",
+        day: new Date().getDate(),
+        month: new Date().getMonth() + 1,
+        year: new Date().getFullYear(),
         gender: "male",
     };
+
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const [months, setMonths] = useState(getMonths());
+    const [years, setYears] = useState(getYears());
+    const [days, setDays] = useState(
+        getDaysOfMonth(initialValues.month, initialValues.year)
+    );
 
     return (
         <Wrapper>
@@ -166,14 +180,148 @@ const Register = () => {
                                                 </InputRightElement>
                                             </InputGroup>
                                         </FormControl>
-                                        <RadioGroup
-                                            onChange={formikProps.handleChange}
-                                            defaultValue={formikProps.values.gender}
+                                        <HStack>
+                                            <Box w={"full"} h={"full"}>
+                                                <Select
+                                                    id="day"
+                                                    name="day"
+                                                    defaultValue={
+                                                        formikProps.values.day
+                                                    }
+                                                    onChange={
+                                                        formikProps.handleChange
+                                                    }
+                                                >
+                                                    {days.map((day) => (
+                                                        <option
+                                                            value={day}
+                                                            key={day}
+                                                        >
+                                                            {day}
+                                                        </option>
+                                                    ))}
+                                                </Select>
+                                            </Box>
+                                            <Box w={"full"} h={"full"}>
+                                                <Select
+                                                    id="month"
+                                                    name="month"
+                                                    defaultValue={
+                                                        formikProps.values.month
+                                                    }
+                                                    onChange={
+                                                        formikProps.handleChange
+                                                    }
+                                                >
+                                                    {months.map((month) => (
+                                                        <option
+                                                            value={months.indexOf(
+                                                                month
+                                                            )}
+                                                            key={months.indexOf(
+                                                                month
+                                                            )}
+                                                        >
+                                                            {month}
+                                                        </option>
+                                                    ))}
+                                                </Select>
+                                            </Box>
+                                            <Box w={"full"} h={"full"}>
+                                                <Select
+                                                    id="year"
+                                                    name="year"
+                                                    defaultValue={
+                                                        formikProps.values.year
+                                                    }
+                                                    onChange={
+                                                        formikProps.handleChange
+                                                    }
+                                                >
+                                                    {years.map((year) => (
+                                                        <option
+                                                            value={year}
+                                                            key={year}
+                                                        >
+                                                            {year}
+                                                        </option>
+                                                    ))}
+                                                </Select>
+                                            </Box>
+                                        </HStack>
+                                        <FormLabel
+                                            fontSize={"12px"}
+                                            color={"gray.400"}
                                         >
-                                            <Stack direction="row">
-                                                <Radio value="male" defaultChecked>Male</Radio>
-                                                <Radio value="female">Female</Radio>
-                                                <Radio value="3">Third</Radio>
+                                            Gender
+                                        </FormLabel>
+                                        <RadioGroup
+                                            id="gender"
+                                            name="gender"
+                                            defaultValue={
+                                                formikProps.values.gender
+                                            }
+                                            onChange={formikProps.handleChange}
+                                        >
+                                            <Stack
+                                                direction="row"
+                                                spacing={"2"}
+                                            >
+                                                <Box
+                                                    border={"solid 1px"}
+                                                    borderColor={"gray.300"}
+                                                    borderRadius={"7px"}
+                                                    w={"full"}
+                                                    h={"full"}
+                                                    p={3}
+                                                >
+                                                    <Radio
+                                                        id="male"
+                                                        value="male"
+                                                        defaultChecked
+                                                        onChange={
+                                                            formikProps.handleChange
+                                                        }
+                                                    >
+                                                        Male
+                                                    </Radio>
+                                                </Box>
+                                                <Box
+                                                    border={"solid 1px"}
+                                                    borderColor={"gray.300"}
+                                                    borderRadius={"7px"}
+                                                    w={"full"}
+                                                    h={"full"}
+                                                    p={3}
+                                                >
+                                                    <Radio
+                                                        id="female"
+                                                        value="female"
+                                                        onChange={
+                                                            formikProps.handleChange
+                                                        }
+                                                    >
+                                                        Female
+                                                    </Radio>
+                                                </Box>
+                                                <Box
+                                                    border={"solid 1px"}
+                                                    borderColor={"gray.300"}
+                                                    borderRadius={"7px"}
+                                                    w={"full"}
+                                                    h={"full"}
+                                                    p={3}
+                                                >
+                                                    <Radio
+                                                        id="other"
+                                                        value="3"
+                                                        onChange={
+                                                            formikProps.handleChange
+                                                        }
+                                                    >
+                                                        Other
+                                                    </Radio>
+                                                </Box>
                                             </Stack>
                                         </RadioGroup>
                                         <Stack spacing={10} pt={2}>

@@ -4,8 +4,8 @@ export interface ILoginInput {
     confirmPassword: string
     firstName: string
     surname: string
-    day: string
-    month: string
-    year: string
+    day: number
+    month: number
+    year: number
     gender: string
 }
