@@ -6,8 +6,6 @@ import { IInputField } from "../types/form/InputField";
 const InputField = ({ ...props }: IInputField) => {
     const [field, { error }] = useField(props);
 
-    console.log(error);
-
     return (
         <FormControl id={field.name} isRequired>
             <Input {...field} id={field.name} {...props} />
