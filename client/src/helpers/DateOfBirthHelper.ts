@@ -6,9 +6,9 @@ export const daysOfFeb = (year: number): number => {
     return isLeapYear(year) ? 29 : 28;
 };
 
-export const getDays = (daysOfMonth: number): number[] => {
+export const getDays = (): number[] => {
     let option: number[] = [];
-    for (let i = 1; i < daysOfMonth; i++) {
+    for (let i = 1; i < 32; i++) {
         option = [...option, i];
     }
     return option;
@@ -52,19 +52,3 @@ export const handleSelectYear = (
 
     return [31, daysFeb, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 };
-
-export const getDaysOfMonth = (month: number, year: number) => {
-    const daysFeb: number = daysOfFeb(year);
-
-    const listNumberDays = [31, daysFeb, 31, 30, 31, 30, 31, 30, 31, 30, 31];
-    
-    return getDays(listNumberDays[month]);
-};
-
-export const getDay = (month: number, year: number) => {
-    const daysFeb: number = daysOfFeb(year);
-
-    const listNumberDays = [31, daysFeb, 31, 30, 31, 30, 31, 30, 31, 30, 31];
-    
-    return getDays(listNumberDays[month]);
-}
