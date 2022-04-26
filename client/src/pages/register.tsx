@@ -17,18 +17,13 @@ import {
     Radio,
     Select,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import Wrapper from "../components/Wrapper";
-import { Form, Formik, useFormik } from "formik";
+import { Form, Formik, FormikProps, useFormik } from "formik";
 import { ILoginInput } from "../types/form/LoginInput";
 import InputTextField from "../components/InputTextField";
-import {
-    getDay,
-    getDaysOfMonth,
-    getMonths,
-    getYears,
-} from "../helpers/DateOfBirthHelper";
+import { getDays, getMonths, getYears } from "../helpers/DateOfBirthHelper";
 
 const Register = () => {
     const initialValues: ILoginInput = {
@@ -48,9 +43,7 @@ const Register = () => {
 
     const [months, setMonths] = useState(getMonths());
     const [years, setYears] = useState(getYears());
-    const [days, setDays] = useState(
-        getDaysOfMonth(initialValues.month, initialValues.year)
-    );
+    const [days, setDays] = useState(getDays());
 
     return (
         <Wrapper>
