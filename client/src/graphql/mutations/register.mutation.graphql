@@ -1,0 +1,19 @@
+mutation Register {
+    register(registerInput: $registerInput) {
+        code
+        success
+        message
+        user {
+            id
+            email
+            firstName
+            surname
+            dateOfBirth
+            gender
+        }
+        errors {
+            field
+            message
+        }
+    }
+}
