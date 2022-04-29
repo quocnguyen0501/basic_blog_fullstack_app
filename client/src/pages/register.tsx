@@ -17,17 +17,22 @@ import {
     Radio,
     Select,
 } from "@chakra-ui/react";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useState } from "react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import Wrapper from "../components/Wrapper";
-import { Form, Formik, FormikProps, useFormik } from "formik";
-import { ILoginInput } from "../types/form/LoginInput";
+import { Form, Formik, FormikHelpers, FormikProps, useFormik } from "formik";
+import { IRegisterInput } from "../types/form/LoginInput";
 import InputTextField from "../components/InputTextField";
 import { getDays, getMonths, getYears } from "../helpers/DateOfBirthHelper";
-import { RegisterInput, useRegisterMutation } from "../generated/graphql";
+import {
+    ErrorMutationResponse,
+    RegisterInput,
+    useRegisterMutation,
+} from "../generated/graphql";
+import { validateSignUpSchema } from "../validation/RegisterValidationSchema";
 
 const Register = () => {
-    const initialValues: ILoginInput = {
+    const initialValues: IRegisterInput = {
         email: "",
         firstName: "",
         surname: "",
@@ -49,7 +54,12 @@ const Register = () => {
     const [years, _setYears] = useState(getYears());
     const [days, _setDays] = useState(getDays());
 
-    const onRegisterSubmit = async (values: ILoginInput) => {
+    const validationSchema = validateSignUpSchema;
+
+    const onRegisterSubmit = async (
+        values: IRegisterInput,
+        { setErrors }: FormikHelpers<IRegisterInput>
+    ) => {
         const registerInput: RegisterInput = {
             email: values.email,
             firstName: values.firstName,
@@ -67,7 +77,22 @@ const Register = () => {
             },
         });
 
-        console.log('>>> RESPONSE: ', res);
+        console.log(">>> RESPONSE: ", res.data.register[0].code);
+
+        if (res.data.register[0].code !== 200) {
+            const errorMutationResponse: ErrorMutationResponse = res.data
+                .register[0] as ErrorMutationResponse;
+
+            console.log(">>> ERROR: ");
+
+            errorMutationResponse.errors.forEach((e) => {
+                console.log(e.message);
+            });
+
+            setErrors({
+                email: "Email was wrong",
+            });
+        }
     };
 
     return (
@@ -83,9 +108,17 @@ const Register = () => {
                 </Stack>
                 <Formik
                     initialValues={initialValues}
+                    validationSchema={validationSchema}
                     onSubmit={onRegisterSubmit}
                 >
-                    {(formikProps) => {
+                    {({
+                        values,
+                        touched,
+                        errors,
+                        handleBlur,
+                        handleChange,
+                        isSubmitting,
+                    }: FormikProps<IRegisterInput>) => {
                         return (
                             <Form>
                                 <Box
@@ -113,22 +146,29 @@ const Register = () => {
                                                 />
                                             </Box>
                                         </HStack>
+                                        {errors.firstName &&
+                                        touched.firstName ? (
+                                            <div>{errors.firstName}</div>
+                                        ) : null}
+                                        {errors.surname && touched.surname ? (
+                                            <div>{errors.surname}</div>
+                                        ) : null}
                                         <InputTextField
                                             name="email"
                                             placeholder="Email address"
                                             label="Email address"
                                             type="text"
                                         />
+                                        {errors.email && touched.email ? (
+                                            <div>{errors.email}</div>
+                                        ) : null}
                                         <FormControl id="password" isRequired>
                                             <InputGroup>
                                                 <Input
-                                                    value={
-                                                        formikProps.values
-                                                            .password
-                                                    }
-                                                    onChange={
-                                                        formikProps.handleChange
-                                                    }
+                                                    id="password"
+                                                    name="password"
+                                                    value={values.password}
+                                                    onChange={handleChange}
                                                     placeholder="Password"
                                                     type={
                                                         showPassword
@@ -156,6 +196,10 @@ const Register = () => {
                                                     </Button>
                                                 </InputRightElement>
                                             </InputGroup>
+                                            {errors.password &&
+                                            touched.password ? (
+                                                <div>{errors.firstName}</div>
+                                            ) : null}
                                         </FormControl>
                                         <FormControl
                                             id="confirmPassword"
@@ -163,13 +207,12 @@ const Register = () => {
                                         >
                                             <InputGroup>
                                                 <Input
+                                                    id="confirmPassword"
+                                                    name="confirmPassword"
                                                     value={
-                                                        formikProps.values
-                                                            .confirmPassword
+                                                        values.confirmPassword
                                                     }
-                                                    onChange={
-                                                        formikProps.handleChange
-                                                    }
+                                                    onChange={handleChange}
                                                     placeholder="Confirm password"
                                                     type={
                                                         showConfirmPassword
@@ -197,18 +240,20 @@ const Register = () => {
                                                     </Button>
                                                 </InputRightElement>
                                             </InputGroup>
+                                            {errors.confirmPassword &&
+                                            touched.confirmPassword ? (
+                                                <div>
+                                                    {errors.confirmPassword}
+                                                </div>
+                                            ) : null}
                                         </FormControl>
                                         <HStack>
                                             <Box w={"full"} h={"full"}>
                                                 <Select
                                                     id="day"
                                                     name="day"
-                                                    defaultValue={
-                                                        formikProps.values.day
-                                                    }
-                                                    onChange={
-                                                        formikProps.handleChange
-                                                    }
+                                                    defaultValue={values.day}
+                                                    onChange={handleChange}
                                                 >
                                                     {days.map((day) => (
                                                         <option
@@ -224,12 +269,8 @@ const Register = () => {
                                                 <Select
                                                     id="month"
                                                     name="month"
-                                                    defaultValue={
-                                                        formikProps.values.month
-                                                    }
-                                                    onChange={
-                                                        formikProps.handleChange
-                                                    }
+                                                    defaultValue={values.month}
+                                                    onChange={handleChange}
                                                 >
                                                     {months.map((month) => (
                                                         <option
@@ -249,12 +290,8 @@ const Register = () => {
                                                 <Select
                                                     id="year"
                                                     name="year"
-                                                    defaultValue={
-                                                        formikProps.values.year
-                                                    }
-                                                    onChange={
-                                                        formikProps.handleChange
-                                                    }
+                                                    defaultValue={values.year}
+                                                    onChange={handleChange}
                                                 >
                                                     {years.map((year) => (
                                                         <option
@@ -276,10 +313,8 @@ const Register = () => {
                                         <RadioGroup
                                             id="gender"
                                             name="gender"
-                                            defaultValue={
-                                                formikProps.values.gender
-                                            }
-                                            onChange={formikProps.handleChange}
+                                            defaultValue={values.gender}
+                                            onChange={handleChange}
                                         >
                                             <Stack
                                                 direction="row"
@@ -297,9 +332,7 @@ const Register = () => {
                                                         id="male"
                                                         value="male"
                                                         defaultChecked
-                                                        onChange={
-                                                            formikProps.handleChange
-                                                        }
+                                                        onChange={handleChange}
                                                     >
                                                         Male
                                                     </Radio>
@@ -315,9 +348,7 @@ const Register = () => {
                                                     <Radio
                                                         id="female"
                                                         value="female"
-                                                        onChange={
-                                                            formikProps.handleChange
-                                                        }
+                                                        onChange={handleChange}
                                                     >
                                                         Female
                                                     </Radio>
@@ -333,9 +364,7 @@ const Register = () => {
                                                     <Radio
                                                         id="other"
                                                         value="3"
-                                                        onChange={
-                                                            formikProps.handleChange
-                                                        }
+                                                        onChange={handleChange}
                                                     >
                                                         Other
                                                     </Radio>
