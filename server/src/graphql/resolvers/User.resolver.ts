@@ -2,7 +2,6 @@ import { Arg, Ctx, Mutation, Resolver } from "type-graphql";
 import * as argon2 from "argon2";
 
 import { User } from "../../models/User.model";
-import { UserMutationResponse } from "../../types/graphql/UserMutaionResponse";
 import { RegisterInput } from "../../types/input/RegisterInput";
 import { LoginInput } from "../../types/input/LoginInput";
 import { ValidateRegisterInput } from "../../utils/validates/RegisterInput.validate";
@@ -12,10 +11,11 @@ import { SESSION_COOKIE_CONFIGS } from "../../helpers/storage/SessionCookieConfi
 import { ErrorMutationResponse } from "../../types/graphql/ErrorMutationResponse";
 import { getErrorMutationResponse } from "../../helpers/resolvers/ErrorMutationResponseHelper";
 import { HTTP_STATUS_CODE } from "../../utils/constants/constants";
+import { UserUnionMutationResponse } from "../../types/graphql/unions/UserUnionMutationResponse";
 
 @Resolver()
 export class UserResolver {
-    @Mutation((_return) => UserMutationResponse || ErrorMutationResponse, {
+    @Mutation((_return) => [UserUnionMutationResponse], {
         nullable: true,
     })
     async register(
@@ -23,15 +23,17 @@ export class UserResolver {
         registerInput: RegisterInput,
         @Ctx()
         { req }: Context
-    ): Promise<UserMutationResponse | ErrorMutationResponse> {
+    ): Promise<Array<typeof UserUnionMutationResponse>> {
         const validateRegisterInputError = ValidateRegisterInput(registerInput);
 
         if (validateRegisterInputError !== null) {
-            return {
+            const error: ErrorMutationResponse = {
                 code: HTTP_STATUS_CODE.BAD_REQUEST,
                 success: false,
                 ...validateRegisterInputError,
             };
+
+            return [error];
         }
         try {
             const {
@@ -53,7 +55,7 @@ export class UserResolver {
             const existingUser = await User.findOneBy({ email });
 
             if (existingUser) {
-                return {
+                const error: ErrorMutationResponse = {
                     code: HTTP_STATUS_CODE.BAD_REQUEST,
                     success: false,
                     message: "Duplicated email! Please try again!",
@@ -64,6 +66,7 @@ export class UserResolver {
                         },
                     ],
                 };
+                return [error];
             } else {
                 const hashPassword = await argon2.hash(password);
 
@@ -80,32 +83,43 @@ export class UserResolver {
 
                 req.session.userId = newUser.id;
 
-                return {
-                    code: HTTP_STATUS_CODE.SUCCESS,
-                    success: true,
-                    message: "Registation successful",
-                    user: newUser,
-                };
+                return [
+                    {
+                        code: HTTP_STATUS_CODE.SUCCESS,
+                        success: true,
+                        message: "Registation successful",
+                        user: newUser,
+                    },
+                ];
             }
         } catch (error) {
-            return getErrorMutationResponse(error, HTTP_STATUS_CODE.INTERNAL_SERVER, "user", "error register in mutation");
+            return [
+                getErrorMutationResponse(
+                    error,
+                    HTTP_STATUS_CODE.INTERNAL_SERVER,
+                    "user",
+                    "error register in mutation"
+                ),
+            ];
         }
     }
 
-    @Mutation((_return) => UserMutationResponse || ErrorMutationResponse)
+    @Mutation((_return) => [UserUnionMutationResponse])
     async login(
         @Arg("loginInput")
         loginInput: LoginInput,
         @Ctx()
         { req }: Context
-    ): Promise<UserMutationResponse | ErrorMutationResponse> {
+    ): Promise<Array<typeof UserUnionMutationResponse>> {
         const validateLoginInputError = ValidateLoginInput(loginInput);
         if (validateLoginInputError !== null) {
-            return {
-                code: HTTP_STATUS_CODE.BAD_REQUEST,
-                success: false,
-                ...validateLoginInputError,
-            };
+            return [
+                {
+                    code: HTTP_STATUS_CODE.BAD_REQUEST,
+                    success: false,
+                    ...validateLoginInputError,
+                },
+            ];
         } else {
             try {
                 const { email, password } = loginInput;
@@ -113,11 +127,13 @@ export class UserResolver {
                 const existingUser = await User.findOneBy({ email });
 
                 if (!existingUser) {
-                    return {
-                        code: HTTP_STATUS_CODE.BAD_REQUEST,
-                        success: false,
-                        message: "User not found",
-                    };
+                    return [
+                        {
+                            code: HTTP_STATUS_CODE.BAD_REQUEST,
+                            success: false,
+                            message: "User not found",
+                        },
+                    ];
                 }
 
                 const isPwdValid = await argon2.verify(
@@ -126,11 +142,19 @@ export class UserResolver {
                 );
 
                 if (!isPwdValid) {
-                    return {
-                        code: HTTP_STATUS_CODE.BAD_REQUEST,
-                        success: false,
-                        message: "Incorect password",
-                    };
+                    return [
+                        {
+                            code: HTTP_STATUS_CODE.BAD_REQUEST,
+                            success: false,
+                            message: "Incorect password",
+                            errors: [
+                                {
+                                    field: "password",
+                                    message: "Email was incorrect",
+                                },
+                            ],
+                        },
+                    ];
                 }
 
                 /**
@@ -139,14 +163,23 @@ export class UserResolver {
 
                 req.session.userId = existingUser.id;
 
-                return {
-                    code: HTTP_STATUS_CODE.SUCCESS,
-                    success: true,
-                    message: "Login Successfully",
-                    user: existingUser,
-                };
+                return [
+                    {
+                        code: HTTP_STATUS_CODE.SUCCESS,
+                        success: true,
+                        message: "Login Successfully",
+                        user: existingUser,
+                    },
+                ];
             } catch (error) {
-                return getErrorMutationResponse(error, HTTP_STATUS_CODE.INTERNAL_SERVER, "user", "error login in mutation");
+                return [
+                    getErrorMutationResponse(
+                        error,
+                        HTTP_STATUS_CODE.INTERNAL_SERVER,
+                        "user",
+                        "error login in mutation"
+                    ),
+                ];
             }
         }
     }
