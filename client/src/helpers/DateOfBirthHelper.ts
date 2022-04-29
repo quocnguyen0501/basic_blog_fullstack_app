@@ -16,7 +16,8 @@ export const getDays = (): number[] => {
 
 export const getMonthName = (month: number): string => {
     const date = new Date();
-    date.setMonth(month - 1);
+    date.setMonth(month - 1, 1);
+    
     return date.toLocaleString("default", {
         month: "short",
     });
@@ -24,9 +25,10 @@ export const getMonthName = (month: number): string => {
 
 export const getMonths = (): string[] => {
     let option: string[] = [];
-    for (let i = 0; i < 12; i++) {
+    for (let i = 1; i <= 12; i++) {
         option = [...option, getMonthName(i)];
     }
+    
     return option;
 };
 

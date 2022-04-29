@@ -24,6 +24,7 @@ import { Form, Formik, FormikProps, useFormik } from "formik";
 import { ILoginInput } from "../types/form/LoginInput";
 import InputTextField from "../components/InputTextField";
 import { getDays, getMonths, getYears } from "../helpers/DateOfBirthHelper";
+import { RegisterInput, useRegisterMutation } from "../generated/graphql";
 
 const Register = () => {
     const initialValues: ILoginInput = {
@@ -33,10 +34,13 @@ const Register = () => {
         password: "",
         confirmPassword: "",
         day: new Date().getDate(),
-        month: new Date().getMonth() + 1,
+        month: new Date().getMonth(),
         year: new Date().getFullYear(),
         gender: "male",
     };
+
+    const [registerUser, { loading: _registerUserLoading, data, error }] =
+        useRegisterMutation();
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -44,6 +48,27 @@ const Register = () => {
     const [months, _setMonths] = useState(getMonths());
     const [years, _setYears] = useState(getYears());
     const [days, _setDays] = useState(getDays());
+
+    const onRegisterSubmit = async (values: ILoginInput) => {
+        const registerInput: RegisterInput = {
+            email: values.email,
+            firstName: values.firstName,
+            surname: values.surname,
+            password: values.password,
+            day: values.day.toString(),
+            month: values.month.toString(),
+            year: values.year.toString(),
+            gender: values.gender,
+        };
+
+        const res = await registerUser({
+            variables: {
+                registerInput: registerInput,
+            },
+        });
+
+        console.log('>>> RESPONSE: ', res);
+    };
 
     return (
         <Wrapper>
@@ -58,7 +83,7 @@ const Register = () => {
                 </Stack>
                 <Formik
                     initialValues={initialValues}
-                    onSubmit={(values: ILoginInput) => console.log(values)}
+                    onSubmit={onRegisterSubmit}
                 >
                     {(formikProps) => {
                         return (
