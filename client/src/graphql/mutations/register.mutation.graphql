@@ -1,19 +1,25 @@
-mutation Register {
+mutation Register($registerInput: RegisterInput!) {
     register(registerInput: $registerInput) {
-        code
-        success
-        message
-        user {
-            id
-            email
-            firstName
-            surname
-            dateOfBirth
-            gender
-        }
-        errors {
-            field
+        ... on UserMutationResponse {
+            code
+            success
             message
+            user {
+                firstName
+                surname
+                email
+                dateOfBirth
+                gender
+            }
+        }
+        ... on ErrorMutationResponse {
+            code
+            success
+            message
+            errors {
+                field
+                message
+            }
         }
     }
 }
