@@ -7,6 +7,7 @@ import {
     ApolloServerPluginDrainHttpServer,
     ApolloServerPluginLandingPageGraphQLPlayground,
 } from "apollo-server-core";
+import cors from "cors";
 
 import mongoose from "mongoose";
 import session from "express-session";
@@ -20,11 +21,19 @@ import { RESOLVERS } from "./graphql/resolvers/Resolvers";
 import { __prod__ } from "./utils/constants/constants";
 import { SESSION_OPTION } from "./helpers/storage/SessionCookieHelper";
 import { Context } from "./types/graphql/Context";
+import { CORS } from "./helpers/cors/CorsConfig";
 
 const main = async () => {
     await DATA_SOURCE.initialize();
 
     const app = express();
+
+    app.use(
+        cors({
+            origin: __prod__ ? CORS.CORS_ORIGIN_PROD : CORS.CORS_ORIGIN_DEV,
+            credentials: true,
+        })
+    );
 
     /**
      * Session/Coockie Store
@@ -33,7 +42,7 @@ const main = async () => {
 
     console.log("🚀 Connect Mongo Success!");
 
-    app.set('trust proxy', 1)
+    app.set("trust proxy", 1);
 
     app.use(session(SESSION_OPTION));
 
@@ -48,7 +57,7 @@ const main = async () => {
             ApolloServerPluginDrainHttpServer({ httpServer }),
             ApolloServerPluginLandingPageGraphQLPlayground(),
         ],
-        context: ({ req, res } : Context) => ({
+        context: ({ req, res }: Context) => ({
             req,
             res,
         }),
