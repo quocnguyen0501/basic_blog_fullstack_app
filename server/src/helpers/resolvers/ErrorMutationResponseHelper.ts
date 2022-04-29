@@ -4,12 +4,15 @@ export const getErrorMutationResponse = (
     error: any,
     code: number,
     field: string,
-    message: string
+    message: string,
+    messageField?: string
 ): ErrorMutationResponse => {
     return {
         code: code,
         success: false,
-        message: `>>> Internal Server Error: ${error.message}`,
+        message: messageField
+            ? messageField
+            : `>>> Internal Server Error: ${error.message}`,
         errors: [
             {
                 field: field,
