@@ -16,6 +16,7 @@ import {
     RadioGroup,
     Radio,
     Select,
+    FormErrorMessage,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
@@ -30,6 +31,8 @@ import {
     useRegisterMutation,
 } from "../generated/graphql";
 import { validateSignUpSchema } from "../validation/RegisterValidationSchema";
+import { mapFieldErrors } from "../helpers/mapFieldErrors";
+import router from "next/router";
 
 const Register = () => {
     const initialValues: IRegisterInput = {
@@ -77,21 +80,13 @@ const Register = () => {
             },
         });
 
-        console.log(">>> RESPONSE: ", res.data.register[0].code);
-
         if (res.data.register[0].code !== 200) {
             const errorMutationResponse: ErrorMutationResponse = res.data
                 .register[0] as ErrorMutationResponse;
 
-            console.log(">>> ERROR: ");
-
-            errorMutationResponse.errors.forEach((e) => {
-                console.log(e.message);
-            });
-
-            setErrors({
-                email: "Email was wrong",
-            });
+            setErrors(mapFieldErrors(errorMutationResponse.errors));
+        } else {
+            router.push('/')
         }
     };
 
@@ -115,7 +110,6 @@ const Register = () => {
                         values,
                         touched,
                         errors,
-                        handleBlur,
                         handleChange,
                         isSubmitting,
                     }: FormikProps<IRegisterInput>) => {
@@ -148,10 +142,14 @@ const Register = () => {
                                         </HStack>
                                         {errors.firstName &&
                                         touched.firstName ? (
-                                            <div>{errors.firstName}</div>
+                                            <FormErrorMessage>
+                                                {errors.firstName}
+                                            </FormErrorMessage>
                                         ) : null}
                                         {errors.surname && touched.surname ? (
-                                            <div>{errors.surname}</div>
+                                            <FormErrorMessage>
+                                                {errors.surname}
+                                            </FormErrorMessage>
                                         ) : null}
                                         <InputTextField
                                             name="email"
@@ -160,7 +158,9 @@ const Register = () => {
                                             type="text"
                                         />
                                         {errors.email && touched.email ? (
-                                            <div>{errors.email}</div>
+                                            <FormErrorMessage>
+                                                {errors.email}
+                                            </FormErrorMessage>
                                         ) : null}
                                         <FormControl id="password" isRequired>
                                             <InputGroup>
@@ -198,7 +198,9 @@ const Register = () => {
                                             </InputGroup>
                                             {errors.password &&
                                             touched.password ? (
-                                                <div>{errors.firstName}</div>
+                                                <FormErrorMessage>
+                                                    {errors.firstName}
+                                                </FormErrorMessage>
                                             ) : null}
                                         </FormControl>
                                         <FormControl
@@ -381,6 +383,7 @@ const Register = () => {
                                                 _hover={{
                                                     bg: "blue.500",
                                                 }}
+                                                isLoading={isSubmitting}
                                             >
                                                 Sign up
                                             </Button>

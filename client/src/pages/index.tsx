@@ -2,7 +2,7 @@ import Register from "./register";
 
 const Index = () => (
     <div>
-        <Register/>
+        <h1>HOME PAGE</h1>
     </div>
 );
 
