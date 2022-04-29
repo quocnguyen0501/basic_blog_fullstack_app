@@ -7,9 +7,11 @@ const InputField = ({ ...props }: IInputField) => {
     const [field, { error }] = useField(props);
 
     return (
-        <FormControl id={field.name} isRequired>
-            <Input {...field} id={field.name} {...props} />
-        </FormControl>
+        <>
+            <FormControl id={field.name} isRequired isInvalid={!!error}>
+                <Input {...field} id={field.name} {...props} />
+            </FormControl>
+        </>
     );
 };
 

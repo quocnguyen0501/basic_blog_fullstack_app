@@ -1,4 +1,4 @@
-export interface ILoginInput {
+export interface IRegisterInput {
     email: string
     password: string
     confirmPassword: string
