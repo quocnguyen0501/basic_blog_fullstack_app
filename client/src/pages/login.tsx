@@ -14,11 +14,48 @@ import {
     useColorModeValue,
     InputGroup,
     InputRightElement,
+    FormErrorMessage,
 } from "@chakra-ui/react";
+import { Form, Formik, FormikHelpers, FormikProps } from "formik";
+import router from "next/router";
 import { useState } from "react";
+import InputTextField from "../components/InputTextField";
+import { ErrorMutationResponse, LoginInput, useLoginMutation } from "../generated/graphql";
+import { mapFieldErrors } from "../helpers/mapFieldErrors";
+import { validateSignInSchema } from "../validation/LoginValidationSchema";
 
 const login = () => {
+    const [loginUser, { loading: _loginUserLogin, data, error }] =
+        useLoginMutation();
     const [showPassword, setShowPassword] = useState(false);
+
+    const initialValues: LoginInput = {
+        email: "",
+        password: "",
+    };
+
+    const validationSchema = validateSignInSchema;
+
+    const onLoginSubmit = async (
+        values: LoginInput,
+        { setErrors }: FormikHelpers<LoginInput>
+    ) => {
+        const res = await loginUser({
+            variables: {
+                loginInput: values
+            }
+        });
+
+        if (res.data.login[0].code !== 200) {
+            const errorMutationResponse: ErrorMutationResponse = res.data
+                .login[0] as ErrorMutationResponse;
+
+            setErrors(mapFieldErrors(errorMutationResponse.errors));
+        } else {
+            router.push('/')
+        }
+    };
+
     return (
         <Flex
             minH={"100vh"}
@@ -34,62 +71,107 @@ const login = () => {
                         <Link color={"blue.400"}>features</Link> ✌️
                     </Text>
                 </Stack>
-                <Box
-                    rounded={"lg"}
-                    bg={useColorModeValue("white", "gray.700")}
-                    boxShadow={"lg"}
-                    p={8}
+                <Formik
+                    initialValues={initialValues}
+                    validationSchema={validationSchema}
+                    onSubmit={onLoginSubmit}
                 >
-                    <Stack spacing={4}>
-                        <FormControl id="email">
-                            <FormLabel>Email address</FormLabel>
-                            <Input type="email" />
-                        </FormControl>
-                        <FormControl id="password" isRequired>
-                            <FormLabel>Password</FormLabel>
-                            <InputGroup>
-                                <Input
-                                    type={showPassword ? "text" : "password"}
-                                />
-                                <InputRightElement h={"full"}>
-                                    <Button
-                                        variant={"ghost"}
-                                        onClick={() =>
-                                            setShowPassword(
-                                                (showPassword) => !showPassword
-                                            )
-                                        }
-                                    >
-                                        {showPassword ? (
-                                            <ViewIcon />
-                                        ) : (
-                                            <ViewOffIcon />
-                                        )}
-                                    </Button>
-                                </InputRightElement>
-                            </InputGroup>
-                        </FormControl>
-                        <Stack spacing={10}>
-                            <Stack
-                                direction={{ base: "column", sm: "row" }}
-                                align={"start"}
-                                justify={"space-between"}
+                    {({
+                        values,
+                        touched,
+                        errors,
+                        handleChange,
+                        isSubmitting,
+                    }: FormikProps<LoginInput>) => (
+                        <Form>
+                            <Box
+                                rounded={"lg"}
+                                bg={useColorModeValue("white", "gray.700")}
+                                boxShadow={"lg"}
+                                p={8}
                             >
-                                <Checkbox>Remember me</Checkbox>
-                                <Link color={"blue.400"}>Forgot password?</Link>
-                            </Stack>
-                            <Button
-                                bg={"blue.400"}
-                                color={"white"}
-                                _hover={{
-                                    bg: "blue.500",
-                                }}
-                            >
-                                Sign in
-                            </Button>
-                        </Stack>
-                    </Stack>
-                </Box>
+                                <Stack spacing={4}>
+                                    <InputTextField
+                                        name="email"
+                                        placeholder="Email address"
+                                        label="Email address"
+                                        type="text"
+                                    />
+                                    {errors.email && touched.email ? (
+                                        <FormErrorMessage>
+                                            {errors.email}
+                                        </FormErrorMessage>
+                                    ) : null}
+                                    <FormControl id="password" isRequired>
+                                        <InputGroup>
+                                            <Input
+                                                id="password"
+                                                name="password"
+                                                value={values.password}
+                                                onChange={handleChange}
+                                                placeholder="Password"
+                                                type={
+                                                    showPassword
+                                                        ? "text"
+                                                        : "password"
+                                                }
+                                            />
+                                            <InputRightElement h={"full"}>
+                                                <Button
+                                                    variant={"ghost"}
+                                                    onClick={() =>
+                                                        setShowPassword(
+                                                            (showPassword) =>
+                                                                !showPassword
+                                                        )
+                                                    }
+                                                >
+                                                    {showPassword ? (
+                                                        <ViewIcon />
+                                                    ) : (
+                                                        <ViewOffIcon />
+                                                    )}
+                                                </Button>
+                                            </InputRightElement>
+                                        </InputGroup>
+                                        {errors.password && touched.password ? (
+                                            <FormErrorMessage>
+                                                {errors.password}
+                                            </FormErrorMessage>
+                                        ) : null}
+                                    </FormControl>
+                                    <Stack spacing={10}>
+                                        <Stack
+                                            direction={{
+                                                base: "column",
+                                                sm: "row",
+                                            }}
+                                            align={"start"}
+                                            justify={"space-between"}
+                                        >
+                                            <Checkbox>Remember me</Checkbox>
+                                            <Link color={"blue.400"}>
+                                                Forgot password?
+                                            </Link>
+                                        </Stack>
+                                        <Button
+                                            type="submit"
+                                            size="lg"
+                                            bg={"blue.400"}
+                                            color={"white"}
+                                            _hover={{
+                                                bg: "blue.500",
+                                            }}
+                                            isLoading={isSubmitting}
+                                        >
+                                            Sign in
+                                        </Button>
+                                    </Stack>
+                                </Stack>
+                            </Box>
+                        </Form>
+                    )}
+                </Formik>
             </Stack>
         </Flex>
     );
