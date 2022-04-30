@@ -1,5 +1,5 @@
-mutation Register($registerInput: RegisterInput!) {
-    register(registerInput: $registerInput) {
+mutation login($loginInput: LoginInput!) {
+    login(loginInput: $loginInput) {
         ... on UserMutationResponse {
             ...commonState
             user {

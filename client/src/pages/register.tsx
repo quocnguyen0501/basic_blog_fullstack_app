@@ -21,8 +21,8 @@ import {
 import { useState } from "react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import Wrapper from "../components/Wrapper";
-import { Form, Formik, FormikHelpers, FormikProps, useFormik } from "formik";
-import { IRegisterInput } from "../types/form/LoginInput";
+import { Form, Formik, FormikHelpers, FormikProps } from "formik";
+import { IRegisterInput } from "../types/form/IRegisterInput";
 import InputTextField from "../components/InputTextField";
 import { getDays, getMonths, getYears } from "../helpers/DateOfBirthHelper";
 import {
@@ -199,7 +199,7 @@ const Register = () => {
                                             {errors.password &&
                                             touched.password ? (
                                                 <FormErrorMessage>
-                                                    {errors.firstName}
+                                                    {errors.password}
                                                 </FormErrorMessage>
                                             ) : null}
                                         </FormControl>
@@ -376,7 +376,6 @@ const Register = () => {
                                         <Stack spacing={10} pt={2}>
                                             <Button
                                                 type="submit"
-                                                loadingText="Submitting"
                                                 size="lg"
                                                 bg={"blue.400"}
                                                 color={"white"}
