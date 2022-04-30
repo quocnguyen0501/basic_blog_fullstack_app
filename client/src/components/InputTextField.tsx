@@ -3,7 +3,7 @@ import { useField } from "formik";
 import React from "react";
 import { IInputField } from "../types/form/InputField";
 
-const InputField = ({ ...props }: IInputField) => {
+const InputTextField = ({ ...props }: IInputField) => {
     const [field, { error }] = useField(props);
 
     return (
@@ -16,4 +16,4 @@ const InputField = ({ ...props }: IInputField) => {
     );
 };
 
-export default InputField;
+export default InputTextField;
