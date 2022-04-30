@@ -20,7 +20,11 @@ import { Form, Formik, FormikHelpers, FormikProps } from "formik";
 import router from "next/router";
 import { useState } from "react";
 import InputTextField from "../components/InputTextField";
-import { ErrorMutationResponse, LoginInput, useLoginMutation } from "../generated/graphql";
+import {
+    ErrorMutationResponse,
+    LoginInput,
+    useLoginMutation,
+} from "../generated/graphql";
 import { mapFieldErrors } from "../helpers/mapFieldErrors";
 import { validateSignInSchema } from "../validation/LoginValidationSchema";
 
@@ -42,17 +46,18 @@ const login = () => {
     ) => {
         const res = await loginUser({
             variables: {
-                loginInput: values
-            }
+                loginInput: values,
+            },
         });
 
         if (res.data.login[0].code !== 200) {
             const errorMutationResponse: ErrorMutationResponse = res.data
                 .login[0] as ErrorMutationResponse;
+            console.log(">>> ERROR MUTATION RES: ", errorMutationResponse);
 
             setErrors(mapFieldErrors(errorMutationResponse.errors));
         } else {
-            router.push('/')
+            router.push("/");
         }
     };
 
@@ -102,7 +107,11 @@ const login = () => {
                                             {errors.email}
                                         </FormErrorMessage>
                                     ) : null}
-                                    <FormControl id="password" isRequired>
+                                    <FormControl
+                                        id="password"
+                                        isRequired
+                                        isInvalid={!!error}
+                                    >
                                         <InputGroup>
                                             <Input
                                                 id="password"
@@ -134,11 +143,11 @@ const login = () => {
                                                 </Button>
                                             </InputRightElement>
                                         </InputGroup>
-                                        {errors.password && touched.password ? (
+                                        {error && (
                                             <FormErrorMessage>
-                                                {errors.password}
+                                                {error}
                                             </FormErrorMessage>
-                                        ) : null}
+                                        )}
                                     </FormControl>
                                     <Stack spacing={10}>
                                         <Stack
