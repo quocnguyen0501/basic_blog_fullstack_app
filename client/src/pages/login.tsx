@@ -19,6 +19,7 @@ import {
 import { Form, Formik, FormikHelpers, FormikProps } from "formik";
 import router from "next/router";
 import { useState } from "react";
+import { InputPasswordField } from "../components/InputPasswordField";
 import InputTextField from "../components/InputTextField";
 import {
     ErrorMutationResponse,
@@ -107,48 +108,13 @@ const login = () => {
                                             {errors.email}
                                         </FormErrorMessage>
                                     ) : null}
-                                    <FormControl
-                                        id="password"
-                                        isRequired
-                                        isInvalid={!!error}
-                                    >
-                                        <InputGroup>
-                                            <Input
-                                                id="password"
-                                                name="password"
-                                                value={values.password}
-                                                onChange={handleChange}
-                                                placeholder="Password"
-                                                type={
-                                                    showPassword
-                                                        ? "text"
-                                                        : "password"
-                                                }
-                                            />
-                                            <InputRightElement h={"full"}>
-                                                <Button
-                                                    variant={"ghost"}
-                                                    onClick={() =>
-                                                        setShowPassword(
-                                                            (showPassword) =>
-                                                                !showPassword
-                                                        )
-                                                    }
-                                                >
-                                                    {showPassword ? (
-                                                        <ViewIcon />
-                                                    ) : (
-                                                        <ViewOffIcon />
-                                                    )}
-                                                </Button>
-                                            </InputRightElement>
-                                        </InputGroup>
-                                        {error && (
-                                            <FormErrorMessage>
-                                                {error}
-                                            </FormErrorMessage>
-                                        )}
-                                    </FormControl>
+                                    <InputPasswordField
+                                        name="password"
+                                        placeholder="Password field"
+                                        label="Password"
+                                        showPassword={showPassword}
+                                        setShowPassword={setShowPassword}
+                                    />
                                     <Stack spacing={10}>
                                         <Stack
                                             direction={{

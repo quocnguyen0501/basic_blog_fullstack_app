@@ -33,6 +33,7 @@ import {
 import { validateSignUpSchema } from "../validation/RegisterValidationSchema";
 import { mapFieldErrors } from "../helpers/mapFieldErrors";
 import router from "next/router";
+import { InputPasswordField } from "../components/InputPasswordField";
 
 const Register = () => {
     const initialValues: IRegisterInput = {
@@ -86,7 +87,7 @@ const Register = () => {
 
             setErrors(mapFieldErrors(errorMutationResponse.errors));
         } else {
-            router.push('/')
+            router.push("/");
         }
     };
 
@@ -162,93 +163,22 @@ const Register = () => {
                                                 {errors.email}
                                             </FormErrorMessage>
                                         ) : null}
-                                        <FormControl id="password" isRequired>
-                                            <InputGroup>
-                                                <Input
-                                                    id="password"
-                                                    name="password"
-                                                    value={values.password}
-                                                    onChange={handleChange}
-                                                    placeholder="Password"
-                                                    type={
-                                                        showPassword
-                                                            ? "text"
-                                                            : "password"
-                                                    }
-                                                />
-                                                <InputRightElement h={"full"}>
-                                                    <Button
-                                                        variant={"ghost"}
-                                                        onClick={() =>
-                                                            setShowPassword(
-                                                                (
-                                                                    showPassword
-                                                                ) =>
-                                                                    !showPassword
-                                                            )
-                                                        }
-                                                    >
-                                                        {showPassword ? (
-                                                            <ViewIcon />
-                                                        ) : (
-                                                            <ViewOffIcon />
-                                                        )}
-                                                    </Button>
-                                                </InputRightElement>
-                                            </InputGroup>
-                                            {errors.password &&
-                                            touched.password ? (
-                                                <FormErrorMessage>
-                                                    {errors.password}
-                                                </FormErrorMessage>
-                                            ) : null}
-                                        </FormControl>
-                                        <FormControl
-                                            id="confirmPassword"
-                                            isRequired
-                                        >
-                                            <InputGroup>
-                                                <Input
-                                                    id="confirmPassword"
-                                                    name="confirmPassword"
-                                                    value={
-                                                        values.confirmPassword
-                                                    }
-                                                    onChange={handleChange}
-                                                    placeholder="Confirm password"
-                                                    type={
-                                                        showConfirmPassword
-                                                            ? "text"
-                                                            : "password"
-                                                    }
-                                                />
-                                                <InputRightElement h={"full"}>
-                                                    <Button
-                                                        variant={"ghost"}
-                                                        onClick={() =>
-                                                            setShowConfirmPassword(
-                                                                (
-                                                                    showConfirmPassword
-                                                                ) =>
-                                                                    !showConfirmPassword
-                                                            )
-                                                        }
-                                                    >
-                                                        {showConfirmPassword ? (
-                                                            <ViewIcon />
-                                                        ) : (
-                                                            <ViewOffIcon />
-                                                        )}
-                                                    </Button>
-                                                </InputRightElement>
-                                            </InputGroup>
-                                            {errors.confirmPassword &&
-                                            touched.confirmPassword ? (
-                                                <div>
-                                                    {errors.confirmPassword}
-                                                </div>
-                                            ) : null}
-                                        </FormControl>
+                                        <InputPasswordField
+                                            name="password"
+                                            placeholder="Password"
+                                            label="Password"
+                                            showPassword={showPassword}
+                                            setShowPassword={setShowPassword}
+                                        />
+                                        <InputPasswordField
+                                            name="confirmPassword"
+                                            placeholder="Confirm password"
+                                            label="Password"
+                                            showPassword={showConfirmPassword}
+                                            setShowPassword={
+                                                setShowConfirmPassword
+                                            }
+                                        />
                                         <HStack>
                                             <Box w={"full"} h={"full"}>
                                                 <Select
