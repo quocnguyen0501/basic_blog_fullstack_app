@@ -17,6 +17,7 @@ import {
     Center,
     Image,
     Input,
+    Heading,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
@@ -25,29 +26,111 @@ import logo from "../public/avatar.png";
 import { Formik } from "formik";
 import { ISearchField } from "../types/form/ISearchField";
 import InputSearchField from "./InputSearchField";
-
-const NavLink = ({ children }: { children: ReactNode }) => (
-    <Link
-        px={2}
-        py={1}
-        rounded={"md"}
-        _hover={{
-            textDecoration: "none",
-            bg: useColorModeValue("gray.200", "gray.700"),
-        }}
-        href={"#"}
-    >
-        {children}
-    </Link>
-);
+import { useLoginProfileQuery } from "../generated/graphql";
 
 export const Navbar = () => {
+    const { data, loading, error } = useLoginProfileQuery();
+
     const { colorMode, toggleColorMode } = useColorMode();
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const initialValues: ISearchField = {
         data: "",
     };
+
+    let body: any;
+
+    if (loading) {
+        body = null;
+    } else if (!data?.loginProfile) {
+        body = (
+            <>
+                <NextLink href="/login">
+                    <Button
+                        /* flex={1} */
+                        px={10}
+                        fontSize={"sm"}
+                        rounded={"full"}
+                        bg={"white.400"}
+                        color={"wblack"}
+                        border={"solid 0.1px"}
+                        boxShadow={
+                            "0px 1px 25px -5px rgb(66 153 225 / 48%), 0 10px 10px -5px rgb(66 153 225 / 43%)"
+                        }
+                        _hover={{
+                            bg: "white.500",
+                        }}
+                        _focus={{
+                            bg: "white.500",
+                        }}
+                    >
+                        Log In
+                    </Button>
+                </NextLink>
+                <NextLink href="/register">
+                    <Button
+                        /* flex={1} */
+                        px={10}
+                        fontSize={"sm"}
+                        rounded={"full"}
+                        bg={"blue.400"}
+                        color={"white"}
+                        boxShadow={
+                            "0px 1px 25px -5px rgb(66 153 225 / 48%), 0 10px 10px -5px rgb(66 153 225 / 43%)"
+                        }
+                        _hover={{
+                            bg: "blue.500",
+                        }}
+                        _focus={{
+                            bg: "blue.500",
+                        }}
+                    >
+                        Sign Up
+                    </Button>
+                </NextLink>
+            </>
+        );
+    } else {
+        body = (
+            <Menu>
+                <MenuButton
+                    as={Button}
+                    rounded={"full"}
+                    variant={"link"}
+                    cursor={"pointer"}
+                    minW={0}
+                >
+                    <Avatar
+                        size={"sm"}
+                        src={
+                            "https://styles.redditmedia.com/t5_3g7hb/styles/communityIcon_r0bu1vjkmg851.png?width=256&s=048dd93e23a369889243e242cc741f4d2f88b5f8"
+                        }
+                    />
+                </MenuButton>
+                <MenuList alignItems={"center"}>
+                    <br />
+                    <Center>
+                        <Avatar
+                            size={"2xl"}
+                            src={
+                                "https://styles.redditmedia.com/t5_3g7hb/styles/communityIcon_r0bu1vjkmg851.png?width=256&s=048dd93e23a369889243e242cc741f4d2f88b5f8"
+                            }
+                        />
+                    </Center>
+                    <br />
+                    <Center>
+                        <p>Username</p>
+                    </Center>
+                    <br />
+                    <MenuDivider />
+                    <MenuItem>Your Servers</MenuItem>
+                    <MenuItem>Account Settings</MenuItem>
+                    <MenuItem>Logout</MenuItem>
+                </MenuList>
+            </Menu>
+        );
+    }
+
     return (
         <>
             <Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>
@@ -66,14 +149,15 @@ export const Navbar = () => {
                                             height={"30px"}
                                         />
                                     </Box>
-                                    <Box
+                                    <Heading
+                                        alignItems={"center"}
                                         mx={3}
                                         fontFamily={"monospace"}
                                         fontWeight={"semibold"}
                                         fontSize={"20px"}
                                     >
                                         QN-Network
-                                    </Box>
+                                    </Heading>
                                 </Flex>
                             </Box>
                         </button>
@@ -96,49 +180,7 @@ export const Navbar = () => {
 
                     <Flex alignItems={"center"}>
                         <Stack direction={"row"} spacing={7}>
-                            <NextLink href="/login">
-                                <Button
-                                    /* flex={1} */
-                                    px={10}
-                                    fontSize={"sm"}
-                                    rounded={"full"}
-                                    bg={"white.400"}
-                                    color={"wblack"}
-                                    border={"solid 0.1px"}
-                                    boxShadow={
-                                        "0px 1px 25px -5px rgb(66 153 225 / 48%), 0 10px 10px -5px rgb(66 153 225 / 43%)"
-                                    }
-                                    _hover={{
-                                        bg: "white.500",
-                                    }}
-                                    _focus={{
-                                        bg: "white.500",
-                                    }}
-                                >
-                                    Log In
-                                </Button>
-                            </NextLink>
-                            <NextLink href="/register">
-                                <Button
-                                    /* flex={1} */
-                                    px={10}
-                                    fontSize={"sm"}
-                                    rounded={"full"}
-                                    bg={"blue.400"}
-                                    color={"white"}
-                                    boxShadow={
-                                        "0px 1px 25px -5px rgb(66 153 225 / 48%), 0 10px 10px -5px rgb(66 153 225 / 43%)"
-                                    }
-                                    _hover={{
-                                        bg: "blue.500",
-                                    }}
-                                    _focus={{
-                                        bg: "blue.500",
-                                    }}
-                                >
-                                    Sign Up
-                                </Button>
-                            </NextLink>
+                            {body}
                             <Button onClick={toggleColorMode}>
                                 {colorMode === "light" ? (
                                     <MoonIcon />
@@ -146,43 +188,6 @@ export const Navbar = () => {
                                     <SunIcon />
                                 )}
                             </Button>
-
-                            <Menu>
-                                <MenuButton
-                                    as={Button}
-                                    rounded={"full"}
-                                    variant={"link"}
-                                    cursor={"pointer"}
-                                    minW={0}
-                                >
-                                    <Avatar
-                                        size={"sm"}
-                                        src={
-                                            "https://styles.redditmedia.com/t5_3g7hb/styles/communityIcon_r0bu1vjkmg851.png?width=256&s=048dd93e23a369889243e242cc741f4d2f88b5f8"
-                                        }
-                                    />
-                                </MenuButton>
-                                <MenuList alignItems={"center"}>
-                                    <br />
-                                    <Center>
-                                        <Avatar
-                                            size={"2xl"}
-                                            src={
-                                                "https://styles.redditmedia.com/t5_3g7hb/styles/communityIcon_r0bu1vjkmg851.png?width=256&s=048dd93e23a369889243e242cc741f4d2f88b5f8"
-                                            }
-                                        />
-                                    </Center>
-                                    <br />
-                                    <Center>
-                                        <p>Username</p>
-                                    </Center>
-                                    <br />
-                                    <MenuDivider />
-                                    <MenuItem>Your Servers</MenuItem>
-                                    <MenuItem>Account Settings</MenuItem>
-                                    <MenuItem>Logout</MenuItem>
-                                </MenuList>
-                            </Menu>
                         </Stack>
                     </Flex>
                 </Flex>

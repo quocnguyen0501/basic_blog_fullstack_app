@@ -104,6 +104,7 @@ export type PostUnionMutationResponse = ErrorMutationResponse | PostMutationResp
 export type Query = {
   __typename?: 'Query';
   hello: Scalars['String'];
+  loginProfile?: Maybe<User>;
   post?: Maybe<Post>;
   posts: Array<Post>;
 };
@@ -183,6 +184,11 @@ export type RegisterMutationVariables = Exact<{
 
 
 export type RegisterMutation = { __typename?: 'Mutation', register?: Array<{ __typename?: 'ErrorMutationResponse', code: number, success: boolean, message?: string | null, errors: Array<{ __typename?: 'FieldError', field: string, message: string }> } | { __typename?: 'UserMutationResponse', code: number, success: boolean, message?: string | null, user?: { __typename?: 'User', id: string, firstName: string, surname: string, email: string, dateOfBirth: any, gender: string } | null }> | null };
+
+export type LoginProfileQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type LoginProfileQuery = { __typename?: 'Query', loginProfile?: { __typename?: 'User', id: string, firstName: string, surname: string, email: string, dateOfBirth: any, gender: string } | null };
 
 export const CommonStateFragmentDoc = gql`
     fragment commonState on IMutaionResponse {
@@ -317,3 +323,37 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const LoginProfileDocument = gql`
+    query loginProfile {
+  loginProfile {
+    ...user
+  }
+}
+    ${UserFragmentDoc}`;
+
+/**
+ * __useLoginProfileQuery__
+ *
+ * To run a query within a React component, call `useLoginProfileQuery` and pass it any options that fit your needs.
+ * When your component renders, `useLoginProfileQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useLoginProfileQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useLoginProfileQuery(baseOptions?: Apollo.QueryHookOptions<LoginProfileQuery, LoginProfileQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<LoginProfileQuery, LoginProfileQueryVariables>(LoginProfileDocument, options);
+      }
+export function useLoginProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<LoginProfileQuery, LoginProfileQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<LoginProfileQuery, LoginProfileQueryVariables>(LoginProfileDocument, options);
+        }
+export type LoginProfileQueryHookResult = ReturnType<typeof useLoginProfileQuery>;
+export type LoginProfileLazyQueryHookResult = ReturnType<typeof useLoginProfileLazyQuery>;
+export type LoginProfileQueryResult = Apollo.QueryResult<LoginProfileQuery, LoginProfileQueryVariables>;
