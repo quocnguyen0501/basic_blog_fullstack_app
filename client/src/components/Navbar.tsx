@@ -38,7 +38,7 @@ export const Navbar = () => {
         data: "",
     };
 
-    let body: any;
+    let body: JSX.Element | null;
 
     if (loading) {
         body = null;
