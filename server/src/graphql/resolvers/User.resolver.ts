@@ -1,4 +1,4 @@
-import { Arg, Ctx, Mutation, Resolver } from "type-graphql";
+import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import * as argon2 from "argon2";
 
 import { User } from "../../models/User.model";
@@ -15,6 +15,24 @@ import { UserUnionMutationResponse } from "../../types/graphql/unions/UserUnionM
 
 @Resolver()
 export class UserResolver {
+    @Query((_return) => User, {
+        nullable: true,
+    })
+    async loginProfile(
+        @Ctx()
+        { req }: Context
+    ): Promise<User | undefined | null> {
+        if (!req.session.userId) {
+            return null;
+        }
+
+        const user = await User.findOneBy({
+            id: req.session.userId,
+        });
+
+        return user;
+    }
+
     @Mutation((_return) => [UserUnionMutationResponse], {
         nullable: true,
     })
