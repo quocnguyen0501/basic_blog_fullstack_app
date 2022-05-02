@@ -11,7 +11,7 @@ export const SESSION_OPTION: SessionOptions = {
     }),
     cookie: {
         // Set time of cookie
-        maxAge: 1000 * 60, //1hours
+        maxAge: 1000 * 60 * 60, //1hours
         httpOnly: true, //JS in front end can not read cookie
         secure: __prod__, //cookie only work in https
         sameSite: "lax", //protect CSRF
