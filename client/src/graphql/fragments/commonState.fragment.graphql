@@ -1,5 +1,0 @@
-fragment commonState on IMutaionResponse {
-    code
-    success
-    message
-}
