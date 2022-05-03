@@ -26,13 +26,34 @@ import logo from "../public/avatar.png";
 import { Formik } from "formik";
 import { ISearchField } from "../types/form/ISearchField";
 import InputSearchField from "./InputSearchField";
-import { useLoginProfileQuery } from "../generated/graphql";
+import {
+    LoginProfileDocument,
+    LoginProfileQuery,
+    useLoginProfileQuery,
+    useLogoutMutation,
+} from "../generated/graphql";
 
 export const Navbar = () => {
-    const { data, loading, error } = useLoginProfileQuery();
-
     const { colorMode, toggleColorMode } = useColorMode();
     const { isOpen, onOpen, onClose } = useDisclosure();
+
+    const { data, loading: useLoginProfileLoading } = useLoginProfileQuery();
+    const [logout, { loading: useLogoutMutationLoading }] = useLogoutMutation();
+
+    const logoutUser = async () => {
+        await logout({
+            update(cache, { data }) {
+                if (data?.logout) {
+                    cache.writeQuery<LoginProfileQuery>({
+                        query: LoginProfileDocument,
+                        data: {
+                            loginProfile: null,
+                        },
+                    });
+                }
+            },
+        });
+    };
 
     const initialValues: ISearchField = {
         data: "",
@@ -40,7 +61,7 @@ export const Navbar = () => {
 
     let body: JSX.Element | null;
 
-    if (loading) {
+    if (useLoginProfileLoading) {
         body = null;
     } else if (!data?.loginProfile) {
         body = (
@@ -126,7 +147,7 @@ export const Navbar = () => {
                     <MenuItem>Your Servers</MenuItem>
                     <MenuItem>Account Settings</MenuItem>
                     <MenuDivider />
-                    <MenuItem>Logout</MenuItem>
+                    <MenuItem onClick={logoutUser}>Logout</MenuItem>
                 </MenuList>
             </Menu>
         );
