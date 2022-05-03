@@ -125,6 +125,7 @@ export const Navbar = () => {
                     <MenuDivider />
                     <MenuItem>Your Servers</MenuItem>
                     <MenuItem>Account Settings</MenuItem>
+                    <MenuDivider />
                     <MenuItem>Logout</MenuItem>
                 </MenuList>
             </Menu>
@@ -133,7 +134,11 @@ export const Navbar = () => {
 
     return (
         <>
-            <Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>
+            <Box
+                bg={useColorModeValue("white", "gray.900")}
+                px={4}
+                shadow={"lg"}
+            >
                 <Flex
                     h={16}
                     alignItems={"center"}
