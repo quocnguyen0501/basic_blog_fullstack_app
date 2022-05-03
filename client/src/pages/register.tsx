@@ -87,7 +87,7 @@ const Register = () => {
 
             setErrors(mapFieldErrors(errorMutationResponse.errors));
         } else {
-            router.push("/");
+            router.push("/login");
         }
     };
 
