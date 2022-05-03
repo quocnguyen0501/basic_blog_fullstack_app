@@ -140,11 +140,11 @@ export const Navbar = () => {
                     </Center>
                     <br />
                     <Center>
-                        <p>Username</p>
+                        <p>{`${data.loginProfile.surname} ${data.loginProfile.firstName}`}</p>
                     </Center>
                     <br />
                     <MenuDivider />
-                    <MenuItem>Your Servers</MenuItem>
+                    <MenuItem>Your Profile</MenuItem>
                     <MenuItem>Account Settings</MenuItem>
                     <MenuDivider />
                     <MenuItem onClick={logoutUser}>Logout</MenuItem>
