@@ -17,6 +17,7 @@ import {
     Radio,
     Select,
     FormErrorMessage,
+    Spinner,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
@@ -34,6 +35,7 @@ import { validateSignUpSchema } from "../validation/RegisterValidationSchema";
 import { mapFieldErrors } from "../helpers/mapFieldErrors";
 import router from "next/router";
 import { InputPasswordField } from "../components/InputPasswordField";
+import { useCheckAuth } from "../utils/useCheckAuth";
 
 const Register = () => {
     const initialValues: IRegisterInput = {
@@ -57,6 +59,7 @@ const Register = () => {
     const [months, _setMonths] = useState(getMonths());
     const [years, _setYears] = useState(getYears());
     const [days, _setDays] = useState(getDays());
+    const { data: dataCheckAuth, loading: loadingCheckAuth } = useCheckAuth();
 
     const validationSchema = validateSignUpSchema;
 
@@ -92,247 +95,303 @@ const Register = () => {
     };
 
     return (
-        <Wrapper>
-            <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
-                <Stack align={"center"}>
-                    <Heading fontSize={"4xl"} textAlign={"center"}>
-                        Sign up
-                    </Heading>
-                    <Text fontSize={"lg"} color={"gray.600"}>
-                        to enjoy all of our cool features ✌️
-                    </Text>
-                </Stack>
-                <Formik
-                    initialValues={initialValues}
-                    validationSchema={validationSchema}
-                    onSubmit={onRegisterSubmit}
+        <>
+            {loadingCheckAuth ||
+            (!loadingCheckAuth && dataCheckAuth?.loginProfile) ? (
+                <Flex
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                    minH={"100vh"}
                 >
-                    {({
-                        values,
-                        touched,
-                        errors,
-                        handleChange,
-                        isSubmitting,
-                    }: FormikProps<IRegisterInput>) => {
-                        return (
-                            <Form>
-                                <Box
-                                    rounded={"lg"}
-                                    bg={useColorModeValue("white", "gray.700")}
-                                    boxShadow={"lg"}
-                                    p={8}
-                                >
-                                    <Stack spacing={4}>
-                                        <HStack>
-                                            <Box>
+                    <Spinner />
+                </Flex>
+            ) : (
+                <Wrapper>
+                    <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
+                        <Stack align={"center"}>
+                            <Heading fontSize={"4xl"} textAlign={"center"}>
+                                Sign up
+                            </Heading>
+                            <Text fontSize={"lg"} color={"gray.600"}>
+                                to enjoy all of our cool features ✌️
+                            </Text>
+                        </Stack>
+                        <Formik
+                            initialValues={initialValues}
+                            validationSchema={validationSchema}
+                            onSubmit={onRegisterSubmit}
+                        >
+                            {({
+                                values,
+                                touched,
+                                errors,
+                                handleChange,
+                                isSubmitting,
+                            }: FormikProps<IRegisterInput>) => {
+                                return (
+                                    <Form>
+                                        <Box
+                                            rounded={"lg"}
+                                            bg={useColorModeValue(
+                                                "white",
+                                                "gray.700"
+                                            )}
+                                            boxShadow={"lg"}
+                                            p={8}
+                                        >
+                                            <Stack spacing={4}>
+                                                <HStack>
+                                                    <Box>
+                                                        <InputTextField
+                                                            name="surname"
+                                                            placeholder="Surname"
+                                                            label="Surname"
+                                                            type="text"
+                                                        />
+                                                    </Box>
+                                                    <Box>
+                                                        <InputTextField
+                                                            name="firstName"
+                                                            placeholder="First name"
+                                                            label="First name"
+                                                            type="text"
+                                                        />
+                                                    </Box>
+                                                </HStack>
+                                                {errors.firstName &&
+                                                touched.firstName ? (
+                                                    <FormErrorMessage>
+                                                        {errors.firstName}
+                                                    </FormErrorMessage>
+                                                ) : null}
+                                                {errors.surname &&
+                                                touched.surname ? (
+                                                    <FormErrorMessage>
+                                                        {errors.surname}
+                                                    </FormErrorMessage>
+                                                ) : null}
                                                 <InputTextField
-                                                    name="surname"
-                                                    placeholder="Surname"
-                                                    label="Surname"
+                                                    name="email"
+                                                    placeholder="Email address"
+                                                    label="Email address"
                                                     type="text"
                                                 />
-                                            </Box>
-                                            <Box>
-                                                <InputTextField
-                                                    name="firstName"
-                                                    placeholder="First name"
-                                                    label="First name"
-                                                    type="text"
+                                                {errors.email &&
+                                                touched.email ? (
+                                                    <FormErrorMessage>
+                                                        {errors.email}
+                                                    </FormErrorMessage>
+                                                ) : null}
+                                                <InputPasswordField
+                                                    name="password"
+                                                    placeholder="Password"
+                                                    label="Password"
+                                                    showPassword={showPassword}
+                                                    setShowPassword={
+                                                        setShowPassword
+                                                    }
                                                 />
-                                            </Box>
-                                        </HStack>
-                                        {errors.firstName &&
-                                        touched.firstName ? (
-                                            <FormErrorMessage>
-                                                {errors.firstName}
-                                            </FormErrorMessage>
-                                        ) : null}
-                                        {errors.surname && touched.surname ? (
-                                            <FormErrorMessage>
-                                                {errors.surname}
-                                            </FormErrorMessage>
-                                        ) : null}
-                                        <InputTextField
-                                            name="email"
-                                            placeholder="Email address"
-                                            label="Email address"
-                                            type="text"
-                                        />
-                                        {errors.email && touched.email ? (
-                                            <FormErrorMessage>
-                                                {errors.email}
-                                            </FormErrorMessage>
-                                        ) : null}
-                                        <InputPasswordField
-                                            name="password"
-                                            placeholder="Password"
-                                            label="Password"
-                                            showPassword={showPassword}
-                                            setShowPassword={setShowPassword}
-                                        />
-                                        <InputPasswordField
-                                            name="confirmPassword"
-                                            placeholder="Confirm password"
-                                            label="Password"
-                                            showPassword={showConfirmPassword}
-                                            setShowPassword={
-                                                setShowConfirmPassword
-                                            }
-                                        />
-                                        <HStack>
-                                            <Box w={"full"} h={"full"}>
-                                                <Select
-                                                    id="day"
-                                                    name="day"
-                                                    defaultValue={values.day}
-                                                    onChange={handleChange}
-                                                >
-                                                    {days.map((day) => (
-                                                        <option
-                                                            value={day}
-                                                            key={day}
+                                                <InputPasswordField
+                                                    name="confirmPassword"
+                                                    placeholder="Confirm password"
+                                                    label="Password"
+                                                    showPassword={
+                                                        showConfirmPassword
+                                                    }
+                                                    setShowPassword={
+                                                        setShowConfirmPassword
+                                                    }
+                                                />
+                                                <HStack>
+                                                    <Box w={"full"} h={"full"}>
+                                                        <Select
+                                                            id="day"
+                                                            name="day"
+                                                            defaultValue={
+                                                                values.day
+                                                            }
+                                                            onChange={
+                                                                handleChange
+                                                            }
                                                         >
-                                                            {day}
-                                                        </option>
-                                                    ))}
-                                                </Select>
-                                            </Box>
-                                            <Box w={"full"} h={"full"}>
-                                                <Select
-                                                    id="month"
-                                                    name="month"
-                                                    defaultValue={values.month}
-                                                    onChange={handleChange}
-                                                >
-                                                    {months.map((month) => (
-                                                        <option
-                                                            value={months.indexOf(
-                                                                month
+                                                            {days.map((day) => (
+                                                                <option
+                                                                    value={day}
+                                                                    key={day}
+                                                                >
+                                                                    {day}
+                                                                </option>
+                                                            ))}
+                                                        </Select>
+                                                    </Box>
+                                                    <Box w={"full"} h={"full"}>
+                                                        <Select
+                                                            id="month"
+                                                            name="month"
+                                                            defaultValue={
+                                                                values.month
+                                                            }
+                                                            onChange={
+                                                                handleChange
+                                                            }
+                                                        >
+                                                            {months.map(
+                                                                (month) => (
+                                                                    <option
+                                                                        value={months.indexOf(
+                                                                            month
+                                                                        )}
+                                                                        key={months.indexOf(
+                                                                            month
+                                                                        )}
+                                                                    >
+                                                                        {month}
+                                                                    </option>
+                                                                )
                                                             )}
-                                                            key={months.indexOf(
-                                                                month
-                                                            )}
+                                                        </Select>
+                                                    </Box>
+                                                    <Box w={"full"} h={"full"}>
+                                                        <Select
+                                                            id="year"
+                                                            name="year"
+                                                            defaultValue={
+                                                                values.year
+                                                            }
+                                                            onChange={
+                                                                handleChange
+                                                            }
                                                         >
-                                                            {month}
-                                                        </option>
-                                                    ))}
-                                                </Select>
-                                            </Box>
-                                            <Box w={"full"} h={"full"}>
-                                                <Select
-                                                    id="year"
-                                                    name="year"
-                                                    defaultValue={values.year}
+                                                            {years.map(
+                                                                (year) => (
+                                                                    <option
+                                                                        value={
+                                                                            year
+                                                                        }
+                                                                        key={
+                                                                            year
+                                                                        }
+                                                                    >
+                                                                        {year}
+                                                                    </option>
+                                                                )
+                                                            )}
+                                                        </Select>
+                                                    </Box>
+                                                </HStack>
+                                                <FormLabel
+                                                    fontSize={"12px"}
+                                                    color={"gray.400"}
+                                                >
+                                                    Gender
+                                                </FormLabel>
+                                                <RadioGroup
+                                                    id="gender"
+                                                    name="gender"
+                                                    defaultValue={values.gender}
                                                     onChange={handleChange}
                                                 >
-                                                    {years.map((year) => (
-                                                        <option
-                                                            value={year}
-                                                            key={year}
+                                                    <Stack
+                                                        direction="row"
+                                                        spacing={"2"}
+                                                    >
+                                                        <Box
+                                                            border={"solid 1px"}
+                                                            borderColor={
+                                                                "gray.300"
+                                                            }
+                                                            borderRadius={"7px"}
+                                                            w={"full"}
+                                                            h={"full"}
+                                                            p={3}
                                                         >
-                                                            {year}
-                                                        </option>
-                                                    ))}
-                                                </Select>
-                                            </Box>
-                                        </HStack>
-                                        <FormLabel
-                                            fontSize={"12px"}
-                                            color={"gray.400"}
-                                        >
-                                            Gender
-                                        </FormLabel>
-                                        <RadioGroup
-                                            id="gender"
-                                            name="gender"
-                                            defaultValue={values.gender}
-                                            onChange={handleChange}
-                                        >
-                                            <Stack
-                                                direction="row"
-                                                spacing={"2"}
-                                            >
-                                                <Box
-                                                    border={"solid 1px"}
-                                                    borderColor={"gray.300"}
-                                                    borderRadius={"7px"}
-                                                    w={"full"}
-                                                    h={"full"}
-                                                    p={3}
-                                                >
-                                                    <Radio
-                                                        id="male"
-                                                        value="male"
-                                                        defaultChecked
-                                                        onChange={handleChange}
+                                                            <Radio
+                                                                id="male"
+                                                                value="male"
+                                                                defaultChecked
+                                                                onChange={
+                                                                    handleChange
+                                                                }
+                                                            >
+                                                                Male
+                                                            </Radio>
+                                                        </Box>
+                                                        <Box
+                                                            border={"solid 1px"}
+                                                            borderColor={
+                                                                "gray.300"
+                                                            }
+                                                            borderRadius={"7px"}
+                                                            w={"full"}
+                                                            h={"full"}
+                                                            p={3}
+                                                        >
+                                                            <Radio
+                                                                id="female"
+                                                                value="female"
+                                                                onChange={
+                                                                    handleChange
+                                                                }
+                                                            >
+                                                                Female
+                                                            </Radio>
+                                                        </Box>
+                                                        <Box
+                                                            border={"solid 1px"}
+                                                            borderColor={
+                                                                "gray.300"
+                                                            }
+                                                            borderRadius={"7px"}
+                                                            w={"full"}
+                                                            h={"full"}
+                                                            p={3}
+                                                        >
+                                                            <Radio
+                                                                id="other"
+                                                                value="3"
+                                                                onChange={
+                                                                    handleChange
+                                                                }
+                                                            >
+                                                                Other
+                                                            </Radio>
+                                                        </Box>
+                                                    </Stack>
+                                                </RadioGroup>
+                                                <Stack spacing={10} pt={2}>
+                                                    <Button
+                                                        type="submit"
+                                                        size="lg"
+                                                        bg={"blue.400"}
+                                                        color={"white"}
+                                                        _hover={{
+                                                            bg: "blue.500",
+                                                        }}
+                                                        isLoading={isSubmitting}
                                                     >
-                                                        Male
-                                                    </Radio>
-                                                </Box>
-                                                <Box
-                                                    border={"solid 1px"}
-                                                    borderColor={"gray.300"}
-                                                    borderRadius={"7px"}
-                                                    w={"full"}
-                                                    h={"full"}
-                                                    p={3}
-                                                >
-                                                    <Radio
-                                                        id="female"
-                                                        value="female"
-                                                        onChange={handleChange}
-                                                    >
-                                                        Female
-                                                    </Radio>
-                                                </Box>
-                                                <Box
-                                                    border={"solid 1px"}
-                                                    borderColor={"gray.300"}
-                                                    borderRadius={"7px"}
-                                                    w={"full"}
-                                                    h={"full"}
-                                                    p={3}
-                                                >
-                                                    <Radio
-                                                        id="other"
-                                                        value="3"
-                                                        onChange={handleChange}
-                                                    >
-                                                        Other
-                                                    </Radio>
-                                                </Box>
+                                                        Sign up
+                                                    </Button>
+                                                </Stack>
+                                                <Stack pt={6}>
+                                                    <Text align={"center"}>
+                                                        Already a user?{" "}
+                                                        <Link
+                                                            color={"blue.400"}
+                                                        >
+                                                            Login
+                                                        </Link>
+                                                    </Text>
+                                                </Stack>
                                             </Stack>
-                                        </RadioGroup>
-                                        <Stack spacing={10} pt={2}>
-                                            <Button
-                                                type="submit"
-                                                size="lg"
-                                                bg={"blue.400"}
-                                                color={"white"}
-                                                _hover={{
-                                                    bg: "blue.500",
-                                                }}
-                                                isLoading={isSubmitting}
-                                            >
-                                                Sign up
-                                            </Button>
-                                        </Stack>
-                                        <Stack pt={6}>
-                                            <Text align={"center"}>
-                                                Already a user?{" "}
-                                                <Link color={"blue.400"}>
-                                                    Login
-                                                </Link>
-                                            </Text>
-                                        </Stack>
-                                    </Stack>
-                                </Box>
-                            </Form>
-                        );
-                    }}
-                </Formik>
-            </Stack>
-        </Wrapper>
+                                        </Box>
+                                    </Form>
+                                );
+                            }}
+                        </Formik>
+                    </Stack>
+                </Wrapper>
+            )}
+        </>
     );
 };
 
