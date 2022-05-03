@@ -1,3 +1,4 @@
+import { gql } from "@apollo/client";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
     Flex,
@@ -12,8 +13,6 @@ import {
     Heading,
     Text,
     useColorModeValue,
-    InputGroup,
-    InputRightElement,
     FormErrorMessage,
 } from "@chakra-ui/react";
 import { Form, Formik, FormikHelpers, FormikProps } from "formik";
@@ -24,7 +23,11 @@ import InputTextField from "../components/InputTextField";
 import {
     ErrorMutationResponse,
     LoginInput,
+    LoginMutation,
+    LoginProfileDocument,
+    LoginProfileQuery,
     useLoginMutation,
+    UserMutationResponse,
 } from "../generated/graphql";
 import { mapFieldErrors } from "../helpers/mapFieldErrors";
 import { validateSignInSchema } from "../validation/LoginValidationSchema";
@@ -49,6 +52,11 @@ const login = () => {
             variables: {
                 loginInput: values,
             },
+            refetchQueries: [
+                {
+                    query: LoginProfileDocument,
+                },
+            ]
         });
 
         if (res.data.login[0].code !== 200) {
