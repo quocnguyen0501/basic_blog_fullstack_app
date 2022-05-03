@@ -1,0 +1,14 @@
+fragment userUnionMutationResponse on UserUnionMutationResponse {
+    ... on UserMutationResponse {
+        ...commonState
+        user {
+            ...user
+        }
+    }
+    ... on ErrorMutationResponse {
+        ...commonState
+        errors {
+            ...fieldError
+        }
+    }
+}

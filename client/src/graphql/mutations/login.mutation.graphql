@@ -1,0 +1,16 @@
+mutation login($loginInput: LoginInput!) {
+    login(loginInput: $loginInput) {
+        ... on UserMutationResponse {
+            ...commonState
+            user {
+                ...user
+            }
+        }
+        ... on ErrorMutationResponse {
+            ...commonState
+            errors {
+                ...fieldError
+            }
+        }
+    }
+}

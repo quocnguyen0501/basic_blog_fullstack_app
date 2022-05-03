@@ -1,0 +1,16 @@
+mutation Register($registerInput: RegisterInput!) {
+    register(registerInput: $registerInput) {
+        ... on UserMutationResponse {
+            ...commonState
+            user {
+                ...user
+            }
+        }
+        ... on ErrorMutationResponse {
+            ...commonState
+            errors {
+                ...fieldError
+            }
+        }
+    }
+}
