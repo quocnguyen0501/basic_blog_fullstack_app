@@ -1,11 +1,6 @@
-import { gql } from "@apollo/client";
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
     Flex,
     Box,
-    FormControl,
-    FormLabel,
-    Input,
     Checkbox,
     Stack,
     Link,
@@ -25,9 +20,7 @@ import InputTextField from "../components/InputTextField";
 import {
     ErrorMutationResponse,
     LoginInput,
-    LoginMutation,
     LoginProfileDocument,
-    LoginProfileQuery,
     useLoginMutation,
     UserMutationResponse,
 } from "../generated/graphql";

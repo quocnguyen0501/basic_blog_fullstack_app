@@ -2,7 +2,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 
 import theme from "../theme";
 import { AppProps } from "next/app";
-import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import { ApolloProvider } from "@apollo/client";
 import { useApollo } from "../lib/apolloClient";
 
 // CSR
@@ -12,9 +12,9 @@ import { useApollo } from "../lib/apolloClient";
 //     credentials: "include",
 // });
 
-function MyApp({ Component, pageProps }: AppProps) {
+const MyApp = ({ Component, pageProps }: AppProps) => {
     // SSR
-    const apolloClient = useApollo(pageProps)
+    const apolloClient = useApollo(pageProps);
 
     return (
         <ApolloProvider client={apolloClient}>
@@ -23,6 +23,6 @@ function MyApp({ Component, pageProps }: AppProps) {
             </ChakraProvider>
         </ApolloProvider>
     );
-}
+};
 
 export default MyApp;
