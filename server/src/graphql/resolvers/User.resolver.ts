@@ -247,8 +247,7 @@ export class UserResolver {
 
             // Send reset password link to user via email
             await sendEmail(
-                // forgotPasswordInput.email,
-                "nnguyen18110166@gmail.com",
+                forgotPasswordInput.email,
                 `<a href='http://localhost:3000/change-password?token=${resetToken}&userId=${user.id}'>Click here to reset password</a>`
             );
 
