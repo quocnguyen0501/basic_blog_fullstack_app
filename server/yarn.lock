@@ -163,10 +163,10 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
-"@typegoose/typegoose@^9.8.0":
-  version "9.8.0"
-  resolved "https://registry.yarnpkg.com/@typegoose/typegoose/-/typegoose-9.8.0.tgz#2813f04a282cf6fefe7b213bbb22e8798560ffa1"
-  integrity sha512-YMwyy2jHMVy4T9cIdwpNcg4VmBsGe7ijIsSJz1hDxmYo4JeXhqCPl4fS1+rig4bXCYIupCiBujLdVp385FJdOQ==
+"@typegoose/typegoose@^9.8.1":
+  version "9.8.1"
+  resolved "https://registry.yarnpkg.com/@typegoose/typegoose/-/typegoose-9.8.1.tgz#0160ffed706c47195f3971bceb8af2f98ad9f3c7"
+  integrity sha512-7m9ydYlzOSwxgFRWOrUK/wiNb1GBHLaztGQBkWsiGIIy4P2AmiHKKlwB34DaQEtvwWa8MxEDXtUWA04a3KSFjg==
   dependencies:
     lodash "^4.17.20"
     loglevel "^1.8.0"
@@ -294,6 +294,11 @@
   dependencies:
     "@types/mime" "^1"
     "@types/node" "*"
+
+"@types/uuid@^8.3.4":
+  version "8.3.4"
+  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-8.3.4.tgz#bd86a43617df0594787d38b735f55c805becf1bc"
+  integrity sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==
 
 "@types/webidl-conversions@*":
   version "6.1.1"

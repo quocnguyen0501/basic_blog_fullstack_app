@@ -33,3 +33,6 @@ Set script in package.json:
     },
 -----------------------------------------------------------------------------------
 
+Set up forgot password:
+    yarn add uuid --save
+    yarn add @types/uuid --save-dev
