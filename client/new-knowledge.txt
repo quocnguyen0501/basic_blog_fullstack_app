@@ -1,0 +1,4 @@
+SSG - SSR:
+- React: send request to GRAPHQL SERVER
+
+- NextJS: CLIENT (BROWSER) -> NEXT -> GRAPHQL SERVER
