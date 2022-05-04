@@ -14,7 +14,10 @@ export const sendEmail = async (to: string, html: string) => {
             subject: "Change Password", // Subject line
             html, // html body
         });
+        return true;
     } catch (error) {
-        console.log(">>> ERROR FOR SEND EMAIL: ", error.messages);
+        console.log(">>> ERROR SEND EMAIL: ", error);
+
+        return false;
     }
 };

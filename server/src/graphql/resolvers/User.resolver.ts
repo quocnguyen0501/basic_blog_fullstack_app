@@ -12,6 +12,8 @@ import { ErrorMutationResponse } from "../../types/graphql/ErrorMutationResponse
 import { getErrorMutationResponse } from "../../helpers/resolvers/ErrorMutationResponseHelper";
 import { HTTP_STATUS_CODE } from "../../utils/constants/constants";
 import { UserUnionMutationResponse } from "../../types/graphql/unions/UserUnionMutationResponse";
+import { ForgotPasswordInput } from "../../types/input/ForgotPasswordInput";
+import { sendEmail } from "../../utils/email/SendEmail.email";
 
 @Resolver()
 export class UserResolver {
@@ -218,5 +220,33 @@ export class UserResolver {
                 }
             });
         });
+    }
+
+    @Mutation((_return) => Boolean)
+    async forgotPassword(
+        @Arg("forgotPasswordInput")
+        forgotPasswordInput: ForgotPasswordInput
+    ): Promise<boolean> {
+        const user = await User.findOneBy({
+            email: forgotPasswordInput.email,
+        });
+
+        if (!user) {
+            return true;
+        } else {
+            const token = "";
+            // Save token to database
+
+            // Send reset password link to user via email
+            await sendEmail(
+                // forgotPasswordInput.email,
+                "nnguyen18110166@gmail.com",
+                `<a href='http://localhost:3000/change-password?token=${token}'>Click here to reset password</a>`
+            );
+
+            console.log(">>> SEND SUCCESS !!!");
+
+            return true;
+        }
     }
 }
