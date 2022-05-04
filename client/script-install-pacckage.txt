@@ -20,3 +20,7 @@ install plugin for auto generate graphql mutation or query:
             </ApolloProvider>
         );
     }
+
+- Config for SSR-SSG:
+    yarn add deepmerge --save
+    yarn add lodash --save
