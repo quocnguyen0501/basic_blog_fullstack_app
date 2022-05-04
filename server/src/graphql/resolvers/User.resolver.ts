@@ -249,7 +249,7 @@ export class UserResolver {
             await sendEmail(
                 // forgotPasswordInput.email,
                 "nnguyen18110166@gmail.com",
-                `<a href='http://localhost:3000/change-password?token=${resetToken}'>Click here to reset password</a>`
+                `<a href='http://localhost:3000/change-password?token=${resetToken}&userId=${user.id}'>Click here to reset password</a>`
             );
 
             console.log(">>> SEND SUCCESS !!!");
