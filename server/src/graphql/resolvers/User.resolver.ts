@@ -1,5 +1,6 @@
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import * as argon2 from "argon2";
+import { v4 as uuidv4 } from "uuid";
 
 import { User } from "../../models/User.model";
 import { RegisterInput } from "../../types/input/RegisterInput";
@@ -14,6 +15,7 @@ import { HTTP_STATUS_CODE } from "../../utils/constants/constants";
 import { UserUnionMutationResponse } from "../../types/graphql/unions/UserUnionMutationResponse";
 import { ForgotPasswordInput } from "../../types/input/ForgotPasswordInput";
 import { sendEmail } from "../../utils/email/SendEmail.email";
+import { TokenModel } from "../../models/Token.model";
 
 @Resolver()
 export class UserResolver {
@@ -234,14 +236,20 @@ export class UserResolver {
         if (!user) {
             return true;
         } else {
-            const token = "";
-            // Save token to database
+            const resetToken = uuidv4();
+            const hashResetPassword = await argon2.hash(resetToken);
+
+            // Save hash token to database
+            await new TokenModel({
+                userId: `${user.id}`,
+                token: hashResetPassword,
+            }).save();
 
             // Send reset password link to user via email
             await sendEmail(
                 // forgotPasswordInput.email,
                 "nnguyen18110166@gmail.com",
-                `<a href='http://localhost:3000/change-password?token=${token}'>Click here to reset password</a>`
+                `<a href='http://localhost:3000/change-password?token=${resetToken}'>Click here to reset password</a>`
             );
 
             console.log(">>> SEND SUCCESS !!!");
