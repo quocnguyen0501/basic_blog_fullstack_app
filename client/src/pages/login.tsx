@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { Form, Formik, FormikHelpers, FormikProps } from "formik";
 import router from "next/router";
+import NextLink from "next/link";
 import { useState } from "react";
 import { InputPasswordField } from "../components/InputPasswordField";
 import InputTextField from "../components/InputTextField";
@@ -161,9 +162,17 @@ const login = () => {
                                                     <Checkbox>
                                                         Remember me
                                                     </Checkbox>
-                                                    <Link color={"blue.400"}>
-                                                        Forgot password?
-                                                    </Link>
+                                                    <NextLink
+                                                        href={
+                                                            "/forgot-password"
+                                                        }
+                                                    >
+                                                        <Link
+                                                            color={"blue.400"}
+                                                        >
+                                                            Forgot password?
+                                                        </Link>
+                                                    </NextLink>
                                                 </Stack>
                                                 <Button
                                                     type="submit"
