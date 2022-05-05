@@ -248,7 +248,9 @@ export class UserResolver {
             // Send reset password link to user via email
             await sendEmail(
                 forgotPasswordInput.email,
-                `<a href='http://localhost:3000/change-password?token=${resetToken}&userId=${user.id}'>Click here to reset password</a>`
+                resetToken,
+                user.id
+                // `<a href='http://localhost:3000/change-password?token=${resetToken}&userId=${user.id}'>Click here to reset password</a>`
             );
 
             console.log(">>> SEND SUCCESS !!!");
