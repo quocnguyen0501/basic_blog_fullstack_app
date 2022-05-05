@@ -36,3 +36,7 @@ Set script in package.json:
 Set up forgot password:
     yarn add uuid --save
     yarn add @types/uuid --save-dev
+
+Express Handlebars plugin for Nodemailer
+    yarn add nodemailer-express-handlebars --save
+    yarn add -D @types/nodemailer-express-handlebars
