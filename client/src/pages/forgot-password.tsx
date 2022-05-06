@@ -31,6 +31,8 @@ const ForgotPassword = () => {
     const validationSchema = validateForgotPasswordSchema;
 
     const onForgotPasswordSubmit = async (values: ForgotPasswordInput) => {
+        console.log(">>> EMAIL: ", values);
+        
         await forgotPassword({
             variables: {
                 forgotPasswordInput: values,

@@ -143,7 +143,7 @@ const login = () => {
                                             ) : null}
                                             <InputPasswordField
                                                 name="password"
-                                                placeholder="Password field"
+                                                placeholder="Password"
                                                 label="Password"
                                                 showPassword={showPassword}
                                                 setShowPassword={
