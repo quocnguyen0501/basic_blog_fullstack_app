@@ -16,6 +16,7 @@ import { UserUnionMutationResponse } from "../../types/graphql/unions/UserUnionM
 import { ForgotPasswordInput } from "../../types/input/ForgotPasswordInput";
 import { sendEmail } from "../../utils/email/SendEmail.email";
 import { TokenModel } from "../../models/Token.model";
+import { NewPasswordInput } from "../../types/input/NewPasswordInput";
 
 @Resolver()
 export class UserResolver {
@@ -42,9 +43,7 @@ export class UserResolver {
     })
     async register(
         @Arg("registerInput")
-        registerInput: RegisterInput,
-        @Ctx()
-        { req }: Context
+        registerInput: RegisterInput
     ): Promise<Array<typeof UserUnionMutationResponse>> {
         const validateRegisterInputError = ValidateRegisterInput(registerInput);
 
@@ -102,8 +101,6 @@ export class UserResolver {
                 });
 
                 await newUser.save();
-
-                req.session.userId = newUser.id;
 
                 return [
                     {
@@ -236,6 +233,13 @@ export class UserResolver {
         if (!user) {
             return true;
         } else {
+            /**
+             * Find in DB have a token from this user id -> delete this token
+             */
+            await TokenModel.findOneAndDelete({
+                userId: user.id.toString(),
+            });
+
             const resetToken = uuidv4();
             const hashResetPassword = await argon2.hash(resetToken);
 
@@ -256,6 +260,131 @@ export class UserResolver {
             console.log(">>> SEND SUCCESS !!!");
 
             return true;
+        }
+    }
+
+    @Mutation((_return) => [UserUnionMutationResponse])
+    async changePassword(
+        @Arg("token")
+        token: string,
+        @Arg("userId")
+        userId: string,
+        @Arg("newPasswordInput")
+        newPasswordInput: NewPasswordInput
+    ): Promise<Array<typeof UserUnionMutationResponse>> {
+        if (newPasswordInput.newPassword.length < 5) {
+            const error: ErrorMutationResponse = {
+                code: HTTP_STATUS_CODE.BAD_REQUEST,
+                success: false,
+                message: "Invalid password!",
+                errors: [
+                    {
+                        field: "newPassword",
+                        message:
+                            "New password should have length greater than 5!",
+                    },
+                ],
+            };
+            return [error];
+        } else {
+            try {
+                const resetPasswordToken = await TokenModel.findOne({
+                    userId: userId,
+                });
+
+                if (!resetPasswordToken) {
+                    return [
+                        {
+                            code: HTTP_STATUS_CODE.BAD_REQUEST,
+                            success: false,
+                            message: "Invalid or expired password reset token!",
+                            errors: [
+                                {
+                                    field: "token",
+                                    message:
+                                        "Invalid or expired password reset password!",
+                                },
+                            ],
+                        },
+                    ];
+                } else {
+                    const resetPasswordTokenValid = argon2.verify(
+                        resetPasswordToken.token,
+                        token
+                    );
+
+                    if (!resetPasswordTokenValid) {
+                        return [
+                            {
+                                code: HTTP_STATUS_CODE.BAD_REQUEST,
+                                success: false,
+                                message:
+                                    "Invalid or expired password reset token!",
+                                errors: [
+                                    {
+                                        field: "token",
+                                        message:
+                                            "Invalid or expired password reset password!",
+                                    },
+                                ],
+                            },
+                        ];
+                    } else {
+                        const userIdNum = parseInt(userId);
+                        const user = await User.findOneBy({
+                            id: userIdNum,
+                        });
+
+                        if (!user) {
+                            return [
+                                {
+                                    code: HTTP_STATUS_CODE.BAD_REQUEST,
+                                    success: false,
+                                    message: "User no longer exists!",
+                                    errors: [
+                                        {
+                                            field: "token",
+                                            message: "User no longer exists!",
+                                        },
+                                    ],
+                                },
+                            ];
+                        } else {
+                            const updatedPassword = await argon2.hash(
+                                newPasswordInput.newPassword
+                            );
+                            await User.update(
+                                {
+                                    id: userIdNum,
+                                },
+                                {
+                                    password: updatedPassword,
+                                }
+                            );
+
+                            await resetPasswordToken.deleteOne();
+
+                            return [
+                                {
+                                    code: HTTP_STATUS_CODE.SUCCESS,
+                                    success: true,
+                                    message: "Change password successfully",
+                                    user: user,
+                                },
+                            ];
+                        }
+                    }
+                }
+            } catch (error) {
+                return [
+                    getErrorMutationResponse(
+                        error,
+                        HTTP_STATUS_CODE.INTERNAL_SERVER,
+                        "changePassword",
+                        "error change password in mutation"
+                    ),
+                ];
+            }
         }
     }
 }
