@@ -21,7 +21,7 @@ export const InputPasswordField = ({ ...props }: IInputField) => {
                     name={field.name}
                     value={field.value}
                     onChange={field.onChange}
-                    placeholder="Password"
+                    placeholder={props.placeholder}
                     type={props.showPassword ? "text" : "password"}
                 />
                 <InputRightElement h={"full"}>
