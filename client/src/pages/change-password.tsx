@@ -7,6 +7,7 @@ import {
     Stack,
     Text,
     useColorModeValue,
+    useToast,
 } from "@chakra-ui/react";
 import { Form, Formik, FormikHelpers, FormikProps } from "formik";
 import { useRouter } from "next/router";
@@ -25,6 +26,7 @@ import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function ResetPasswordForm(): JSX.Element {
     const router = useRouter();
+    const toast = useToast();
     const { data: dataCheckAuth, loading: loadingCheckAuth } = useCheckAuth();
     const [showPassword, setShowPassword] = useState(false);
     const [tokenError, setTokenError] = useState("");
@@ -64,6 +66,12 @@ export default function ResetPasswordForm(): JSX.Element {
                 }
                 setErrors(fieldErrors);
             } else {
+                toast({
+                    title: "Change password successfully!",
+                    status: "success",
+                    duration: 3000,
+                    isClosable: true,
+                });
                 router.push("/login");
             }
         }
