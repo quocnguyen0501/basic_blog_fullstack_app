@@ -197,6 +197,12 @@ const Register = () => {
                                                         setShowConfirmPassword
                                                     }
                                                 />
+                                                <FormLabel
+                                                    fontSize={"12px"}
+                                                    color={"gray.400"}
+                                                >
+                                                    Date of birth
+                                                </FormLabel>
                                                 <HStack>
                                                     <Box w={"full"} h={"full"}>
                                                         <Select
