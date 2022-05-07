@@ -1,23 +1,38 @@
+import Image from "next/image";
+import {
+    Box,
+    Center,
+    Heading,
+    Text,
+    Stack,
+    Avatar,
+    useColorModeValue,
+} from "@chakra-ui/react";
+import LoadingSpinner from "../components/LoadingSpinner";
 import Navbar from "../components/Navbar";
 import { PostsDocument, usePostsQuery } from "../generated/graphql";
 import { addApolloState, initializeApollo } from "../lib/apolloClient";
+import SinglePost from "../components/SinglePost";
+import { IPost } from "../types/props/IPost.props";
+import { FC } from "react";
 
-const Index = () => {
+const Index: FC = () => {
     const { data, loading } = usePostsQuery();
 
     return (
         <>
             <Navbar />
-            <h1>HOME PAGE</h1>
             {loading ? (
-                "LOADING..."
+                <LoadingSpinner />
             ) : (
                 <>
-                    <ul>
-                        {data?.posts.map((post) => (
-                            <li key={post.id}>{post.title}</li>
-                        ))}
-                    </ul>
+                    <Center pt={20} pb={6} px={2}>
+                        <Box>
+                            {data?.posts.map((post: IPost) => (
+                                <SinglePost key={post.id} post={post} />
+                            ))}
+                        </Box>
+                    </Center>
                 </>
             )}
         </>

@@ -156,6 +156,10 @@ export const Navbar = () => {
     return (
         <>
             <Box
+                as="header"
+                position="fixed"
+                w={"full"}
+                zIndex={1}
                 bg={useColorModeValue("white", "gray.900")}
                 px={4}
                 shadow={"lg"}
