@@ -36,6 +36,7 @@ import { mapFieldErrors } from "../helpers/mapFieldErrors";
 import router from "next/router";
 import { InputPasswordField } from "../components/InputPasswordField";
 import { useCheckAuth } from "../utils/useCheckAuth";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const Register = () => {
     const initialValues: IRegisterInput = {
@@ -98,13 +99,7 @@ const Register = () => {
         <>
             {loadingCheckAuth ||
             (!loadingCheckAuth && dataCheckAuth?.loginProfile) ? (
-                <Flex
-                    justifyContent={"center"}
-                    alignItems={"center"}
-                    minH={"100vh"}
-                >
-                    <Spinner />
-                </Flex>
+                <LoadingSpinner />
             ) : (
                 <Wrapper>
                     <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>

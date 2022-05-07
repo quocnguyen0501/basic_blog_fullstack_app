@@ -28,6 +28,7 @@ import {
 import { mapFieldErrors } from "../helpers/mapFieldErrors";
 import { useCheckAuth } from "../utils/useCheckAuth";
 import { validateSignInSchema } from "../validation/LoginValidationSchema";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const login = () => {
     const [loginUser, { loading: _loginUserLogin, data, error }] =
@@ -83,13 +84,7 @@ const login = () => {
         <>
             {loadingCheckAuth ||
             (!loadingCheckAuth && dataCheckAuth?.loginProfile) ? (
-                <Flex
-                    justifyContent={"center"}
-                    alignItems={"center"}
-                    minH={"100vh"}
-                >
-                    <Spinner />
-                </Flex>
+                <LoadingSpinner/>
             ) : (
                 <Flex
                     minH={"100vh"}
