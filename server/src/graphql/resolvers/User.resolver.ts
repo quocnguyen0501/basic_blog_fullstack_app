@@ -169,7 +169,7 @@ export class UserResolver {
                             errors: [
                                 {
                                     field: "password",
-                                    message: "Email was incorrect",
+                                    message: "Email or password was incorrect",
                                 },
                             ],
                         },
