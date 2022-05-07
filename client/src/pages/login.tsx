@@ -11,6 +11,7 @@ import {
     FormErrorMessage,
     Spinner,
     useToast,
+    MenuDivider,
 } from "@chakra-ui/react";
 import { Form, Formik, FormikHelpers, FormikProps } from "formik";
 import router from "next/router";
@@ -84,7 +85,7 @@ const login = () => {
         <>
             {loadingCheckAuth ||
             (!loadingCheckAuth && dataCheckAuth?.loginProfile) ? (
-                <LoadingSpinner/>
+                <LoadingSpinner />
             ) : (
                 <Flex
                     minH={"100vh"}
@@ -181,6 +182,22 @@ const login = () => {
                                                 >
                                                     Sign in
                                                 </Button>
+                                                <Stack pt={-20}>
+                                                    <Text align={"center"}>
+                                                        Don't have an account?{" "}
+                                                        <NextLink
+                                                            href={"/register"}
+                                                        >
+                                                            <Link
+                                                                color={
+                                                                    "blue.400"
+                                                                }
+                                                            >
+                                                                Register
+                                                            </Link>
+                                                        </NextLink>
+                                                    </Text>
+                                                </Stack>
                                             </Stack>
                                         </Stack>
                                     </Box>

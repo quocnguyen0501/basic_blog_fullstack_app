@@ -20,7 +20,7 @@ import {
     Spinner,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import NextLink from "next/link";
 import Wrapper from "../components/Wrapper";
 import { Form, Formik, FormikHelpers, FormikProps } from "formik";
 import { IRegisterInput } from "../types/form/IRegisterInput";
@@ -370,11 +370,17 @@ const Register = () => {
                                                 <Stack pt={6}>
                                                     <Text align={"center"}>
                                                         Already a user?{" "}
-                                                        <Link
-                                                            color={"blue.400"}
+                                                        <NextLink
+                                                            href={"/login"}
                                                         >
-                                                            Login
-                                                        </Link>
+                                                            <Link
+                                                                color={
+                                                                    "blue.400"
+                                                                }
+                                                            >
+                                                                Login
+                                                            </Link>
+                                                        </NextLink>
                                                     </Text>
                                                 </Stack>
                                             </Stack>
