@@ -7,7 +7,7 @@ import {
     InputGroup,
     InputRightElement,
 } from "@chakra-ui/react";
-import { useField } from "formik";
+import { ErrorMessage, useField } from "formik";
 import { IInputField } from "../types/form/InputField";
 
 export const InputPasswordField = ({ ...props }: IInputField) => {
