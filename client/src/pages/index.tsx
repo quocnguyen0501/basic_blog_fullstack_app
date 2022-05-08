@@ -10,10 +10,9 @@ import {
 } from "@chakra-ui/react";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Navbar from "../components/Navbar";
-import { PostsDocument, usePostsQuery } from "../generated/graphql";
+import { Post, PostsDocument, usePostsQuery } from "../generated/graphql";
 import { addApolloState, initializeApollo } from "../lib/apolloClient";
 import SinglePost from "../components/SinglePost";
-import { IPost } from "../types/props/IPost.props";
 import { FC } from "react";
 
 const Index: FC = () => {
@@ -27,8 +26,8 @@ const Index: FC = () => {
             ) : (
                 <>
                     <Center pt={20} pb={6} px={2}>
-                        <Box>
-                            {data?.posts.map((post: IPost) => (
+                        <Box maxW={"900px"}>
+                            {data?.posts.map((post: Post) => (
                                 <SinglePost key={post.id} post={post} />
                             ))}
                         </Box>

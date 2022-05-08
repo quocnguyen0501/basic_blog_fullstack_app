@@ -107,6 +107,7 @@ export type NewPasswordInput = {
 export type Post = {
   __typename?: 'Post';
   content: Scalars['String'];
+  contentSnippet: Scalars['String'];
   creactedAt: Scalars['DateTime'];
   id: Scalars['ID'];
   title: Scalars['String'];
@@ -236,7 +237,7 @@ export type LoginProfileQuery = { __typename?: 'Query', loginProfile?: { __typen
 export type PostsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: string, title: string, content: string, creactedAt: any, updatedAt: any }> };
+export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: string, title: string, content: string, contentSnippet: string, creactedAt: any, updatedAt: any }> };
 
 export const CommonStateFragmentDoc = gql`
     fragment commonState on IMutaionResponse {
@@ -524,6 +525,7 @@ export const PostsDocument = gql`
     id
     title
     content
+    contentSnippet
     creactedAt
     updatedAt
   }

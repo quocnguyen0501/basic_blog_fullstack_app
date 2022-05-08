@@ -12,6 +12,7 @@ import {
 @Entity()
 export class Post extends BaseEntity {
     private _id!: number;
+    private _userId!: number;
     private _title!: string;
     private _content!: string;
     private _createdAt!: Date;
@@ -25,6 +26,16 @@ export class Post extends BaseEntity {
 
     public set id(id: number) {
         this._id = id;
+    }
+
+    @Field((_type) => Number)
+    @Column()
+    public get userId(): number {
+        return this._userId;
+    }
+
+    public set userId(userId: number) {
+        this._userId = userId;
     }
 
     @Field((_type) => String)
