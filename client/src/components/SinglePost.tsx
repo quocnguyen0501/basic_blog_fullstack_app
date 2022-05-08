@@ -24,7 +24,9 @@ const SinglePost: FC<PostProp> = ({ post }: PostProp) => {
     const monthPost = createdAt.getMonth();
     const yearPost = createdAt.getFullYear();
 
-    console.log(`${createdAt.getHours()}h - ${createdAt.getMinutes()}p - ${createdAt.getSeconds()}s`);
+    console.log(
+        `${createdAt.getHours()}h - ${createdAt.getMinutes()}p - ${createdAt.getSeconds()}s`
+    );
 
     return (
         <Box
@@ -40,11 +42,11 @@ const SinglePost: FC<PostProp> = ({ post }: PostProp) => {
             overflow={"hidden"}
         >
             <Stack mb={6} direction={"row"} spacing={4} align={"center"}>
-                <Avatar
-                    src={"https://avatars0.githubusercontent.com/u/1164541?v=4"}
-                />
+                <Avatar />
                 <Stack direction={"column"} spacing={0} fontSize={"sm"}>
-                    <Text fontWeight={600}>Achim Rolle</Text>
+                    <Text
+                        fontWeight={600}
+                    >{`${post.user.surname} ${post.user.firstName}`}</Text>
                     <Text color={"gray.500"}>
                         {`${getMonthName(
                             monthPost + 1

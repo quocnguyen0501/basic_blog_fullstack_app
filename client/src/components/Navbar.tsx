@@ -18,12 +18,14 @@ import {
     Image,
     Input,
     Heading,
+    HStack,
+    VStack,
+    Text,
 } from "@chakra-ui/react";
+import { FiChevronDown } from "react-icons/fi";
 import NextLink from "next/link";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 
-import logo from "../public/avatar.png";
-import { Formik } from "formik";
 import { ISearchField } from "../types/form/ISearchField";
 import InputSearchField from "./InputSearchField";
 import {
@@ -32,6 +34,7 @@ import {
     useLoginProfileQuery,
     useLogoutMutation,
 } from "../generated/graphql";
+import { Formik } from "formik";
 
 export const Navbar = () => {
     const { colorMode, toggleColorMode } = useColorMode();
@@ -113,43 +116,45 @@ export const Navbar = () => {
         );
     } else {
         body = (
-            <Menu>
-                <MenuButton
-                    as={Button}
-                    rounded={"full"}
-                    variant={"link"}
-                    cursor={"pointer"}
-                    minW={0}
-                >
-                    <Avatar
-                        size={"sm"}
-                        src={
-                            "https://styles.redditmedia.com/t5_3g7hb/styles/communityIcon_r0bu1vjkmg851.png?width=256&s=048dd93e23a369889243e242cc741f4d2f88b5f8"
-                        }
-                    />
-                </MenuButton>
-                <MenuList alignItems={"center"}>
-                    <br />
-                    <Center>
-                        <Avatar
-                            size={"2xl"}
-                            src={
-                                "https://styles.redditmedia.com/t5_3g7hb/styles/communityIcon_r0bu1vjkmg851.png?width=256&s=048dd93e23a369889243e242cc741f4d2f88b5f8"
-                            }
-                        />
-                    </Center>
-                    <br />
-                    <Center>
-                        <p>{`${data.loginProfile.surname} ${data.loginProfile.firstName}`}</p>
-                    </Center>
-                    <br />
-                    <MenuDivider />
-                    <MenuItem>Your Profile</MenuItem>
-                    <MenuItem>Account Settings</MenuItem>
-                    <MenuDivider />
-                    <MenuItem onClick={logoutUser}>Logout</MenuItem>
-                </MenuList>
-            </Menu>
+            <Box w={"full"}>
+                <Menu>
+                    <MenuButton
+                        py={2}
+                        transition="all 0.3s"
+                        _focus={{ boxShadow: "none" }}
+                    >
+                        <HStack>
+                            <Avatar
+                                size={"sm"}
+                            />
+                            <VStack
+                                display={{ base: "none", md: "flex" }}
+                                alignItems="flex-start"
+                                spacing="1px"
+                                ml="2"
+                            >
+                                <Text fontSize="sm">{`${data.loginProfile.surname} ${data.loginProfile.firstName}`}</Text>
+                                <Text fontSize="xs" color="gray.600">
+                                    Online
+                                </Text>
+                            </VStack>
+                            <Box display={{ base: "none", md: "flex" }}>
+                                <FiChevronDown />
+                            </Box>
+                        </HStack>
+                    </MenuButton>
+                    <MenuList
+                        bg={useColorModeValue("white", "gray.900")}
+                        borderColor={useColorModeValue("gray.200", "gray.700")}
+                    >
+                        <MenuItem>Profile</MenuItem>
+                        <MenuItem>Settings</MenuItem>
+                        <MenuItem>Billing</MenuItem>
+                        <MenuDivider />
+                        <MenuItem onClick={logoutUser}>Sign out</MenuItem>
+                    </MenuList>
+                </Menu>
+            </Box>
         );
     }
 
@@ -192,7 +197,7 @@ export const Navbar = () => {
                             </Box>
                         </button>
                     </NextLink>
-                    <Box w={"full"} mx={"50px"}>
+                    <Box w={"1200px"}>
                         <Formik
                             initialValues={initialValues}
                             onSubmit={(values: ISearchField) =>
@@ -209,7 +214,12 @@ export const Navbar = () => {
                     </Box>
 
                     <Flex alignItems={"center"}>
-                        <Stack direction={"row"} spacing={7}>
+                        <Stack
+                            direction={"row"}
+                            spacing={7}
+                            justifyContent={"center"}
+                            alignItems={"center"}
+                        >
                             {body}
                             <Button onClick={toggleColorMode}>
                                 {colorMode === "light" ? (

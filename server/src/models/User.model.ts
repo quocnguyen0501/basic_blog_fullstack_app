@@ -4,9 +4,11 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
+import { Post } from "./Post.model";
 
 @ObjectType()
 @Entity({
@@ -20,20 +22,21 @@ export class User extends BaseEntity {
     private _surname!: string;
     private _dateOfBirth!: Date;
     private _gender!: string;
+    private _posts: Post[];
     private _createdAt!: Date;
     private _updatedAt!: Date;
 
-    @Field(_type => ID)
+    @Field((_type) => ID)
     @PrimaryGeneratedColumn()
     public get id(): number {
         return this._id;
     }
 
-    public set id(id : number) {
+    public set id(id: number) {
         this._id = id;
     }
 
-    @Field(_type => String)
+    @Field((_type) => String)
     @Column({
         unique: true,
     })
@@ -54,7 +57,7 @@ export class User extends BaseEntity {
         this._password = password;
     }
 
-    @Field(_type => String)
+    @Field((_type) => String)
     @Column()
     public get firstName(): string {
         return this._firstName;
@@ -64,7 +67,7 @@ export class User extends BaseEntity {
         this._firstName = firstName;
     }
 
-    @Field(_type => String)
+    @Field((_type) => String)
     @Column()
     public get surname(): string {
         return this._surname;
@@ -74,7 +77,7 @@ export class User extends BaseEntity {
         this._surname = surname;
     }
 
-    @Field(_type => Date)
+    @Field((_type) => Date)
     @Column()
     public get dateOfBirth(): Date {
         return this._dateOfBirth;
@@ -84,7 +87,7 @@ export class User extends BaseEntity {
         this._dateOfBirth = dateOfBirth;
     }
 
-    @Field(_type => String)
+    @Field((_type) => String)
     @Column()
     public get gender(): string {
         return this._gender;
@@ -94,23 +97,32 @@ export class User extends BaseEntity {
         this._gender = gender;
     }
 
-    @Field(_type => Date)
+    @OneToMany(() => Post, (post) => post.user)
+    public get posts(): Post[] {
+        return this._posts;
+    }
+
+    public set posts(posts: Post[]) {
+        this._posts = posts;
+    }
+
+    @Field((_type) => Date)
     @CreateDateColumn()
     public get createdAt(): Date {
         return this._createdAt;
     }
 
     public set createdAt(createdAt: Date) {
-        this._createdAt = createdAt
+        this._createdAt = createdAt;
     }
 
-    @Field(_type => Date)
+    @Field((_type) => Date)
     @UpdateDateColumn()
     public get updatedAt(): Date {
         return this._updatedAt;
     }
 
     public set updatedAt(updatedAt: Date) {
-        this._updatedAt = updatedAt
+        this._updatedAt = updatedAt;
     }
 }
