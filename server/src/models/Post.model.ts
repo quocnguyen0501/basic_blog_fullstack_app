@@ -4,15 +4,18 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    ManyToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
+import { User } from "./User.model";
 
 @ObjectType()
 @Entity()
 export class Post extends BaseEntity {
     private _id!: number;
     private _userId!: number;
+    private _user: User;
     private _title!: string;
     private _content!: string;
     private _createdAt!: Date;
@@ -36,6 +39,18 @@ export class Post extends BaseEntity {
 
     public set userId(userId: number) {
         this._userId = userId;
+    }
+
+    /**
+     * many photos are owned by one user
+     */
+    @ManyToOne(() => User, (user) => user.posts)
+    public get user(): User {
+        return this._user;
+    }
+
+    public set user(user: User) {
+        this._user = user;
     }
 
     @Field((_type) => String)

@@ -16,14 +16,15 @@ import { HTTP_STATUS_CODE } from "../../utils/constants/constants";
 import { checkAuth } from "../../middleware/auth/checkAuth";
 import { DATA_SOURCE } from "../../helpers/database/DatabaseHelper";
 import { PostUnionMutationResponse } from "../../types/graphql/unions/PostUnionMutationResponse";
+import { User } from "../../models/User.model";
 
 @Resolver((_of) => Post)
 export class PostResolver {
     /**
-     * Field Resolver => Nếu muốn định nghĩa thêm Field dư thừa 
-     * không cần thiết phải lưu trong DB được suy ra từ các Field 
+     * Field Resolver => Nếu muốn định nghĩa thêm Field dư thừa
+     * không cần thiết phải lưu trong DB được suy ra từ các Field
      * của 1 Object có sẵn.
-     * 
+     *
      * @param parent: parent result of query return before if have a before query version
      * @returns : Content snippet
      */
@@ -38,14 +39,25 @@ export class PostResolver {
         return parent.content.slice(START_CHARS_INDEX, END_CHARS_INDEX);
     }
 
+    @FieldResolver((_return) => User)
+    async user(
+        @Root()
+        parent: Post
+    ) {
+        return await User.findOneBy({
+            id: parent.userId,
+        });
+    }
+
     @Mutation((_return) => [PostUnionMutationResponse])
     @UseMiddleware(checkAuth)
     async createPost(
         @Arg("createPostInput")
-        { title, content }: CreatePostInput
+        { userId, title, content }: CreatePostInput
     ): Promise<Array<typeof PostUnionMutationResponse>> {
         try {
             const newPost = Post.create({
+                userId: userId,
                 title: title,
                 content: content,
             });
