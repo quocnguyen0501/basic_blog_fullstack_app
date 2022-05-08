@@ -7,9 +7,10 @@ import {
     Stack,
     Avatar,
     useColorModeValue,
+    Flex,
 } from "@chakra-ui/react";
-import { IPost } from "../types/props/IPost.props";
-import { FC } from "react";
+import { MdPublic } from "react-icons/md";
+import { FC, useEffect, useState } from "react";
 import { getMonthName } from "../helpers/DateOfBirthHelper";
 import { Post } from "../generated/graphql";
 
@@ -18,15 +19,18 @@ interface PostProp {
 }
 
 const SinglePost: FC<PostProp> = ({ post }: PostProp) => {
-    const createdAt = new Date(post.creactedAt);
+    const [createdAt, setCreatedAt] = useState(new Date(post.creactedAt));
 
     const dayPost = createdAt.getDate();
     const monthPost = createdAt.getMonth();
     const yearPost = createdAt.getFullYear();
 
-    console.log(
-        `${createdAt.getHours()}h - ${createdAt.getMinutes()}p - ${createdAt.getSeconds()}s`
-    );
+    useEffect(() => {
+        const interval = setInterval(() => {
+            console.log("This will run every second!");
+        }, 1000);
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <Box
@@ -47,12 +51,15 @@ const SinglePost: FC<PostProp> = ({ post }: PostProp) => {
                     <Text
                         fontWeight={600}
                     >{`${post.user.surname} ${post.user.firstName}`}</Text>
-                    <Text color={"gray.500"}>
-                        {`${getMonthName(
-                            monthPost + 1
-                        )} ${dayPost}, ${yearPost}`}{" "}
-                        · 6min read
-                    </Text>
+                    <Flex justifyContent={"center"} alignItems={"center"}>
+                        <Text color={"gray.500"} mr={"5px"}>
+                            {`${getMonthName(
+                                monthPost + 1
+                            )} ${dayPost}, ${yearPost}`}{" "}
+                            .
+                        </Text>
+                        <MdPublic />
+                    </Flex>
                 </Stack>
             </Stack>
             <Stack>
