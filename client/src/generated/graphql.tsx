@@ -20,6 +20,7 @@ export type Scalars = {
 export type CreatePostInput = {
   content: Scalars['String'];
   title: Scalars['String'];
+  userId: Scalars['Float'];
 };
 
 export type ErrorMutationResponse = IMutaionResponse & {
@@ -112,6 +113,8 @@ export type Post = {
   id: Scalars['ID'];
   title: Scalars['String'];
   updatedAt: Scalars['DateTime'];
+  user: User;
+  userId: Scalars['Float'];
 };
 
 export type PostMutationResponse = IMutaionResponse & {
@@ -237,7 +240,7 @@ export type LoginProfileQuery = { __typename?: 'Query', loginProfile?: { __typen
 export type PostsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: string, title: string, content: string, contentSnippet: string, creactedAt: any, updatedAt: any }> };
+export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: string, title: string, content: string, contentSnippet: string, creactedAt: any, updatedAt: any, user: { __typename?: 'User', id: string, surname: string, firstName: string, dateOfBirth: any, gender: string } }> };
 
 export const CommonStateFragmentDoc = gql`
     fragment commonState on IMutaionResponse {
@@ -526,6 +529,13 @@ export const PostsDocument = gql`
     title
     content
     contentSnippet
+    user {
+      id
+      surname
+      firstName
+      dateOfBirth
+      gender
+    }
     creactedAt
     updatedAt
   }

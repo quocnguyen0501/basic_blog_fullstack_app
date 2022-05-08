@@ -4,6 +4,13 @@ query posts {
         title
         content
         contentSnippet
+        user {
+            id
+            surname
+            firstName
+            dateOfBirth
+            gender
+        }
         creactedAt
         updatedAt
     }
