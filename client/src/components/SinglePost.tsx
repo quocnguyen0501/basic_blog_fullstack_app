@@ -11,15 +11,20 @@ import {
 import { IPost } from "../types/props/IPost.props";
 import { FC } from "react";
 import { getMonthName } from "../helpers/DateOfBirthHelper";
+import { Post } from "../generated/graphql";
 
 interface PostProp {
-    post: IPost;
+    post: Post;
 }
 
 const SinglePost: FC<PostProp> = ({ post }: PostProp) => {
-    const dayPost = new Date(post.creactedAt).getDate();
-    const monthPost = new Date(post.creactedAt).getMonth();
-    const yearPost = new Date(post.creactedAt).getFullYear();
+    const createdAt = new Date(post.creactedAt);
+
+    const dayPost = createdAt.getDate();
+    const monthPost = createdAt.getMonth();
+    const yearPost = createdAt.getFullYear();
+
+    console.log(`${createdAt.getHours()}h - ${createdAt.getMinutes()}p - ${createdAt.getSeconds()}s`);
 
     return (
         <Box
@@ -41,7 +46,10 @@ const SinglePost: FC<PostProp> = ({ post }: PostProp) => {
                 <Stack direction={"column"} spacing={0} fontSize={"sm"}>
                     <Text fontWeight={600}>Achim Rolle</Text>
                     <Text color={"gray.500"}>
-                        {`${getMonthName(monthPost + 1)} ${dayPost}, ${yearPost}`} · 6min read
+                        {`${getMonthName(
+                            monthPost + 1
+                        )} ${dayPost}, ${yearPost}`}{" "}
+                        · 6min read
                     </Text>
                 </Stack>
             </Stack>
@@ -53,7 +61,7 @@ const SinglePost: FC<PostProp> = ({ post }: PostProp) => {
                 >
                     {post.title}
                 </Heading>
-                <Text color={"gray.500"}>{post.content}</Text>
+                <Text color={"gray.500"}>{post.contentSnippet}</Text>
             </Stack>
         </Box>
     );
