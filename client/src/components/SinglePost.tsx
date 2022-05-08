@@ -13,24 +13,36 @@ import { MdPublic } from "react-icons/md";
 import { FC, useEffect, useState } from "react";
 import { getMonthName } from "../helpers/DateOfBirthHelper";
 import { Post } from "../generated/graphql";
+import moment from "moment";
+import { setTimeIntervalCreatedAtDisplay } from "../helpers/singlePostHelper";
 
 interface PostProp {
     post: Post;
 }
 
 const SinglePost: FC<PostProp> = ({ post }: PostProp) => {
-    const [createdAt, setCreatedAt] = useState(new Date(post.creactedAt));
+    const createdAt = new Date(post.creactedAt);
 
-    const dayPost = createdAt.getDate();
-    const monthPost = createdAt.getMonth();
-    const yearPost = createdAt.getFullYear();
+    /**
+     * Use if want to display day month year post
+     */
+    // const dayPost = createdAt.getDate();
+    // const monthPost = createdAt.getMonth();
+    // const yearPost = createdAt.getFullYear();
 
+    const timeDisplay = moment(createdAt).fromNow();
+
+    const now = Date.now();
+    const [createdAtDisplay, setCreatedAtDisplay] = useState("");
     useEffect(() => {
         const interval = setInterval(() => {
-            console.log("This will run every second!");
+            console.log(">>> SET TIME DISPLAY: ", setTimeIntervalCreatedAtDisplay(createdAt));
+            console.log(moment(now).fromNow());
+            
+            setCreatedAtDisplay(moment(createdAt).fromNow());
         }, 1000);
         return () => clearInterval(interval);
-    }, []);
+    }, [createdAtDisplay]);
 
     return (
         <Box
@@ -53,10 +65,10 @@ const SinglePost: FC<PostProp> = ({ post }: PostProp) => {
                     >{`${post.user.surname} ${post.user.firstName}`}</Text>
                     <Flex justifyContent={"center"} alignItems={"center"}>
                         <Text color={"gray.500"} mr={"5px"}>
-                            {`${getMonthName(
+                            {/* {`${getMonthName(
                                 monthPost + 1
-                            )} ${dayPost}, ${yearPost}`}{" "}
-                            .
+                            )} ${dayPost}, ${yearPost}`} */}
+                            {createdAtDisplay} .
                         </Text>
                         <MdPublic />
                     </Flex>
