@@ -1,9 +1,11 @@
 import {
     Arg,
+    FieldResolver,
     ID,
     Mutation,
     Query,
     Resolver,
+    Root,
     UseMiddleware,
 } from "type-graphql";
 import { CreatePostInput } from "../../types/input/CreatePostInput";
@@ -15,8 +17,27 @@ import { checkAuth } from "../../middleware/auth/checkAuth";
 import { DATA_SOURCE } from "../../helpers/database/DatabaseHelper";
 import { PostUnionMutationResponse } from "../../types/graphql/unions/PostUnionMutationResponse";
 
-@Resolver()
+@Resolver((_of) => Post)
 export class PostResolver {
+    /**
+     * Field Resolver => Nếu muốn định nghĩa thêm Field dư thừa 
+     * không cần thiết phải lưu trong DB được suy ra từ các Field 
+     * của 1 Object có sẵn.
+     * 
+     * @param parent: parent result of query return before if have a before query version
+     * @returns : Content snippet
+     */
+    @FieldResolver((_return) => String)
+    contentSnippet(
+        @Root()
+        parent: Post
+    ) {
+        const START_CHARS_INDEX = 0;
+        const END_CHARS_INDEX = 150;
+
+        return parent.content.slice(START_CHARS_INDEX, END_CHARS_INDEX);
+    }
+
     @Mutation((_return) => [PostUnionMutationResponse])
     @UseMiddleware(checkAuth)
     async createPost(
