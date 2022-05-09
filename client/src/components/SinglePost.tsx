@@ -23,7 +23,7 @@ interface PostProp {
 }
 
 const SinglePost: FC<PostProp> = ({ post }: PostProp) => {
-    const createdAt = new Date(post.creactedAt);
+    const createdAt = new Date(post.createdAt);
 
     /**
      * Use if want to display day month year post
@@ -38,7 +38,6 @@ const SinglePost: FC<PostProp> = ({ post }: PostProp) => {
     const [createdAtDisplay, setCreatedAtDisplay] = useState("");
     useEffect(() => {
         const timeInterval = setTimeIntervalCreatedAtDisplay(createdAt);
-        console.log(timeInterval);
 
         if (timeInterval !== null) {
             setCreatedAtDisplay(moment(createdAt).fromNow());
@@ -84,7 +83,7 @@ const SinglePost: FC<PostProp> = ({ post }: PostProp) => {
                     </Stack>
                 </Stack>
                 <Box>
-                    <MoreOptionsSinglePost/>
+                    <MoreOptionsSinglePost />
                 </Box>
             </Flex>
             <Stack>
