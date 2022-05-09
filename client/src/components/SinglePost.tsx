@@ -7,11 +7,14 @@ import {
     Stack,
     Avatar,
     useColorModeValue,
+    Flex,
 } from "@chakra-ui/react";
-import { IPost } from "../types/props/IPost.props";
-import { FC } from "react";
+import { MdPublic } from "react-icons/md";
+import { FC, useEffect, useState } from "react";
 import { getMonthName } from "../helpers/DateOfBirthHelper";
 import { Post } from "../generated/graphql";
+import moment from "moment";
+import { setTimeIntervalCreatedAtDisplay } from "../helpers/singlePostHelper";
 
 interface PostProp {
     post: Post;
@@ -20,13 +23,32 @@ interface PostProp {
 const SinglePost: FC<PostProp> = ({ post }: PostProp) => {
     const createdAt = new Date(post.creactedAt);
 
-    const dayPost = createdAt.getDate();
-    const monthPost = createdAt.getMonth();
-    const yearPost = createdAt.getFullYear();
+    /**
+     * Use if want to display day month year post
+     */
+    // const dayPost = createdAt.getDate();
+    // const monthPost = createdAt.getMonth();
+    // const yearPost = createdAt.getFullYear();
 
-    console.log(
-        `${createdAt.getHours()}h - ${createdAt.getMinutes()}p - ${createdAt.getSeconds()}s`
-    );
+    const timeDisplay = moment(createdAt).fromNow();
+
+    const now = Date.now();
+    const [createdAtDisplay, setCreatedAtDisplay] = useState("");
+    useEffect(() => {
+        const timeInterval = setTimeIntervalCreatedAtDisplay(createdAt);
+        console.log(timeInterval);
+
+        if (timeInterval !== null) {
+            setCreatedAtDisplay(moment(createdAt).fromNow());
+
+            const interval = setInterval(() => {
+                setCreatedAtDisplay(moment(createdAt).fromNow());
+            }, timeInterval);
+            return () => clearInterval(interval);
+        } else {
+            setCreatedAtDisplay(moment(createdAt).calendar());
+        }
+    }, [createdAtDisplay]);
 
     return (
         <Box
@@ -47,12 +69,15 @@ const SinglePost: FC<PostProp> = ({ post }: PostProp) => {
                     <Text
                         fontWeight={600}
                     >{`${post.user.surname} ${post.user.firstName}`}</Text>
-                    <Text color={"gray.500"}>
-                        {`${getMonthName(
-                            monthPost + 1
-                        )} ${dayPost}, ${yearPost}`}{" "}
-                        · 6min read
-                    </Text>
+                    <Flex justifyContent={"center"} alignItems={"center"}>
+                        <Text color={"gray.500"} mr={"5px"}>
+                            {/* {`${getMonthName(
+                                monthPost + 1
+                            )} ${dayPost}, ${yearPost}`} */}
+                            {createdAtDisplay} .
+                        </Text>
+                        <MdPublic />
+                    </Flex>
                 </Stack>
             </Stack>
             <Stack>
