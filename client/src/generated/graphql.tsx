@@ -105,11 +105,19 @@ export type NewPasswordInput = {
   newPassword: Scalars['String'];
 };
 
+export type PaginatedPost = {
+  __typename?: 'PaginatedPost';
+  hasMore: Scalars['Boolean'];
+  paginatedPosts: Array<Post>;
+  timeCompareCreatedAt: Scalars['DateTime'];
+  totalPost: Scalars['Float'];
+};
+
 export type Post = {
   __typename?: 'Post';
   content: Scalars['String'];
   contentSnippet: Scalars['String'];
-  creactedAt: Scalars['DateTime'];
+  createdAt: Scalars['DateTime'];
   id: Scalars['ID'];
   title: Scalars['String'];
   updatedAt: Scalars['DateTime'];
@@ -132,12 +140,18 @@ export type Query = {
   hello: Scalars['String'];
   loginProfile?: Maybe<User>;
   post?: Maybe<Post>;
-  posts: Array<Post>;
+  posts: PaginatedPost;
 };
 
 
 export type QueryPostArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryPostsArgs = {
+  limit: Scalars['Int'];
+  timeCompareCreatedAt?: InputMaybe<Scalars['String']>;
 };
 
 export type RegisterInput = {
@@ -237,10 +251,13 @@ export type LoginProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type LoginProfileQuery = { __typename?: 'Query', loginProfile?: { __typename?: 'User', id: string, firstName: string, surname: string, email: string, dateOfBirth: any, gender: string } | null };
 
-export type PostsQueryVariables = Exact<{ [key: string]: never; }>;
+export type PostsQueryVariables = Exact<{
+  limit: Scalars['Int'];
+  timeCompareCreatedAt?: InputMaybe<Scalars['String']>;
+}>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: string, title: string, content: string, contentSnippet: string, creactedAt: any, updatedAt: any, user: { __typename?: 'User', id: string, surname: string, firstName: string, dateOfBirth: any, gender: string } }> };
+export type PostsQuery = { __typename?: 'Query', posts: { __typename?: 'PaginatedPost', totalPost: number, timeCompareCreatedAt: any, hasMore: boolean, paginatedPosts: Array<{ __typename?: 'Post', id: string, title: string, content: string, contentSnippet: string, createdAt: any, updatedAt: any, user: { __typename?: 'User', id: string, surname: string, firstName: string, dateOfBirth: any, gender: string } }> } };
 
 export const CommonStateFragmentDoc = gql`
     fragment commonState on IMutaionResponse {
@@ -523,21 +540,26 @@ export type LoginProfileQueryHookResult = ReturnType<typeof useLoginProfileQuery
 export type LoginProfileLazyQueryHookResult = ReturnType<typeof useLoginProfileLazyQuery>;
 export type LoginProfileQueryResult = Apollo.QueryResult<LoginProfileQuery, LoginProfileQueryVariables>;
 export const PostsDocument = gql`
-    query posts {
-  posts {
-    id
-    title
-    content
-    contentSnippet
-    user {
+    query posts($limit: Int!, $timeCompareCreatedAt: String) {
+  posts(limit: $limit, timeCompareCreatedAt: $timeCompareCreatedAt) {
+    totalPost
+    timeCompareCreatedAt
+    hasMore
+    paginatedPosts {
       id
-      surname
-      firstName
-      dateOfBirth
-      gender
+      title
+      content
+      contentSnippet
+      user {
+        id
+        surname
+        firstName
+        dateOfBirth
+        gender
+      }
+      createdAt
+      updatedAt
     }
-    creactedAt
-    updatedAt
   }
 }
     `;
@@ -554,10 +576,12 @@ export const PostsDocument = gql`
  * @example
  * const { data, loading, error } = usePostsQuery({
  *   variables: {
+ *      limit: // value for 'limit'
+ *      timeCompareCreatedAt: // value for 'timeCompareCreatedAt'
  *   },
  * });
  */
-export function usePostsQuery(baseOptions?: Apollo.QueryHookOptions<PostsQuery, PostsQueryVariables>) {
+export function usePostsQuery(baseOptions: Apollo.QueryHookOptions<PostsQuery, PostsQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<PostsQuery, PostsQueryVariables>(PostsDocument, options);
       }

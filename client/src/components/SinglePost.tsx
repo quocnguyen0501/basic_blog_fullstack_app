@@ -8,13 +8,15 @@ import {
     Avatar,
     useColorModeValue,
     Flex,
+    Link,
 } from "@chakra-ui/react";
 import { MdPublic } from "react-icons/md";
 import { FC, useEffect, useState } from "react";
-import { getMonthName } from "../helpers/DateOfBirthHelper";
+import NextLink from "next/link";
 import { Post } from "../generated/graphql";
 import moment from "moment";
 import { setTimeIntervalCreatedAtDisplay } from "../helpers/singlePostHelper";
+import MoreOptionsSinglePost from "./MoreOptionsSinglePost";
 
 interface PostProp {
     post: Post;
@@ -63,31 +65,40 @@ const SinglePost: FC<PostProp> = ({ post }: PostProp) => {
             my={6}
             overflow={"hidden"}
         >
-            <Stack mb={6} direction={"row"} spacing={4} align={"center"}>
-                <Avatar />
-                <Stack direction={"column"} spacing={0} fontSize={"sm"}>
-                    <Text
-                        fontWeight={600}
-                    >{`${post.user.surname} ${post.user.firstName}`}</Text>
-                    <Flex justifyContent={"center"} alignItems={"center"}>
-                        <Text color={"gray.500"} mr={"5px"}>
-                            {/* {`${getMonthName(
+            <Flex justifyContent={"space-between"}>
+                <Stack mb={6} direction={"row"} spacing={4} align={"center"}>
+                    <Avatar />
+                    <Stack direction={"column"} spacing={0} fontSize={"sm"}>
+                        <Text fontWeight={600}>
+                            {`${post.user.surname} ${post.user.firstName}`}
+                        </Text>
+                        <Flex justifyContent={"center"} alignItems={"center"}>
+                            <Text color={"gray.500"} mr={"5px"}>
+                                {/* {`${getMonthName(
                                 monthPost + 1
                             )} ${dayPost}, ${yearPost}`} */}
-                            {createdAtDisplay} .
-                        </Text>
-                        <MdPublic />
-                    </Flex>
+                                {createdAtDisplay} .
+                            </Text>
+                            <MdPublic />
+                        </Flex>
+                    </Stack>
                 </Stack>
-            </Stack>
+                <Box>
+                    <MoreOptionsSinglePost/>
+                </Box>
+            </Flex>
             <Stack>
-                <Heading
-                    color={useColorModeValue("gray.700", "white")}
-                    fontSize={"2xl"}
-                    fontFamily={"body"}
-                >
-                    {post.title}
-                </Heading>
+                <NextLink href={`/post/${post.id}`}>
+                    <Link>
+                        <Heading
+                            color={useColorModeValue("gray.700", "white")}
+                            fontSize={"2xl"}
+                            fontFamily={"body"}
+                        >
+                            {post.title}
+                        </Heading>
+                    </Link>
+                </NextLink>
                 <Text color={"gray.500"}>{post.contentSnippet}</Text>
             </Stack>
         </Box>

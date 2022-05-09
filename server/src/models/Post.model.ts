@@ -74,17 +74,21 @@ export class Post extends BaseEntity {
     }
 
     @Field((_type) => Date)
-    @CreateDateColumn()
-    public get creactedAt(): Date {
+    @CreateDateColumn({
+        type: "timestamptz",
+    })
+    public get createdAt(): Date {
         return this._createdAt;
     }
 
-    public set creactedAt(createdAt: Date) {
+    public set createdAt(createdAt: Date) {
         this._createdAt = createdAt;
     }
 
     @Field((_type) => Date)
-    @UpdateDateColumn()
+    @UpdateDateColumn({
+        type: "timestamptz",
+    })
     public get updatedAt(): Date {
         return this._updatedAt;
     }
