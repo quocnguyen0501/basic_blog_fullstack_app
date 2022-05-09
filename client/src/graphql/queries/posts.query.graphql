@@ -1,17 +1,22 @@
-query posts {
-    posts {
-        id
-        title
-        content
-        contentSnippet
-        user {
+query posts($limit: Int!, $timeCompareCreatedAt: String) {
+    posts(limit: $limit, timeCompareCreatedAt: $timeCompareCreatedAt) {
+        totalPost
+        timeCompareCreatedAt
+        hasMore
+        paginatedPosts {
             id
-            surname
-            firstName
-            dateOfBirth
-            gender
+            title
+            content
+            contentSnippet
+            user {
+                id
+                surname
+                firstName
+                dateOfBirth
+                gender
+            }
+            createdAt
+            updatedAt
         }
-        creactedAt
-        updatedAt
     }
 }

@@ -15,8 +15,14 @@ import { addApolloState, initializeApollo } from "../lib/apolloClient";
 import SinglePost from "../components/SinglePost";
 import { FC } from "react";
 
+const LIMIT = 5;
+
 const Index: FC = () => {
-    const { data, loading } = usePostsQuery();
+    const { data, loading } = usePostsQuery({
+        variables: {
+            limit: LIMIT,
+        },
+    });
 
     return (
         <>
@@ -27,7 +33,7 @@ const Index: FC = () => {
                 <>
                     <Center pt={20} pb={6} px={2}>
                         <Box maxW={"900px"}>
-                            {data?.posts.map((post: Post) => (
+                            {data?.posts.paginatedPosts.map((post: Post) => (
                                 <SinglePost key={post.id} post={post} />
                             ))}
                         </Box>
@@ -43,6 +49,9 @@ export const getStaticProps = async () => {
 
     await apolloClient.query({
         query: PostsDocument,
+        variables: {
+            limit: LIMIT,
+        },
     });
 
     return addApolloState(apolloClient, {
