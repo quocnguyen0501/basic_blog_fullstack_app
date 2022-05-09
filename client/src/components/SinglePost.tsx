@@ -35,13 +35,19 @@ const SinglePost: FC<PostProp> = ({ post }: PostProp) => {
     const now = Date.now();
     const [createdAtDisplay, setCreatedAtDisplay] = useState("");
     useEffect(() => {
-        const interval = setInterval(() => {
-            console.log(">>> SET TIME DISPLAY: ", setTimeIntervalCreatedAtDisplay(createdAt));
-            console.log(moment(now).fromNow());
-            
+        const timeInterval = setTimeIntervalCreatedAtDisplay(createdAt);
+        console.log(timeInterval);
+
+        if (timeInterval !== null) {
             setCreatedAtDisplay(moment(createdAt).fromNow());
-        }, 1000);
-        return () => clearInterval(interval);
+
+            const interval = setInterval(() => {
+                setCreatedAtDisplay(moment(createdAt).fromNow());
+            }, timeInterval);
+            return () => clearInterval(interval);
+        } else {
+            setCreatedAtDisplay(moment(createdAt).calendar());
+        }
     }, [createdAtDisplay]);
 
     return (
