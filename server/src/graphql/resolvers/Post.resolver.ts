@@ -2,6 +2,7 @@ import {
     Arg,
     FieldResolver,
     ID,
+    Int,
     Mutation,
     Query,
     Resolver,
@@ -17,6 +18,8 @@ import { checkAuth } from "../../middleware/auth/checkAuth";
 import { DATA_SOURCE } from "../../helpers/database/DatabaseHelper";
 import { PostUnionMutationResponse } from "../../types/graphql/unions/PostUnionMutationResponse";
 import { User } from "../../models/User.model";
+import { PaginatedPost } from "../../types/graphql/PaginatedPost";
+import { LessThan } from "typeorm";
 
 @Resolver((_of) => Post)
 export class PostResolver {
@@ -132,11 +135,70 @@ export class PostResolver {
         }
     }
 
-    @Query((_return) => [Post])
-    async posts(): Promise<Post[] | null> {
+    @Query((_return) => PaginatedPost)
+    async posts(
+        @Arg("limit", (_type) => Int)
+        limit: number,
+        @Arg("timeCompareCreatedAt", {
+            nullable: true,
+        })
+        timeCompareCreatedAt?: string
+    ): Promise<PaginatedPost | null> {
         try {
-            return Post.find();
+            const MIN_LIMIT_POST = 5;
+            
+            /**
+             * If recieve a wrong request from client -> set limit default is 5
+             */
+            const LIMIT = Math.min(MIN_LIMIT_POST, limit);
+
+            let findOptions: { [key: string]: any };
+
+            findOptions = {
+                order: {
+                    createdAt: "DESC",
+                },
+                take: LIMIT,
+            };
+
+            let lastPost: Post = new Post();
+
+            if (timeCompareCreatedAt) {
+                findOptions.where = {
+                    createdAt: LessThan(timeCompareCreatedAt),
+                };
+
+                lastPost = (
+                    await Post.find({
+                        order: {
+                            createdAt: "DESC",
+                        },
+                        take: 1,
+                    })
+                )[0];
+            }
+
+            const totalPost = await Post.count();
+
+            const paginatedPosts = await Post.find(findOptions);
+            
+            const hasMore: boolean = timeCompareCreatedAt
+                ? paginatedPosts[
+                      paginatedPosts.length - 1
+                  ].createdAt.toString() !== lastPost.createdAt.toString()
+                : paginatedPosts.length !== totalPost;
+
+            const timeCompareCreatedAtResult =
+                paginatedPosts[paginatedPosts.length - 1].createdAt;
+
+            return {
+                totalPost: totalPost,
+                timeCompareCreatedAt: timeCompareCreatedAtResult,
+                hasMore: hasMore,
+                paginatedPosts: paginatedPosts,
+            };
         } catch (error) {
+            console.log(error);
             return null;
         }
     }
