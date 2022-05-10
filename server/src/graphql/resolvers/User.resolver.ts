@@ -1,4 +1,4 @@
-import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Ctx, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
 import * as argon2 from "argon2";
 import { v4 as uuidv4 } from "uuid";
 
@@ -20,6 +20,11 @@ import { NewPasswordInput } from "../../types/input/NewPasswordInput";
 
 @Resolver()
 export class UserResolver {
+    @FieldResolver((_return) => String)
+    email(@Root() user: User, @Ctx() { req }: Context) {
+        return req.session.userId === user.id ? user.email : "";
+    }
+
     @Query((_return) => User, {
         nullable: true,
     })
