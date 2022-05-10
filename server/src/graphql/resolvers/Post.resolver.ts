@@ -1,5 +1,7 @@
+import { HTTP_STATUS_CODE } from "./../../utils/constants/constants";
 import {
     Arg,
+    Ctx,
     FieldResolver,
     ID,
     Int,
@@ -13,13 +15,13 @@ import { CreatePostInput } from "../../types/input/CreatePostInput";
 import { Post } from "../../models/Post.model";
 import { UpdatePostInput } from "../../types/input/UpdatePostInput";
 import { getErrorMutationResponse } from "../../helpers/resolvers/ErrorMutationResponseHelper";
-import { HTTP_STATUS_CODE } from "../../utils/constants/constants";
 import { checkAuth } from "../../middleware/auth/checkAuth";
 import { DATA_SOURCE } from "../../helpers/database/DatabaseHelper";
 import { PostUnionMutationResponse } from "../../types/graphql/unions/PostUnionMutationResponse";
 import { User } from "../../models/User.model";
 import { PaginatedPost } from "../../types/graphql/PaginatedPost";
 import { LessThan } from "typeorm";
+import { Context } from "../../types/graphql/Context";
 
 @Resolver((_of) => Post)
 export class PostResolver {
@@ -56,11 +58,13 @@ export class PostResolver {
     @UseMiddleware(checkAuth)
     async createPost(
         @Arg("createPostInput")
-        { userId, title, content }: CreatePostInput
+        { title, content }: CreatePostInput,
+        @Ctx()
+        { req }: Context
     ): Promise<Array<typeof PostUnionMutationResponse>> {
         try {
             const newPost = Post.create({
-                userId: userId,
+                userId: req.session.userId,
                 title: title,
                 content: content,
             });
@@ -91,7 +95,9 @@ export class PostResolver {
     @UseMiddleware(checkAuth)
     async updatePost(
         @Arg("updatePostInput")
-        { id, title, content }: UpdatePostInput
+        { id, title, content }: UpdatePostInput,
+        @Ctx()
+        { req }: Context
     ): Promise<Array<typeof PostUnionMutationResponse>> {
         try {
             const existingPost = await Post.findOneBy({ id });
@@ -102,6 +108,14 @@ export class PostResolver {
                         code: HTTP_STATUS_CODE.BAD_REQUEST,
                         success: false,
                         message: "Post not found",
+                    },
+                ];
+            } else if (existingPost.userId !== req.session.userId) {
+                return [
+                    {
+                        code: HTTP_STATUS_CODE.UNAUTHORIZED,
+                        success: false,
+                        message: "Unauthorized",
                     },
                 ];
             } else {
@@ -135,7 +149,7 @@ export class PostResolver {
         }
     }
 
-    @Query((_return) => PaginatedPost)
+    @Query((_return) => PaginatedPost, { nullable: true })
     async posts(
         @Arg("limit", (_type) => Int)
         limit: number,
@@ -146,7 +160,7 @@ export class PostResolver {
     ): Promise<PaginatedPost | null> {
         try {
             const MIN_LIMIT_POST = 5;
-            
+
             /**
              * If recieve a wrong request from client -> set limit default is 5
              */
@@ -161,31 +175,29 @@ export class PostResolver {
                 take: LIMIT,
             };
 
-            let lastPost: Post = new Post();
+            let lastPostArr: Post[] = [];
 
             if (timeCompareCreatedAt) {
                 findOptions.where = {
                     createdAt: LessThan(timeCompareCreatedAt),
                 };
 
-                lastPost = (
-                    await Post.find({
-                        order: {
-                            createdAt: "DESC",
-                        },
-                        take: 1,
-                    })
-                )[0];
+                lastPostArr = await Post.find({
+                    order: {
+                        createdAt: "ASC",
+                    },
+                    take: 1,
+                });
             }
 
             const totalPost = await Post.count();
 
             const paginatedPosts = await Post.find(findOptions);
-            
+
             const hasMore: boolean = timeCompareCreatedAt
                 ? paginatedPosts[
                       paginatedPosts.length - 1
-                  ].createdAt.toString() !== lastPost.createdAt.toString()
+                  ].createdAt.toString() !== lastPostArr[0].createdAt.toString()
                 : paginatedPosts.length !== totalPost;
 
             const timeCompareCreatedAtResult =
@@ -221,16 +233,26 @@ export class PostResolver {
     @UseMiddleware(checkAuth)
     async deletePost(
         @Arg("id", (_type) => ID)
-        id: number
+        id: number,
+        @Ctx()
+        { req }: Context
     ): Promise<Array<typeof PostUnionMutationResponse>> {
         try {
-            const existingPost = Post.findOneBy({ id });
+            const existingPost = await Post.findOneBy({ id });
             if (!existingPost) {
                 return [
                     {
                         code: HTTP_STATUS_CODE.BAD_REQUEST,
                         success: false,
                         message: "Post not found",
+                    },
+                ];
+            } else if (existingPost.userId !== req.session.userId) {
+                return [
+                    {
+                        code: HTTP_STATUS_CODE.UNAUTHORIZED,
+                        success: false,
+                        message: "Unauthorized",
                     },
                 ];
             } else {
