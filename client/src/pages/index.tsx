@@ -8,7 +8,9 @@ import {
     Avatar,
     useColorModeValue,
     Button,
+    useDisclosure,
 } from "@chakra-ui/react";
+import { ImLink, ImImages } from "react-icons/im";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Navbar from "../components/Navbar";
 import { Post, PostsDocument, usePostsQuery } from "../generated/graphql";
@@ -16,6 +18,7 @@ import { addApolloState, initializeApollo } from "../lib/apolloClient";
 import SinglePost from "../components/SinglePost";
 import { FC } from "react";
 import { NetworkStatus } from "@apollo/client";
+import CreatePostButton from "../components/CreatePostButton";
 
 const LIMIT = 5;
 
@@ -51,8 +54,9 @@ const Index: FC = () => {
                 <LoadingSpinner />
             ) : (
                 <>
-                    <Center pt={20} pb={6} px={2}>
-                        <Box maxW={"900px"}>
+                    <Center pt={20} pb={6} px={2} zIndex={"2"}>
+                        <Box maxW={"900px"} w={"900px"}>
+                            <CreatePostButton/>
                             {data?.posts.paginatedPosts.map((post: Post) => (
                                 <SinglePost key={post.id} post={post} />
                             ))}
@@ -75,7 +79,9 @@ const Index: FC = () => {
                                         isLoading={isLoadingMorePost}
                                         onClick={loadMorePost}
                                     >
-                                        {isLoadingMorePost ? 'Loading' : 'Show more'}
+                                        {isLoadingMorePost
+                                            ? "Loading"
+                                            : "Show more"}
                                     </Button>
                                 )}
                             </Center>

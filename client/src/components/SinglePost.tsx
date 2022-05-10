@@ -53,10 +53,9 @@ const SinglePost: FC<PostProp> = ({ post }: PostProp) => {
 
     return (
         <Box
-            width={"950px"}
-            minW={"950px"}
+            width={"900px"}
+            minW={"900px"}
             w={"full"}
-            zIndex={"2"}
             bg={useColorModeValue("white", "gray.900")}
             boxShadow={"2xl"}
             rounded={"md"}
