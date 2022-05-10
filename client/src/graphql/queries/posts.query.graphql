@@ -4,19 +4,7 @@ query posts($limit: Int!, $timeCompareCreatedAt: String) {
         timeCompareCreatedAt
         hasMore
         paginatedPosts {
-            id
-            title
-            content
-            contentSnippet
-            user {
-                id
-                surname
-                firstName
-                dateOfBirth
-                gender
-            }
-            createdAt
-            updatedAt
+            ... postWithUserInfo
         }
     }
 }
