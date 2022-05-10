@@ -1,3 +1,9 @@
+import {
+    Query,
+    Post,
+    PostsQueryResult,
+    PaginatedPost,
+} from "./../generated/graphql";
 import { useMemo } from "react";
 import {
     ApolloClient,
@@ -25,7 +31,54 @@ function createApolloClient() {
             uri: "http://localhost:4000/graphql", // Server URL (must be absolute)
             credentials: "include", // Additional fetch() options like `credentials` or `headers`
         }),
-        cache: new InMemoryCache(),
+        cache: new InMemoryCache({
+            /**
+             * typePolicies: use for change the cache base on (base on: dựa trên) field in Type
+             * Type: Query and Mutation
+             */
+            typePolicies: {
+                Query: {
+                    fields: {
+                        posts: {
+                            keyArgs: false,
+                            /**
+                             * merge will call when Post receive new datas
+                             * @param existing recent data in apollo cache
+                             * @param incoming new data cache will receive
+                             */
+                            merge(
+                                existing: PaginatedPost,
+                                incoming: PaginatedPost
+                            ) {
+                                let paginatedPosts: Post[] = [];
+
+                                if (existing && existing.paginatedPosts) {
+                                    paginatedPosts = paginatedPosts.concat(
+                                        existing.paginatedPosts
+                                    );
+                                }
+                                if (incoming && incoming.paginatedPosts) {
+                                    paginatedPosts = paginatedPosts.concat(
+                                        incoming.paginatedPosts
+                                    );
+                                }
+
+                                const newPaginatedPostsCacheAfterMerge: PaginatedPost =
+                                    {
+                                        totalPost: incoming.totalPost,
+                                        hasMore: incoming.hasMore,
+                                        timeCompareCreatedAt:
+                                            incoming.timeCompareCreatedAt,
+                                        paginatedPosts: paginatedPosts,
+                                    };
+
+                                return newPaginatedPostsCacheAfterMerge;
+                            },
+                        },
+                    },
+                },
+            },
+        }),
     });
 }
 
