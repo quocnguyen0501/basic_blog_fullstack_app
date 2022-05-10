@@ -129,14 +129,14 @@ export const Navbar = () => {
                                 pos={"relative"}
                                 _after={{
                                     content: '""',
-                                    w: 2,
-                                    h: 2,
+                                    w: 3,
+                                    h: 3,
                                     bg: "green.300",
                                     border: "2px solid white",
                                     rounded: "full",
                                     pos: "absolute",
-                                    bottom: -0.5,
-                                    right: 0.5,
+                                    bottom: 0,
+                                    right: 0,
                                 }}
                             />
                             <VStack
