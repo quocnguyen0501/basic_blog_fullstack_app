@@ -126,6 +126,18 @@ export const Navbar = () => {
                         <HStack>
                             <Avatar
                                 size={"sm"}
+                                pos={"relative"}
+                                _after={{
+                                    content: '""',
+                                    w: 3,
+                                    h: 3,
+                                    bg: "green.300",
+                                    border: "2px solid white",
+                                    rounded: "full",
+                                    pos: "absolute",
+                                    bottom: 0,
+                                    right: 0,
+                                }}
                             />
                             <VStack
                                 display={{ base: "none", md: "flex" }}
