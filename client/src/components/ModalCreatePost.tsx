@@ -17,6 +17,7 @@ import { FiLink } from "react-icons/fi";
 import { ImListNumbered } from "react-icons/im";
 import { HiOutlineMicrophone } from "react-icons/hi";
 import InputTextCountWord from "./InputTextCountWord";
+import InputContentRTE from "./InputContentRTE";
 
 const ModalCreatePost = ({
     isOpen,
@@ -92,8 +93,11 @@ const ModalCreatePost = ({
                                 </Button>
                             </Flex>
                             <hr />
-                            <Box mt={"3"}>
+                            <Box my={"3"}>
                                 <InputTextCountWord />
+                            </Box>
+                            <Box border={"0.5px solid"} borderColor={"gray.400"} borderRadius={"7px"} py={1} px={2}>
+                                <InputContentRTE />
                             </Box>
                         </Box>
                     </ModalBody>

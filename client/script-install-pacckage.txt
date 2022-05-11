@@ -4,6 +4,14 @@ install packages for connect to server:
 install plugin for auto generate graphql mutation or query:
     yarn add -D @graphql-codegen/cli
 
+install pakage for text editor:
+    yarn add react-draft-wysiwyg draft-js --save
+    yarn add -D @types/react-draft-wysiwyg
+    yarn add draftjs-to-html --save
+    yarn add -D @types/draftjs-to-html
+    yarn add html-to-draftjs --save
+    yarn add -D @types/html-to-draftjs
+
 * Set up in App.ts
     const client = new ApolloClient({
         uri: "http://localhost:4000/graphql",
