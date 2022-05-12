@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { FC, ReactNode } from "react";
 import {
     Box,
     Flex,
@@ -36,11 +36,13 @@ import {
 } from "../generated/graphql";
 import { Formik } from "formik";
 
-export const Navbar = () => {
+export const Navbar: FC<{
+    data: LoginProfileQuery;
+    useLoginProfileLoading: boolean;
+}> = ({ data, useLoginProfileLoading }) => {
     const { colorMode, toggleColorMode } = useColorMode();
     const { isOpen, onOpen, onClose } = useDisclosure();
 
-    const { data, loading: useLoginProfileLoading } = useLoginProfileQuery();
     const [logout, { loading: useLogoutMutationLoading }] = useLogoutMutation();
 
     const logoutUser = async () => {

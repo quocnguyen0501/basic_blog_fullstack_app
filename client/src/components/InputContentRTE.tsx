@@ -2,7 +2,10 @@ import React, { useState } from "react";
 import { convertToRaw, EditorState } from "draft-js";
 import dynamic from "next/dynamic";
 import { EditorProps } from "react-draft-wysiwyg";
-// import { Editor } from "react-draft-wysiwyg";
+
+/**
+ * set up for SSR NextJS
+ */
 const Editor = dynamic<EditorProps>(
     () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
     { ssr: false }

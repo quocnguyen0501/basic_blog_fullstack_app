@@ -13,7 +13,12 @@ import {
 import { ImLink, ImImages } from "react-icons/im";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Navbar from "../components/Navbar";
-import { Post, PostsDocument, usePostsQuery } from "../generated/graphql";
+import {
+    Post,
+    PostsDocument,
+    useLoginProfileQuery,
+    usePostsQuery,
+} from "../generated/graphql";
 import { addApolloState, initializeApollo } from "../lib/apolloClient";
 import SinglePost from "../components/SinglePost";
 import { FC } from "react";
@@ -23,6 +28,8 @@ import CreatePostButton from "../components/CreatePostButton";
 const LIMIT = 5;
 
 const Index: FC = () => {
+    const { data: loginProfileData, loading: useLoginProfileLoading } =
+        useLoginProfileQuery();
     /**
      * Call in Cache Apollo not send request to server
      */
@@ -49,14 +56,20 @@ const Index: FC = () => {
 
     return (
         <>
-            <Navbar />
+            <Navbar
+                data={loginProfileData}
+                useLoginProfileLoading={useLoginProfileLoading}
+            />
             {loading && !isLoadingMorePost ? (
                 <LoadingSpinner />
             ) : (
                 <>
                     <Center pt={20} pb={6} px={2} zIndex={"2"}>
                         <Box maxW={"900px"} w={"900px"}>
-                            <CreatePostButton/>
+                            {loginProfileData?.loginProfile && (
+                                <CreatePostButton />
+                            )}
+
                             {data?.posts.paginatedPosts.map((post: Post) => (
                                 <SinglePost key={post.id} post={post} />
                             ))}
