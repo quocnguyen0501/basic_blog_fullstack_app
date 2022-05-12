@@ -1,9 +1,15 @@
 import React, { useState } from "react";
 import { convertToRaw, EditorState } from "draft-js";
-import { Editor } from "react-draft-wysiwyg";
+import dynamic from "next/dynamic";
+import { EditorProps } from "react-draft-wysiwyg";
+// import { Editor } from "react-draft-wysiwyg";
+const Editor = dynamic<EditorProps>(
+    () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
+    { ssr: false }
+) as any;
 import draftToHtml from "draftjs-to-html";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { Box, Textarea } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 
 const InputContentRTE = () => {
     const [content, setContent] = useState(EditorState.createEmpty());
