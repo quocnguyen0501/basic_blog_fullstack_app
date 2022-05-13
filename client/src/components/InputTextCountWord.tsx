@@ -1,23 +1,21 @@
-import { Flex, Input, Text } from "@chakra-ui/react";
-import { ChangeEvent, useState } from "react";
+import { Flex, FormControl, Input, Text } from "@chakra-ui/react";
+import { ChangeEvent, Dispatch, FC, SetStateAction, useState } from "react";
 
-const InputTextCountWord = () => {
-    const [word, setWord] = useState("");
-    const [numberWords, setNumberWords] = useState(0);
+interface IInputTitle {
+    word: string;
+    setWord: Dispatch<SetStateAction<string>>;
+    numberWords: number;
+    setNumberWords: Dispatch<SetStateAction<number>>;
+    onWordChange: (event: ChangeEvent<HTMLInputElement>) => void;
+}
 
-    const onWordChange = (event: ChangeEvent<HTMLInputElement>) => {
-        let input = event.target.value;
-        const MAX_WORDS = 300;
-
-        let number = numberWords;
-
-        if (input.length > MAX_WORDS) {
-            input = input.toString().slice(0, 300)
-        }
-        setWord(input);
-        setNumberWords(input.length);
-    };
-
+const InputTextCountWord: FC<IInputTitle> = ({
+    word,
+    setWord,
+    numberWords,
+    setNumberWords,
+    onWordChange,
+}) => {
     return (
         <>
             <Flex
@@ -31,16 +29,20 @@ const InputTextCountWord = () => {
                     borderColor: "blue.200",
                 }}
             >
-                <Input
-                    placeholder="Title"
-                    w={"full"}
-                    border={"transparent"}
-                    focusBorderColor={"transparent"}
-                    value={word}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                        onWordChange(event)
-                    }
-                />
+                <FormControl>
+                    <Input
+                        id="title"
+                        placeholder="Title"
+                        w={"full"}
+                        border={"transparent"}
+                        focusBorderColor={"transparent"}
+                        value={word}
+                        onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                            onWordChange(event)
+                        }
+                        required
+                    />
+                </FormControl>
                 <Text
                     fontWeight={"bold"}
                     fontSize={"12px"}

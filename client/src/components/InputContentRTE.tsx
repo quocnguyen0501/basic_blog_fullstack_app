@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { FC } from "react";
 import { convertToRaw, EditorState } from "draft-js";
 import dynamic from "next/dynamic";
 import { EditorProps } from "react-draft-wysiwyg";
@@ -10,17 +10,17 @@ const Editor = dynamic<EditorProps>(
     () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
     { ssr: false }
 ) as any;
-import draftToHtml from "draftjs-to-html";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { Box } from "@chakra-ui/react";
 
-const InputContentRTE = () => {
-    const [content, setContent] = useState(EditorState.createEmpty());
+interface IInputContentRTE {
+    content: EditorState;
+    onEditorStateChange: (content: EditorState) => void;
+}
 
-    const onEditorStateChange = (content: EditorState) => {
-        setContent(content);
-        console.log(draftToHtml(convertToRaw(content.getCurrentContent())));
-    };
+const InputContentRTE: FC<IInputContentRTE> = ({
+    content,
+    onEditorStateChange,
+}) => {
     return (
         <>
             <Editor
@@ -30,13 +30,6 @@ const InputContentRTE = () => {
                 placeholder="What's in your mind?"
                 onEditorStateChange={onEditorStateChange}
             />
-            <Box
-                dangerouslySetInnerHTML={{
-                    __html: draftToHtml(
-                        convertToRaw(content.getCurrentContent())
-                    ),
-                }}
-            ></Box>
         </>
     );
 };
