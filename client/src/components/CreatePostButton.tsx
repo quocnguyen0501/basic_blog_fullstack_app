@@ -7,15 +7,20 @@ import {
     useColorModeValue,
     useDisclosure,
 } from "@chakra-ui/react";
+import { FC } from "react";
 import { ImImages, ImLink } from "react-icons/im";
 import ModalCreatePost from "./ModalCreatePost";
 
-const CreatePostButton = () => {
+const CreatePostButton: FC<{ userId: string }> = ({ userId }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     return (
         <>
-            <ModalCreatePost isOpen={isOpen} onClose={ onClose } />
+            <ModalCreatePost
+                isOpen={isOpen}
+                onClose={onClose}
+                userId={userId}
+            />
             <Center>
                 <Box
                     w={"full"}

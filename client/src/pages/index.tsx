@@ -67,7 +67,9 @@ const Index: FC = () => {
                     <Center pt={20} pb={6} px={2} zIndex={"2"}>
                         <Box maxW={"900px"} w={"900px"}>
                             {loginProfileData?.loginProfile && (
-                                <CreatePostButton />
+                                <CreatePostButton
+                                    userId={loginProfileData.loginProfile.id}
+                                />
                             )}
 
                             {data?.posts.paginatedPosts.map((post: Post) => (
