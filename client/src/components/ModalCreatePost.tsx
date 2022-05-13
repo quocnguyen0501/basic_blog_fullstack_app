@@ -20,6 +20,7 @@ import InputTextCountWord from "./InputTextCountWord";
 import InputContentRTE from "./InputContentRTE";
 import { ChangeEvent, useState } from "react";
 
+import { useRouter } from "next/router";
 import { convertToRaw, EditorState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
@@ -34,6 +35,8 @@ const ModalCreatePost = ({
     onClose: () => void;
     userId: string;
 }) => {
+    const router = useRouter();
+
     const [createPost, { loading }] = useCreateNewPostMutation();
 
     const [word, setWord] = useState("");
@@ -76,6 +79,17 @@ const ModalCreatePost = ({
                 },
             },
         });
+
+        setWord("");
+        setContent(EditorState.createEmpty());
+
+        /**
+         * If the time of coockie was end -> route user to login 
+         * else -> checkAuth and route use  to home page and rerender
+         */
+        router.push("/login");
+        
+        onClose();
     };
 
     return (
