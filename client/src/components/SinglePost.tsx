@@ -97,7 +97,12 @@ const SinglePost: FC<PostProp> = ({ post }: PostProp) => {
                         </Heading>
                     </Link>
                 </NextLink>
-                <Text color={"gray.500"}>{post.contentSnippet}</Text>
+                <Box
+                    textColor={"gray.500"}
+                    dangerouslySetInnerHTML={{
+                        __html: post.contentSnippet,
+                    }}
+                ></Box>
             </Stack>
         </Box>
     );

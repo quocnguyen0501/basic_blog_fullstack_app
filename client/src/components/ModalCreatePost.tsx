@@ -23,6 +23,7 @@ import { ChangeEvent, useState } from "react";
 import { convertToRaw, EditorState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { useCreateNewPostMutation } from "../generated/graphql";
 
 const ModalCreatePost = ({
     isOpen,
@@ -33,6 +34,8 @@ const ModalCreatePost = ({
     onClose: () => void;
     userId: string;
 }) => {
+    const [createPost, { loading }] = useCreateNewPostMutation();
+
     const [word, setWord] = useState("");
     const [numberWords, setNumberWords] = useState(0);
     const [content, setContent] = useState(EditorState.createEmpty());
@@ -54,12 +57,25 @@ const ModalCreatePost = ({
         setNumberWords(input.length);
     };
 
-    const onPostClick = () => {
+    const onPostClick = async () => {
         console.log(
+            userId,
+            " - ",
             word,
             " - ",
             draftToHtml(convertToRaw(content.getCurrentContent()))
         );
+        await createPost({
+            variables: {
+                createPostInput: {
+                    userId: +userId,
+                    title: word,
+                    content: draftToHtml(
+                        convertToRaw(content.getCurrentContent())
+                    ),
+                },
+            },
+        });
     };
 
     return (
@@ -161,6 +177,7 @@ const ModalCreatePost = ({
                             type="submit"
                             variant="ghost"
                             onClick={onPostClick}
+                            isLoading={loading}
                         >
                             Post
                         </Button>
