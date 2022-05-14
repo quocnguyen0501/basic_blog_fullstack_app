@@ -12,16 +12,17 @@ import {
 import { MdPublic } from "react-icons/md";
 import { FC, useEffect, useState } from "react";
 import NextLink from "next/link";
-import { Post } from "../generated/graphql";
+import { LoginProfileQuery, Post } from "../generated/graphql";
 import moment from "moment";
 import { setTimeIntervalCreatedAtDisplay } from "../helpers/singlePostHelper";
 import MoreOptionsSinglePost from "./MoreOptionsSinglePost";
 
 interface PostProp {
     post: Post;
+    loginProfileData: LoginProfileQuery;
 }
 
-const SinglePost: FC<PostProp> = ({ post }: PostProp) => {
+const SinglePost: FC<PostProp> = ({ post, loginProfileData }: PostProp) => {
     const createdAt = new Date(post.createdAt);
 
     /**
@@ -30,7 +31,7 @@ const SinglePost: FC<PostProp> = ({ post }: PostProp) => {
     // const dayPost = createdAt.getDate();
     // const monthPost = createdAt.getMonth();
     // const yearPost = createdAt.getFullYear();
-    
+
     const [createdAtDisplay, setCreatedAtDisplay] = useState("");
     useEffect(() => {
         const timeInterval = setTimeIntervalCreatedAtDisplay(createdAt);
@@ -78,7 +79,8 @@ const SinglePost: FC<PostProp> = ({ post }: PostProp) => {
                     </Stack>
                 </Stack>
                 <Box>
-                    <MoreOptionsSinglePost />
+                    {loginProfileData?.loginProfile?.id ===
+                        post.userId.toString() && <MoreOptionsSinglePost />}
                 </Box>
             </Flex>
             <Stack>

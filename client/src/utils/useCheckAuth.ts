@@ -17,6 +17,8 @@ export const useCheckAuth = () => {
                 router.route === "/change-password")
         ) {
             router.replace("/");
+        } else if (!data.loginProfile && router.route !== "/login") {
+            router.replace("/login");
         }
     }, [data, loading, router]);
 
