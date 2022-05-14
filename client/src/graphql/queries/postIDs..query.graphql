@@ -1,0 +1,7 @@
+query postIDs($limit: Int!, $timeCompareCreatedAt: String) {
+    posts(limit: $limit, timeCompareCreatedAt: $timeCompareCreatedAt) {
+        paginatedPosts {
+            id
+        }
+    }
+}
