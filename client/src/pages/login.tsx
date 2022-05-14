@@ -30,10 +30,10 @@ import { validateSignInSchema } from "../validation/LoginValidationSchema";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 const login = () => {
+    const { data: dataCheckAuth, loading: loadingCheckAuth } = useCheckAuth();
     const [loginUser, { loading: _loginUserLogin, data, error }] =
         useLoginMutation();
     const [showPassword, setShowPassword] = useState(false);
-    const { data: dataCheckAuth, loading: loadingCheckAuth } = useCheckAuth();
     const toast = useToast();
 
     const initialValues: LoginInput = {
@@ -75,7 +75,7 @@ const login = () => {
                 isClosable: true,
             });
 
-            router.push("/");
+            router.replace("/");
         }
     };
 
