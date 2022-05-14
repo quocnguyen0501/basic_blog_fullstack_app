@@ -1,7 +1,6 @@
 import Image from "next/image";
 import {
     Box,
-    Center,
     Heading,
     Text,
     Stack,
@@ -31,10 +30,7 @@ const SinglePost: FC<PostProp> = ({ post }: PostProp) => {
     // const dayPost = createdAt.getDate();
     // const monthPost = createdAt.getMonth();
     // const yearPost = createdAt.getFullYear();
-
-    const timeDisplay = moment(createdAt).fromNow();
-
-    const now = Date.now();
+    
     const [createdAtDisplay, setCreatedAtDisplay] = useState("");
     useEffect(() => {
         const timeInterval = setTimeIntervalCreatedAtDisplay(createdAt);

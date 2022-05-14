@@ -24,8 +24,9 @@ import SinglePost from "../components/SinglePost";
 import { FC } from "react";
 import { NetworkStatus } from "@apollo/client";
 import CreatePostButton from "../components/CreatePostButton";
+import { GetStaticProps } from "next";
 
-const LIMIT = 5;
+export const LIMIT = 5;
 
 const Index: FC = () => {
     const { data: loginProfileData, loading: useLoginProfileLoading } =
@@ -108,7 +109,7 @@ const Index: FC = () => {
     );
 };
 
-export const getStaticProps = async () => {
+export const getStaticProps: GetStaticProps = async () => {
     const apolloClient = initializeApollo();
 
     await apolloClient.query({
