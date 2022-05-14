@@ -158,7 +158,10 @@ const Post = () => {
                                     </Stack>
                                 </Stack>
                                 <Box>
-                                    <MoreOptionsSinglePost />
+                                    {loginProfileData?.loginProfile?.id ===
+                                        data.post.userId.toString() && (
+                                        <MoreOptionsSinglePost />
+                                    )}
                                 </Box>
                             </Flex>
                             <Stack>

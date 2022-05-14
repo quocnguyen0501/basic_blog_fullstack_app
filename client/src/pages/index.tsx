@@ -1,15 +1,5 @@
 import Image from "next/image";
-import {
-    Box,
-    Center,
-    Heading,
-    Text,
-    Stack,
-    Avatar,
-    useColorModeValue,
-    Button,
-    useDisclosure,
-} from "@chakra-ui/react";
+import { Box, Center, Button } from "@chakra-ui/react";
 import { ImLink, ImImages } from "react-icons/im";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Navbar from "../components/Navbar";
@@ -74,7 +64,11 @@ const Index: FC = () => {
                             )}
 
                             {data?.posts.paginatedPosts.map((post: Post) => (
-                                <SinglePost key={post.id} post={post} />
+                                <SinglePost
+                                    key={post.id}
+                                    post={post}
+                                    loginProfileData={loginProfileData}
+                                />
                             ))}
                             <Center>
                                 {data.posts.hasMore && (
