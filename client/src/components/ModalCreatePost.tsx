@@ -24,7 +24,8 @@ import { useRouter } from "next/router";
 import { convertToRaw, EditorState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { useCreateNewPostMutation } from "../generated/graphql";
+import { PostMutationResponse, useCreateNewPostMutation } from "../generated/graphql";
+import { ApolloCache } from "@apollo/client";
 
 const ModalCreatePost = ({
     isOpen,
@@ -61,13 +62,6 @@ const ModalCreatePost = ({
     };
 
     const onPostClick = async () => {
-        console.log(
-            userId,
-            " - ",
-            word,
-            " - ",
-            draftToHtml(convertToRaw(content.getCurrentContent()))
-        );
         await createPost({
             variables: {
                 createPostInput: {
@@ -78,17 +72,40 @@ const ModalCreatePost = ({
                     ),
                 },
             },
+            /**
+             * Modify cache save list paginated post
+             * 
+             * @param cache Apollo cache
+             * @param data result receiv from server for create new post response
+             */
+            update(cache: ApolloCache<any>, { data }) {
+                cache.modify({
+					fields: {
+						posts(existing) {
+							if (data?.createPost[0].success && (data.createPost[0] as PostMutationResponse).post) {
+								// Post:new_id
+								const newPostRef = cache.identify((data.createPost[0] as PostMutationResponse).post)
+
+								const newPostsAfterCreation = {
+									...existing,
+									totalCount: existing.totalCount + 1,
+									paginatedPosts: [
+										{ __ref: newPostRef },
+										...existing.paginatedPosts // [{__ref: 'Post:1'}, {__ref: 'Post:2'}]
+									]
+								}
+
+								return newPostsAfterCreation
+							}
+						}
+					}
+				})
+			}
         });
 
         setWord("");
         setContent(EditorState.createEmpty());
 
-        /**
-         * If the time of coockie was end -> route user to login 
-         * else -> checkAuth and route use  to home page and rerender
-         */
-        router.push("/login");
-        
         onClose();
     };
 

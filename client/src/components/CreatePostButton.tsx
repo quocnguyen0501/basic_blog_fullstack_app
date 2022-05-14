@@ -56,6 +56,7 @@ const CreatePostButton: FC<{ userId: string }> = ({ userId }) => {
                             w={"full"}
                             h={"12"}
                             borderRadius={"full"}
+                            border={"transparent solid 0.5px"}
                             _hover={{
                                 border: "solid 0.5px",
                             }}
@@ -68,6 +69,7 @@ const CreatePostButton: FC<{ userId: string }> = ({ userId }) => {
                             justifyContent={"center"}
                             h={"12"}
                             rounded={"full"}
+                            border={"transparent solid 0.5px"}
                             _hover={{
                                 border: "solid 0.5px",
                             }}
@@ -79,6 +81,7 @@ const CreatePostButton: FC<{ userId: string }> = ({ userId }) => {
                             justifyContent={"center"}
                             h={"12"}
                             rounded={"full"}
+                            border={"transparent solid 0.5px"}
                             _hover={{
                                 border: "solid 0.5px",
                             }}
