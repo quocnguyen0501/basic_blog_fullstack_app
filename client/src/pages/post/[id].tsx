@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import {
     Avatar,
     Box,
+    Center,
     Flex,
     Heading,
     Link,
@@ -15,6 +16,7 @@ import {
     PostIDsDocument,
     PostIDsQuery,
     PostQuery,
+    useLoginProfileQuery,
     usePostIDsQuery,
     usePostQuery,
 } from "../../generated/graphql";
@@ -27,8 +29,12 @@ import moment from "moment";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { LIMIT } from "../index";
 import { addApolloState, initializeApollo } from "../../lib/apolloClient";
+import Navbar from "../../components/Navbar";
 
 const Post = () => {
+    const { data: loginProfileData, loading: useLoginProfileLoading } =
+        useLoginProfileQuery();
+
     const router = useRouter();
 
     const [createdAtDisplay, setCreatedAtDisplay] = useState("");
@@ -44,28 +50,34 @@ const Post = () => {
     if (error || !data?.post) {
         return (
             <>
-                <Box textAlign="center" py={10} px={6}>
-                    <Box display="inline-block">
-                        <Flex
-                            flexDirection="column"
-                            justifyContent="center"
-                            alignItems="center"
-                            bg={"red.500"}
-                            rounded={"50px"}
-                            w={"55px"}
-                            h={"55px"}
-                            textAlign="center"
-                        >
-                            <CloseIcon boxSize={"20px"} color={"white"} />
-                        </Flex>
+                <Navbar
+                    data={loginProfileData}
+                    useLoginProfileLoading={useLoginProfileLoading}
+                />
+                <Center pt={20} pb={6} px={2} zIndex={"2"}>
+                    <Box textAlign="center" py={10} px={6}>
+                        <Box display="inline-block">
+                            <Flex
+                                flexDirection="column"
+                                justifyContent="center"
+                                alignItems="center"
+                                bg={"red.500"}
+                                rounded={"50px"}
+                                w={"55px"}
+                                h={"55px"}
+                                textAlign="center"
+                            >
+                                <CloseIcon boxSize={"20px"} color={"white"} />
+                            </Flex>
+                        </Box>
+                        <Heading as="h2" size="xl" mt={6} mb={2}>
+                            Crash for this post
+                        </Heading>
+                        <Text color={"gray.500"}>
+                            {error ? error.message : "Post not found"}
+                        </Text>
                     </Box>
-                    <Heading as="h2" size="xl" mt={6} mb={2}>
-                        Crash for this post
-                    </Heading>
-                    <Text color={"gray.500"}>
-                        {error ? error.message : "Post not found"}
-                    </Text>
-                </Box>
+                </Center>
             </>
         );
     } else {
@@ -94,71 +106,81 @@ const Post = () => {
     }
     return (
         <>
+            <Navbar
+                data={loginProfileData}
+                useLoginProfileLoading={useLoginProfileLoading}
+            />
             {loading ? (
                 <LoadingSpinner />
             ) : (
                 <>
-                    <Box
-                        width={"900px"}
-                        minW={"900px"}
-                        w={"full"}
-                        bg={useColorModeValue("white", "gray.900")}
-                        boxShadow={"2xl"}
-                        rounded={"md"}
-                        p={6}
-                        my={6}
-                        overflow={"hidden"}
-                    >
-                        <Flex justifyContent={"space-between"}>
-                            <Stack
-                                mb={6}
-                                direction={"row"}
-                                spacing={4}
-                                align={"center"}
-                            >
-                                <Avatar />
+                    <Center pt={20} pb={6} px={2} zIndex={"2"}>
+                        <Box
+                            maxW={"900px"}
+                            width={"900px"}
+                            minW={"900px"}
+                            w={"full"}
+                            bg={useColorModeValue("white", "gray.900")}
+                            boxShadow={"2xl"}
+                            rounded={"md"}
+                            p={6}
+                            my={6}
+                            overflow={"hidden"}
+                        >
+                            <Flex justifyContent={"space-between"}>
                                 <Stack
-                                    direction={"column"}
-                                    spacing={0}
-                                    fontSize={"sm"}
+                                    mb={6}
+                                    direction={"row"}
+                                    spacing={4}
+                                    align={"center"}
                                 >
-                                    <Text fontWeight={600}>
-                                        {`${data.post.user.surname} ${data.post.user.firstName}`}
-                                    </Text>
-                                    <Flex
-                                        justifyContent={"center"}
-                                        alignItems={"center"}
+                                    <Avatar />
+                                    <Stack
+                                        direction={"column"}
+                                        spacing={0}
+                                        fontSize={"sm"}
                                     >
-                                        <Text color={"gray.500"} mr={"5px"}>
-                                            {/* {`${getMonthName(
+                                        <Text fontWeight={600}>
+                                            {`${data.post.user.surname} ${data.post.user.firstName}`}
+                                        </Text>
+                                        <Flex
+                                            justifyContent={"center"}
+                                            alignItems={"center"}
+                                        >
+                                            <Text color={"gray.500"} mr={"5px"}>
+                                                {/* {`${getMonthName(
                                 monthPost + 1
                             )} ${dayPost}, ${yearPost}`} */}
-                                            {createdAtDisplay} .
-                                        </Text>
-                                        <MdPublic />
-                                    </Flex>
+                                                {createdAtDisplay} .
+                                            </Text>
+                                            <MdPublic />
+                                        </Flex>
+                                    </Stack>
                                 </Stack>
+                                <Box>
+                                    <MoreOptionsSinglePost />
+                                </Box>
+                            </Flex>
+                            <Stack>
+                                <Heading
+                                    color={useColorModeValue(
+                                        "gray.700",
+                                        "white"
+                                    )}
+                                    fontSize={"2xl"}
+                                    fontFamily={"body"}
+                                >
+                                    {data.post.title}
+                                </Heading>
+                                <Box
+                                    textColor={"gray.500"}
+                                    dangerouslySetInnerHTML={{
+                                        __html: data.post.content,
+                                    }}
+                                ></Box>
                             </Stack>
-                            <Box>
-                                <MoreOptionsSinglePost />
-                            </Box>
-                        </Flex>
-                        <Stack>
-                            <Heading
-                                color={useColorModeValue("gray.700", "white")}
-                                fontSize={"2xl"}
-                                fontFamily={"body"}
-                            >
-                                {data.post.title}
-                            </Heading>
-                            <Box
-                                textColor={"gray.500"}
-                                dangerouslySetInnerHTML={{
-                                    __html: data.post.content,
-                                }}
-                            ></Box>
-                        </Stack>
-                    </Box>
+                        </Box>
+                    </Center>
                 </>
             )}
         </>
