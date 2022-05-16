@@ -80,7 +80,9 @@ const SinglePost: FC<PostProp> = ({ post, loginProfileData }: PostProp) => {
                 </Stack>
                 <Box>
                     {loginProfileData?.loginProfile?.id ===
-                        post.userId.toString() && <MoreOptionsSinglePost />}
+                        post.userId.toString() && (
+                        <MoreOptionsSinglePost postId={+post.id} />
+                    )}
                 </Box>
             </Flex>
             <Stack>

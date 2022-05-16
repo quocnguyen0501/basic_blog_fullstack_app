@@ -47,6 +47,20 @@ const Post = () => {
         },
     });
 
+    if (loading) {
+        return (
+            <>
+                <Navbar
+                    data={loginProfileData}
+                    useLoginProfileLoading={useLoginProfileLoading}
+                />
+                <Center pt={20} pb={6} px={2} zIndex={"2"}>
+                    <LoadingSpinner />
+                </Center>
+            </>
+        );
+    }
+
     if (error || !data?.post) {
         return (
             <>
@@ -110,82 +124,73 @@ const Post = () => {
                 data={loginProfileData}
                 useLoginProfileLoading={useLoginProfileLoading}
             />
-            {loading ? (
-                <LoadingSpinner />
-            ) : (
-                <>
-                    <Center pt={20} pb={6} px={2} zIndex={"2"}>
-                        <Box
-                            maxW={"900px"}
-                            width={"900px"}
-                            minW={"900px"}
-                            w={"full"}
-                            bg={useColorModeValue("white", "gray.900")}
-                            boxShadow={"2xl"}
-                            rounded={"md"}
-                            p={6}
-                            my={6}
-                            overflow={"hidden"}
+            <Center pt={20} pb={6} px={2} zIndex={"2"}>
+                <Box
+                    maxW={"900px"}
+                    width={"900px"}
+                    minW={"900px"}
+                    w={"full"}
+                    bg={useColorModeValue("white", "gray.900")}
+                    boxShadow={"2xl"}
+                    rounded={"md"}
+                    p={6}
+                    my={6}
+                    overflow={"hidden"}
+                >
+                    <Flex justifyContent={"space-between"}>
+                        <Stack
+                            mb={6}
+                            direction={"row"}
+                            spacing={4}
+                            align={"center"}
                         >
-                            <Flex justifyContent={"space-between"}>
-                                <Stack
-                                    mb={6}
-                                    direction={"row"}
-                                    spacing={4}
-                                    align={"center"}
+                            <Avatar />
+                            <Stack
+                                direction={"column"}
+                                spacing={0}
+                                fontSize={"sm"}
+                            >
+                                <Text fontWeight={600}>
+                                    {`${data.post.user.surname} ${data.post.user.firstName}`}
+                                </Text>
+                                <Flex
+                                    justifyContent={"center"}
+                                    alignItems={"center"}
                                 >
-                                    <Avatar />
-                                    <Stack
-                                        direction={"column"}
-                                        spacing={0}
-                                        fontSize={"sm"}
-                                    >
-                                        <Text fontWeight={600}>
-                                            {`${data.post.user.surname} ${data.post.user.firstName}`}
-                                        </Text>
-                                        <Flex
-                                            justifyContent={"center"}
-                                            alignItems={"center"}
-                                        >
-                                            <Text color={"gray.500"} mr={"5px"}>
-                                                {/* {`${getMonthName(
-                                monthPost + 1
-                            )} ${dayPost}, ${yearPost}`} */}
-                                                {createdAtDisplay} .
-                                            </Text>
-                                            <MdPublic />
-                                        </Flex>
-                                    </Stack>
-                                </Stack>
-                                <Box>
-                                    {loginProfileData?.loginProfile?.id ===
-                                        data.post.userId.toString() && (
-                                        <MoreOptionsSinglePost />
-                                    )}
-                                </Box>
-                            </Flex>
-                            <Stack>
-                                <Heading
-                                    color={useColorModeValue(
-                                        "gray.700",
-                                        "white"
-                                    )}
-                                    fontSize={"2xl"}
-                                    fontFamily={"body"}
-                                >
-                                    {data.post.title}
-                                </Heading>
-                                <Box
-                                    textColor={"gray.500"}
-                                    dangerouslySetInnerHTML={{
-                                        __html: data.post.content,
-                                    }}
-                                ></Box>
+                                    <Text color={"gray.500"} mr={"5px"}>
+                                        {/* {`${getMonthName(
+                                                    monthPost + 1
+                                                )} ${dayPost}, ${yearPost}`} */}
+                                        {createdAtDisplay} .
+                                    </Text>
+                                    <MdPublic />
+                                </Flex>
                             </Stack>
+                        </Stack>
+                        <Box>
+                            {loginProfileData?.loginProfile?.id ===
+                                data.post.userId.toString() && (
+                                <MoreOptionsSinglePost postId={+POST_ID} />
+                            )}
                         </Box>
-                    </Center>
-                </>
-            )}
+                    </Flex>
+                    <Stack>
+                        <Heading
+                            color={useColorModeValue("gray.700", "white")}
+                            fontSize={"2xl"}
+                            fontFamily={"body"}
+                        >
+                            {data.post.title}
+                        </Heading>
+                        <Box
+                            textColor={"gray.500"}
+                            dangerouslySetInnerHTML={{
+                                __html: data.post.content,
+                            }}
+                        ></Box>
+                    </Stack>
+                </Box>
+            </Center>
         </>
     );
 };

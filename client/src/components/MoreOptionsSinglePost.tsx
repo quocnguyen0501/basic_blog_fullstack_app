@@ -10,12 +10,14 @@ import {
     Flex,
 } from "@chakra-ui/react";
 
+import NextLink from "next/link";
+
 import { HiDotsHorizontal } from "react-icons/hi";
-import { BsPinAngle } from "react-icons/bs";
 import { MdModeEdit } from "react-icons/md";
 import { IoTrashOutline } from "react-icons/io5";
+import { FC } from "react";
 
-const MoreOptionsSinglePost = () => {
+const MoreOptionsSinglePost: FC<{ postId: number }> = ({ postId }) => {
     return (
         <>
             <Popover placement="bottom" isLazy>
@@ -31,18 +33,20 @@ const MoreOptionsSinglePost = () => {
                     <PopoverArrow />
                     <PopoverBody>
                         <Stack>
-                            <Button
-                                w="194px"
-                                variant="ghost"
-                                rightIcon={<MdModeEdit />}
-                                justifyContent="space-between"
-                                fontWeight="normal"
-                                colorScheme="green"
-                                fontSize="sm"
-                            >
-                                Edit post
-                            </Button>
-                            <hr/>
+                            <NextLink href={`/post/edit/${postId}`}>
+                                <Button
+                                    w="194px"
+                                    variant="ghost"
+                                    rightIcon={<MdModeEdit />}
+                                    justifyContent="space-between"
+                                    fontWeight="normal"
+                                    colorScheme="green"
+                                    fontSize="sm"
+                                >
+                                    Edit post
+                                </Button>
+                            </NextLink>
+                            <hr />
                             <Button
                                 w="194px"
                                 variant="ghost"
