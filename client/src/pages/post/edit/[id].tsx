@@ -17,7 +17,11 @@ import NextLink from "next/link";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import Navbar from "../../../components/Navbar";
-import { useLoginProfileQuery, usePostQuery } from "../../../generated/graphql";
+import {
+    useLoginProfileQuery,
+    usePostQuery,
+    useUpdatePostMutation,
+} from "../../../generated/graphql";
 
 import {
     ContentState,
@@ -49,11 +53,6 @@ const EditPost = () => {
         skip: !router.isReady,
     });
 
-    const [errorUpdate, setErrorUpdate] = useState("");
-    const [word, setWord] = useState("");
-    const [numberWords, setNumberWords] = useState(0);
-    const [content, setContent] = useState(EditorState.createEmpty());
-
     /**
      * If first render -> router undefine -> crash for query post
      * -> use useEffect hook for check router was ready for use
@@ -70,6 +69,12 @@ const EditPost = () => {
             )
         );
     }, [router.isReady, profileLoginData, postData]);
+    const [updatePost, { loading }] = useUpdatePostMutation();
+
+    const [errorUpdate, setErrorUpdate] = useState("");
+    const [word, setWord] = useState("");
+    const [numberWords, setNumberWords] = useState(0);
+    const [content, setContent] = useState(EditorState.createEmpty());
 
     const onEditorStateChange = (content: EditorState) => {
         setContent(content);
@@ -139,7 +144,7 @@ const EditPost = () => {
                     useLoginProfileLoading={profileLoginLoading}
                     data={profileLoginData}
                 />
-                <Box textAlign="center" py={10} px={6}>
+                <Box textAlign="center" py={20} px={6}>
                     <Box display="inline-block">
                         <Flex
                             flexDirection="column"
@@ -162,22 +167,36 @@ const EditPost = () => {
         );
     }
 
-    const handleUpdatePostSubmit = () => {
+    const handleUpdatePostSubmit = async () => {
         const contentInput = draftToHtml(
             convertToRaw(content.getCurrentContent())
+        );
+
+        const contentEmpty = EditorState.createEmpty();
+        const contentEmptyString = draftToHtml(
+            convertToRaw(contentEmpty.getCurrentContent())
         );
 
         if (
             word === postData.post.title &&
             contentInput === postData.post.content
         ) {
-            console.log(
-                ">>>Please change title or content of your post before Update "
-            );
-
             setErrorUpdate(
                 "Please change title or content of your post before Update"
             );
+        } else if (word === "" || contentInput === contentEmptyString) {
+            setErrorUpdate("Please fill information before update!");
+        } else {
+            await updatePost({
+                variables: {
+                    updatePostInput: {
+                        id: postId,
+                        title: word,
+                        content: contentInput,
+                    },
+                },
+            });
+            router.back();
         }
     };
 
