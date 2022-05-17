@@ -1,5 +1,9 @@
 import { CloseIcon } from "@chakra-ui/icons";
 import {
+    Alert,
+    AlertDescription,
+    AlertIcon,
+    AlertTitle,
     Box,
     Button,
     Center,
@@ -9,15 +13,11 @@ import {
     useQuery,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
+import NextLink from "next/link";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import Navbar from "../../../components/Navbar";
-import {
-    PostDocument,
-    PostWithUserInfoFragmentDoc,
-    useLoginProfileQuery,
-    usePostQuery,
-} from "../../../generated/graphql";
+import { useLoginProfileQuery, usePostQuery } from "../../../generated/graphql";
 
 import {
     ContentState,
@@ -34,6 +34,8 @@ import { ImListNumbered } from "react-icons/im";
 import { HiOutlineMicrophone } from "react-icons/hi";
 import InputTextCountWord from "../../../components/InputTextCountWord";
 import InputContentRTE from "../../../components/InputContentRTE";
+import { title } from "process";
+import draftToHtml from "draftjs-to-html";
 const EditPost = () => {
     const router = useRouter();
 
@@ -47,10 +49,15 @@ const EditPost = () => {
         skip: !router.isReady,
     });
 
+    const [errorUpdate, setErrorUpdate] = useState("");
     const [word, setWord] = useState("");
     const [numberWords, setNumberWords] = useState(0);
     const [content, setContent] = useState(EditorState.createEmpty());
 
+    /**
+     * If first render -> router undefine -> crash for query post
+     * -> use useEffect hook for check router was ready for use
+     */
     useEffect(() => {
         if (!router.isReady || !profileLoginData || !postData) return;
         const contentBlocks = convertFromHTML(postData.post.content);
@@ -155,6 +162,25 @@ const EditPost = () => {
         );
     }
 
+    const handleUpdatePostSubmit = () => {
+        const contentInput = draftToHtml(
+            convertToRaw(content.getCurrentContent())
+        );
+
+        if (
+            word === postData.post.title &&
+            contentInput === postData.post.content
+        ) {
+            console.log(
+                ">>>Please change title or content of your post before Update "
+            );
+
+            setErrorUpdate(
+                "Please change title or content of your post before Update"
+            );
+        }
+    };
+
     return (
         <>
             <Navbar
@@ -242,6 +268,29 @@ const EditPost = () => {
                             onEditorStateChange={onEditorStateChange}
                         />
                     </Box>
+                    {errorUpdate !== "" && (
+                        <Alert status="error" mt={"4"} borderRadius={5}>
+                            <AlertIcon />
+                            <AlertTitle>Error Update Post!</AlertTitle>
+                            <AlertDescription>{errorUpdate}</AlertDescription>
+                        </Alert>
+                    )}
+                    <Flex
+                        justifyContent="space-between"
+                        alignItems="center"
+                        mt={4}
+                    >
+                        <Button
+                            onClick={handleUpdatePostSubmit}
+                            colorScheme="teal"
+                            // isLoading={isSubmitting}
+                        >
+                            Update Post
+                        </Button>
+                        <NextLink href="/">
+                            <Button>Back to Homepage</Button>
+                        </NextLink>
+                    </Flex>
                 </Box>
             </Center>
         </>

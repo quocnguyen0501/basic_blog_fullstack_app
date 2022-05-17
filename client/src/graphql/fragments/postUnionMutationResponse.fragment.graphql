@@ -1,0 +1,14 @@
+fragment postUnionMutationResponse on PostUnionMutationResponse {
+    ... on PostMutationResponse {
+        ...commonState
+        post {
+            ...postWithUserInfo
+        }
+    }
+    ... on ErrorMutationResponse {
+        ...commonState
+        errors {
+            ...fieldError
+        }
+    }
+}
