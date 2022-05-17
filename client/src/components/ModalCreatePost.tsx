@@ -36,8 +36,6 @@ const ModalCreatePost = ({
     onClose: () => void;
     userId: string;
 }) => {
-    const router = useRouter();
-
     const [createPost, { loading }] = useCreateNewPostMutation();
 
     const [word, setWord] = useState("");
