@@ -1,5 +1,9 @@
 import { CloseIcon } from "@chakra-ui/icons";
 import {
+    Alert,
+    AlertDescription,
+    AlertIcon,
+    AlertTitle,
     Box,
     Button,
     Center,
@@ -9,14 +13,14 @@ import {
     useQuery,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
+import NextLink from "next/link";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import Navbar from "../../../components/Navbar";
 import {
-    PostDocument,
-    PostWithUserInfoFragmentDoc,
     useLoginProfileQuery,
     usePostQuery,
+    useUpdatePostMutation,
 } from "../../../generated/graphql";
 
 import {
@@ -34,6 +38,8 @@ import { ImListNumbered } from "react-icons/im";
 import { HiOutlineMicrophone } from "react-icons/hi";
 import InputTextCountWord from "../../../components/InputTextCountWord";
 import InputContentRTE from "../../../components/InputContentRTE";
+import { title } from "process";
+import draftToHtml from "draftjs-to-html";
 const EditPost = () => {
     const router = useRouter();
 
@@ -47,10 +53,10 @@ const EditPost = () => {
         skip: !router.isReady,
     });
 
-    const [word, setWord] = useState("");
-    const [numberWords, setNumberWords] = useState(0);
-    const [content, setContent] = useState(EditorState.createEmpty());
-
+    /**
+     * If first render -> router undefine -> crash for query post
+     * -> use useEffect hook for check router was ready for use
+     */
     useEffect(() => {
         if (!router.isReady || !profileLoginData || !postData) return;
         const contentBlocks = convertFromHTML(postData.post.content);
@@ -63,6 +69,12 @@ const EditPost = () => {
             )
         );
     }, [router.isReady, profileLoginData, postData]);
+    const [updatePost, { loading }] = useUpdatePostMutation();
+
+    const [errorUpdate, setErrorUpdate] = useState("");
+    const [word, setWord] = useState("");
+    const [numberWords, setNumberWords] = useState(0);
+    const [content, setContent] = useState(EditorState.createEmpty());
 
     const onEditorStateChange = (content: EditorState) => {
         setContent(content);
@@ -71,8 +83,6 @@ const EditPost = () => {
     const onWordChange = (event: ChangeEvent<HTMLInputElement>) => {
         let input = event.target.value;
         const MAX_WORDS = 300;
-
-        let number = numberWords;
 
         if (input.length > MAX_WORDS) {
             input = input.toString().slice(0, 300);
@@ -132,7 +142,7 @@ const EditPost = () => {
                     useLoginProfileLoading={profileLoginLoading}
                     data={profileLoginData}
                 />
-                <Box textAlign="center" py={10} px={6}>
+                <Box textAlign="center" py={20} px={6}>
                     <Box display="inline-block">
                         <Flex
                             flexDirection="column"
@@ -154,6 +164,39 @@ const EditPost = () => {
             </>
         );
     }
+
+    const handleUpdatePostSubmit = async () => {
+        const contentInput = draftToHtml(
+            convertToRaw(content.getCurrentContent())
+        );
+
+        const contentEmpty = EditorState.createEmpty();
+        const contentEmptyString = draftToHtml(
+            convertToRaw(contentEmpty.getCurrentContent())
+        );
+
+        if (
+            word === postData.post.title &&
+            contentInput === postData.post.content
+        ) {
+            setErrorUpdate(
+                "Please change title or content of your post before Update"
+            );
+        } else if (word === "" || contentInput === contentEmptyString) {
+            setErrorUpdate("Please fill information before update!");
+        } else {
+            await updatePost({
+                variables: {
+                    updatePostInput: {
+                        id: postId,
+                        title: word,
+                        content: contentInput,
+                    },
+                },
+            });
+            router.replace(`/post/${postId}`);
+        }
+    };
 
     return (
         <>
@@ -242,6 +285,29 @@ const EditPost = () => {
                             onEditorStateChange={onEditorStateChange}
                         />
                     </Box>
+                    {errorUpdate !== "" && (
+                        <Alert status="error" mt={"4"} borderRadius={5}>
+                            <AlertIcon />
+                            <AlertTitle>Error Update Post!</AlertTitle>
+                            <AlertDescription>{errorUpdate}</AlertDescription>
+                        </Alert>
+                    )}
+                    <Flex
+                        justifyContent="space-between"
+                        alignItems="center"
+                        mt={4}
+                    >
+                        <Button
+                            onClick={handleUpdatePostSubmit}
+                            colorScheme="teal"
+                            isLoading={loading}
+                        >
+                            Update Post
+                        </Button>
+                        <NextLink href="/">
+                            <Button>Back to Homepage</Button>
+                        </NextLink>
+                    </Flex>
                 </Box>
             </Center>
         </>

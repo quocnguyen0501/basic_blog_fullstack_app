@@ -203,6 +203,12 @@ export type CommonStateFragment = CommonState_ErrorMutationResponse_Fragment | C
 
 export type FieldErrorFragment = { __typename?: 'FieldError', field: string, message: string };
 
+type PostUnionMutationResponse_ErrorMutationResponse_Fragment = { __typename?: 'ErrorMutationResponse', code: number, success: boolean, message?: string | null, errors: Array<{ __typename?: 'FieldError', field: string, message: string }> };
+
+type PostUnionMutationResponse_PostMutationResponse_Fragment = { __typename?: 'PostMutationResponse', code: number, success: boolean, message?: string | null, post?: { __typename?: 'Post', id: string, userId: number, title: string, content: string, contentSnippet: string, updatedAt: any, createdAt: any, user: { __typename?: 'User', id: string, surname: string, firstName: string, dateOfBirth: any, gender: string, createdAt: any, updatedAt: any } } | null };
+
+export type PostUnionMutationResponseFragment = PostUnionMutationResponse_ErrorMutationResponse_Fragment | PostUnionMutationResponse_PostMutationResponse_Fragment;
+
 export type PostWithUserInfoFragment = { __typename?: 'Post', id: string, userId: number, title: string, content: string, contentSnippet: string, updatedAt: any, createdAt: any, user: { __typename?: 'User', id: string, surname: string, firstName: string, dateOfBirth: any, gender: string, createdAt: any, updatedAt: any } };
 
 export type UserFragment = { __typename?: 'User', id: string, firstName: string, surname: string, email: string, dateOfBirth: any, gender: string };
@@ -255,6 +261,13 @@ export type RegisterMutationVariables = Exact<{
 
 export type RegisterMutation = { __typename?: 'Mutation', register?: Array<{ __typename?: 'ErrorMutationResponse', code: number, success: boolean, message?: string | null, errors: Array<{ __typename?: 'FieldError', field: string, message: string }> } | { __typename?: 'UserMutationResponse', code: number, success: boolean, message?: string | null, user?: { __typename?: 'User', id: string, firstName: string, surname: string, email: string, dateOfBirth: any, gender: string } | null }> | null };
 
+export type UpdatePostMutationVariables = Exact<{
+  updatePostInput: UpdatePostInput;
+}>;
+
+
+export type UpdatePostMutation = { __typename?: 'Mutation', updatePost: Array<{ __typename?: 'ErrorMutationResponse', code: number, success: boolean, message?: string | null, errors: Array<{ __typename?: 'FieldError', field: string, message: string }> } | { __typename?: 'PostMutationResponse', code: number, success: boolean, message?: string | null, post?: { __typename?: 'Post', id: string, userId: number, title: string, content: string, contentSnippet: string, updatedAt: any, createdAt: any, user: { __typename?: 'User', id: string, surname: string, firstName: string, dateOfBirth: any, gender: string, createdAt: any, updatedAt: any } } | null }> };
+
 export type LoginProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -283,6 +296,13 @@ export type PostsQueryVariables = Exact<{
 
 export type PostsQuery = { __typename?: 'Query', posts?: { __typename?: 'PaginatedPost', totalPost: number, timeCompareCreatedAt: any, hasMore: boolean, paginatedPosts: Array<{ __typename?: 'Post', id: string, userId: number, title: string, content: string, contentSnippet: string, updatedAt: any, createdAt: any, user: { __typename?: 'User', id: string, surname: string, firstName: string, dateOfBirth: any, gender: string, createdAt: any, updatedAt: any } }> } | null };
 
+export const CommonStateFragmentDoc = gql`
+    fragment commonState on IMutaionResponse {
+  code
+  success
+  message
+}
+    `;
 export const PostWithUserInfoFragmentDoc = gql`
     fragment postWithUserInfo on Post {
   id
@@ -303,13 +323,30 @@ export const PostWithUserInfoFragmentDoc = gql`
   createdAt
 }
     `;
-export const CommonStateFragmentDoc = gql`
-    fragment commonState on IMutaionResponse {
-  code
-  success
+export const FieldErrorFragmentDoc = gql`
+    fragment fieldError on FieldError {
+  field
   message
 }
     `;
+export const PostUnionMutationResponseFragmentDoc = gql`
+    fragment postUnionMutationResponse on PostUnionMutationResponse {
+  ... on PostMutationResponse {
+    ...commonState
+    post {
+      ...postWithUserInfo
+    }
+  }
+  ... on ErrorMutationResponse {
+    ...commonState
+    errors {
+      ...fieldError
+    }
+  }
+}
+    ${CommonStateFragmentDoc}
+${PostWithUserInfoFragmentDoc}
+${FieldErrorFragmentDoc}`;
 export const UserFragmentDoc = gql`
     fragment user on User {
   id
@@ -318,12 +355,6 @@ export const UserFragmentDoc = gql`
   email
   dateOfBirth
   gender
-}
-    `;
-export const FieldErrorFragmentDoc = gql`
-    fragment fieldError on FieldError {
-  field
-  message
 }
     `;
 export const UserUnionMutationResponseFragmentDoc = gql`
@@ -351,23 +382,10 @@ export const ChangePasswordDocument = gql`
     token: $token
     newPasswordInput: $newPasswordInput
   ) {
-    ... on UserMutationResponse {
-      ...commonState
-      user {
-        ...user
-      }
-    }
-    ... on ErrorMutationResponse {
-      ...commonState
-      errors {
-        ...fieldError
-      }
-    }
+    ...userUnionMutationResponse
   }
 }
-    ${CommonStateFragmentDoc}
-${UserFragmentDoc}
-${FieldErrorFragmentDoc}`;
+    ${UserUnionMutationResponseFragmentDoc}`;
 export type ChangePasswordMutationFn = Apollo.MutationFunction<ChangePasswordMutation, ChangePasswordMutationVariables>;
 
 /**
@@ -598,6 +616,39 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const UpdatePostDocument = gql`
+    mutation UpdatePost($updatePostInput: UpdatePostInput!) {
+  updatePost(updatePostInput: $updatePostInput) {
+    ...postUnionMutationResponse
+  }
+}
+    ${PostUnionMutationResponseFragmentDoc}`;
+export type UpdatePostMutationFn = Apollo.MutationFunction<UpdatePostMutation, UpdatePostMutationVariables>;
+
+/**
+ * __useUpdatePostMutation__
+ *
+ * To run a mutation, you first call `useUpdatePostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdatePostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updatePostMutation, { data, loading, error }] = useUpdatePostMutation({
+ *   variables: {
+ *      updatePostInput: // value for 'updatePostInput'
+ *   },
+ * });
+ */
+export function useUpdatePostMutation(baseOptions?: Apollo.MutationHookOptions<UpdatePostMutation, UpdatePostMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdatePostMutation, UpdatePostMutationVariables>(UpdatePostDocument, options);
+      }
+export type UpdatePostMutationHookResult = ReturnType<typeof useUpdatePostMutation>;
+export type UpdatePostMutationResult = Apollo.MutationResult<UpdatePostMutation>;
+export type UpdatePostMutationOptions = Apollo.BaseMutationOptions<UpdatePostMutation, UpdatePostMutationVariables>;
 export const LoginProfileDocument = gql`
     query loginProfile {
   loginProfile {
