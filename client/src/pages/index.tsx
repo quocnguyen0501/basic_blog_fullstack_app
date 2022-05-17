@@ -47,10 +47,15 @@ const Index: FC = () => {
 
     return (
         <>
-            <Navbar
-                data={loginProfileData}
-                useLoginProfileLoading={useLoginProfileLoading}
-            />
+            {useLoginProfileLoading ? (
+                <LoadingSpinner />
+            ) : (
+                <Navbar
+                    data={loginProfileData}
+                    useLoginProfileLoading={useLoginProfileLoading}
+                />
+            )}
+
             {loading && !isLoadingMorePost ? (
                 <LoadingSpinner />
             ) : (

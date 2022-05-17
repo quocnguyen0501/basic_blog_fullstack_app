@@ -47,13 +47,9 @@ const Post = () => {
         },
     });
 
-    if (loading) {
+    if (loading || useLoginProfileLoading || !data) {
         return (
             <>
-                <Navbar
-                    data={loginProfileData}
-                    useLoginProfileLoading={useLoginProfileLoading}
-                />
                 <Center pt={20} pb={6} px={2} zIndex={"2"}>
                     <LoadingSpinner />
                 </Center>
