@@ -1,5 +1,10 @@
-mutation DeletePost ($id: ID!) {
-    deletePost (id: $id) {
-        ...commonState
+mutation DeletePost($id: ID!) {
+    deletePost(id: $id) {
+        ... on PostMutationResponse {
+            ...commonState
+        }
+        ... on ErrorMutationResponse {
+            ...commonState
+        }
     }
 }

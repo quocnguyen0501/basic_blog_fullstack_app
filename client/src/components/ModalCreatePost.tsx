@@ -24,8 +24,12 @@ import { useRouter } from "next/router";
 import { convertToRaw, EditorState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { PostMutationResponse, useCreateNewPostMutation } from "../generated/graphql";
-import { ApolloCache } from "@apollo/client";
+import {
+    PaginatedPost,
+    PostMutationResponse,
+    useCreateNewPostMutation,
+} from "../generated/graphql";
+import { ApolloCache, Reference } from "@apollo/client";
 
 const ModalCreatePost = ({
     isOpen,
@@ -72,33 +76,48 @@ const ModalCreatePost = ({
             },
             /**
              * Modify cache save list paginated post
-             * 
+             *
              * @param cache Apollo cache
              * @param data result receiv from server for create new post response
              */
             update(cache: ApolloCache<any>, { data }) {
                 cache.modify({
-					fields: {
-						posts(existing) {
-							if (data?.createPost[0].success && (data.createPost[0] as PostMutationResponse).post) {
-								// Post:new_id
-								const newPostRef = cache.identify((data.createPost[0] as PostMutationResponse).post)
+                    fields: {
+                        posts(
+                            existing: Pick<
+                                PaginatedPost,
+                                | "__typename"
+                                | "timeCompareCreatedAt"
+                                | "hasMore"
+                                | "totalPost"
+                            > & { paginatedPosts: Reference[] }
+                        ) {
+                            if (
+                                data?.createPost[0].success &&
+                                (data.createPost[0] as PostMutationResponse)
+                                    .post
+                            ) {
+                                // Post:new_id
+                                const newPostRef = cache.identify(
+                                    (data.createPost[0] as PostMutationResponse)
+                                        .post
+                                );
 
-								const newPostsAfterCreation = {
-									...existing,
-									totalCount: existing.totalCount + 1,
-									paginatedPosts: [
-										{ __ref: newPostRef },
-										...existing.paginatedPosts // [{__ref: 'Post:1'}, {__ref: 'Post:2'}]
-									]
-								}
+                                const newPostsAfterCreation = {
+                                    ...existing,
+                                    totalPost: existing.totalPost + 1,
+                                    paginatedPosts: [
+                                        { __ref: newPostRef },
+                                        ...existing.paginatedPosts, // [{__ref: 'Post:1'}, {__ref: 'Post:2'}]
+                                    ],
+                                };
 
-								return newPostsAfterCreation
-							}
-						}
-					}
-				})
-			}
+                                return newPostsAfterCreation;
+                            }
+                        },
+                    },
+                });
+            },
         });
 
         setWord("");

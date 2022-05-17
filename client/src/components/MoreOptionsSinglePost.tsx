@@ -16,8 +16,60 @@ import { HiDotsHorizontal } from "react-icons/hi";
 import { MdModeEdit } from "react-icons/md";
 import { IoTrashOutline } from "react-icons/io5";
 import { FC } from "react";
+import { PaginatedPost, useDeletePostMutation } from "../generated/graphql";
+import { ApolloCache, Reference } from "@apollo/client";
+import { useRouter } from "next/router";
 
 const MoreOptionsSinglePost: FC<{ postId: number }> = ({ postId }) => {
+    const router = useRouter();
+
+    const [deletePost, { loading }] = useDeletePostMutation();
+
+    const handleDeletePostClick = async () => {
+        await deletePost({
+            variables: {
+                id: postId.toString(),
+            },
+            update(cache: ApolloCache<any>, { data }) {
+                cache.modify({
+                    fields: {
+                        posts(
+                            existing: Pick<
+                                PaginatedPost,
+                                | "__typename"
+                                | "timeCompareCreatedAt"
+                                | "hasMore"
+                                | "totalPost"
+                            > & { paginatedPosts: Reference[] }
+                        ) {
+                            const newPostsAfterDeletion = {
+                                ...existing,
+                                totalPost: existing.totalPost - 1,
+                                paginatedPosts: existing.paginatedPosts.filter(
+                                    (postRefObject: Reference) =>
+                                        postRefObject.__ref !== `Post:${postId}`
+                                ),
+                            };
+
+                            return newPostsAfterDeletion;
+                        },
+                    },
+                });
+
+                // if (data?.deletePost[0].success) {
+                //     // const normalizedId = cache.identify({
+                //     //     postId,
+                //     //     __typename: "Post",
+                //     // });
+                //     // cache.evict({ id: normalizedId });
+                //     // cache.gc();
+                // }
+            },
+        });
+
+        if (router.route !== "/") router.push("/");
+    };
+
     return (
         <>
             <Popover placement="bottom" isLazy>
@@ -55,6 +107,8 @@ const MoreOptionsSinglePost: FC<{ postId: number }> = ({ postId }) => {
                                 fontWeight="normal"
                                 colorScheme="red"
                                 fontSize="sm"
+                                onClick={handleDeletePostClick}
+                                isLoading={loading}
                             >
                                 Move to trash
                             </Button>

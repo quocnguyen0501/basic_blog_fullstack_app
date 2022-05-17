@@ -473,7 +473,12 @@ export type CreateNewPostMutationOptions = Apollo.BaseMutationOptions<CreateNewP
 export const DeletePostDocument = gql`
     mutation DeletePost($id: ID!) {
   deletePost(id: $id) {
-    ...commonState
+    ... on PostMutationResponse {
+      ...commonState
+    }
+    ... on ErrorMutationResponse {
+      ...commonState
+    }
   }
 }
     ${CommonStateFragmentDoc}`;
