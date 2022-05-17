@@ -84,8 +84,6 @@ const EditPost = () => {
         let input = event.target.value;
         const MAX_WORDS = 300;
 
-        let number = numberWords;
-
         if (input.length > MAX_WORDS) {
             input = input.toString().slice(0, 300);
         }
@@ -196,7 +194,7 @@ const EditPost = () => {
                     },
                 },
             });
-            router.back();
+            router.replace(`/post/${postId}`);
         }
     };
 
@@ -302,7 +300,7 @@ const EditPost = () => {
                         <Button
                             onClick={handleUpdatePostSubmit}
                             colorScheme="teal"
-                            // isLoading={isSubmitting}
+                            isLoading={loading}
                         >
                             Update Post
                         </Button>

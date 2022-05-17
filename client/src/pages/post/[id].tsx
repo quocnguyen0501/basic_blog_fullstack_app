@@ -47,6 +47,23 @@ const Post = () => {
         },
     });
 
+    useEffect(() => {
+        if (!router.isReady || error || !data?.post) return
+        const createdAt = new Date(data.post.createdAt);
+        const timeInterval = setTimeIntervalCreatedAtDisplay(createdAt);
+
+        if (timeInterval !== null) {
+            setCreatedAtDisplay(moment(createdAt).fromNow());
+
+            const interval = setInterval(() => {
+                setCreatedAtDisplay(moment(createdAt).fromNow());
+            }, timeInterval);
+            return () => clearInterval(interval);
+        } else {
+            setCreatedAtDisplay(moment(createdAt).calendar());
+        }
+    }, [router.isReady, loginProfileData, data, createdAtDisplay]);
+
     if (loading || useLoginProfileLoading || !data) {
         return (
             <>
@@ -90,29 +107,6 @@ const Post = () => {
                 </Center>
             </>
         );
-    } else {
-        const createdAt = new Date(data.post.createdAt);
-
-        /**
-         * Use if want to display day month year post
-         */
-        // const dayPost = createdAt.getDate();
-        // const monthPost = createdAt.getMonth();
-        // const yearPost = createdAt.getFullYear();
-        useEffect(() => {
-            const timeInterval = setTimeIntervalCreatedAtDisplay(createdAt);
-
-            if (timeInterval !== null) {
-                setCreatedAtDisplay(moment(createdAt).fromNow());
-
-                const interval = setInterval(() => {
-                    setCreatedAtDisplay(moment(createdAt).fromNow());
-                }, timeInterval);
-                return () => clearInterval(interval);
-            } else {
-                setCreatedAtDisplay(moment(createdAt).calendar());
-            }
-        }, [createdAtDisplay]);
     }
     return (
         <>
