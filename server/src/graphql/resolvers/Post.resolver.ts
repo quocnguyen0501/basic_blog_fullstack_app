@@ -7,6 +7,7 @@ import {
     Int,
     Mutation,
     Query,
+    registerEnumType,
     Resolver,
     Root,
     UseMiddleware,
@@ -22,7 +23,14 @@ import { User } from "../../models/User.model";
 import { PaginatedPost } from "../../types/graphql/PaginatedPost";
 import { LessThan } from "typeorm";
 import { Context } from "../../types/graphql/Context";
+import { VoteType } from "../../types/enum/VoteType.enum";
+import { PostMutationResponse } from "../../types/graphql/PostMutationResponse";
+import { UserInputError } from "apollo-server-core";
+import { Vote } from "../../models/Vote.model";
 
+registerEnumType(VoteType, {
+    name: "VoteType", // this one is mandatory
+});
 @Resolver((_of) => Post)
 export class PostResolver {
     /**
@@ -276,5 +284,49 @@ export class PostResolver {
                 ),
             ];
         }
+    }
+
+    @Mutation((_return) => PostMutationResponse)
+    @UseMiddleware(checkAuth)
+    async vote(
+        @Arg("postId", (_type) => Int)
+        postId: number,
+        @Arg("voteType", (_type) => VoteType)
+        voteType: VoteType,
+        @Ctx()
+        { req: { session }, connection }: Context
+    ): Promise<PostMutationResponse> {
+        return connection.transaction(async (transactionEntityManager) => {
+            let post = await transactionEntityManager.findOne(Post, {
+                where: {
+                    id: postId,
+                },
+            });
+
+            if (!post) {
+                throw new UserInputError("Post not found");
+            }
+
+            const VOTE_VALUES = {
+                userId: session.userId,
+                postId: postId,
+                value: voteType,
+            };
+
+            const newVote = transactionEntityManager.create(Vote, VOTE_VALUES);
+
+            await transactionEntityManager.save(newVote);
+
+            post.points = post.points + voteType;
+
+            post = await transactionEntityManager.save(post);
+
+            return {
+                code: 200,
+                success: true,
+                message: "Post voted",
+                post: post,
+            };
+        });
     }
 }

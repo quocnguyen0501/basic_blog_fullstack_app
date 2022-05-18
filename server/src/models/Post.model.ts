@@ -94,7 +94,7 @@ export class Post extends BaseEntity {
         return this._points;
     }
 
-    public set point(points: number) {
+    public set points(points: number) {
         this._points = points;
     }
 
