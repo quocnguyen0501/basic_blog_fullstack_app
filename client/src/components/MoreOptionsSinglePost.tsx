@@ -30,7 +30,7 @@ const MoreOptionsSinglePost: FC<{ postId: number }> = ({ postId }) => {
             variables: {
                 id: postId.toString(),
             },
-            update(cache: ApolloCache<any>, { data }) {
+            update(cache: ApolloCache<any>) {
                 cache.modify({
                     fields: {
                         posts(
@@ -55,15 +55,6 @@ const MoreOptionsSinglePost: FC<{ postId: number }> = ({ postId }) => {
                         },
                     },
                 });
-
-                // if (data?.deletePost[0].success) {
-                //     // const normalizedId = cache.identify({
-                //     //     postId,
-                //     //     __typename: "Post",
-                //     // });
-                //     // cache.evict({ id: normalizedId });
-                //     // cache.gc();
-                // }
             },
         });
 
