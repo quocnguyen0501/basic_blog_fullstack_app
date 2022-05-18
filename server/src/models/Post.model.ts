@@ -5,19 +5,23 @@ import {
     CreateDateColumn,
     Entity,
     ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
 import { User } from "./User.model";
+import { Vote } from "./Vote.model";
 
 @ObjectType()
 @Entity()
 export class Post extends BaseEntity {
     private _id!: number;
     private _userId!: number;
-    private _user: User;
+    private _user!: User;
     private _title!: string;
     private _content!: string;
+    private _votes!: Vote[];
+    private _points!: number;
     private _createdAt!: Date;
     private _updatedAt!: Date;
 
@@ -71,6 +75,27 @@ export class Post extends BaseEntity {
 
     public set content(content: string) {
         this._content = content;
+    }
+
+    @OneToMany((_to) => Vote, (vote) => vote.post)
+    public get votes(): Vote[] {
+        return this._votes;
+    }
+
+    public set votes(votes: Vote[]) {
+        this._votes = votes;
+    }
+
+    @Field()
+    @Column({
+        default: 0,
+    })
+    public get points(): number {
+        return this._points;
+    }
+
+    public set point(points: number) {
+        this._points = points;
     }
 
     @Field((_type) => Date)
