@@ -291,12 +291,18 @@ export class PostResolver {
     async vote(
         @Arg("postId", (_type) => Int)
         postId: number,
-        @Arg("voteType", (_type) => VoteType)
-        voteType: VoteType,
+        @Arg("inputVoteValue", (_type) => VoteType)
+        inputVoteValue: VoteType,
         @Ctx()
-        { req: { session }, connection }: Context
+        {
+            req: {
+                session: { userId },
+            },
+            connection,
+        }: Context
     ): Promise<PostMutationResponse> {
         return connection.transaction(async (transactionEntityManager) => {
+            // Check post exists
             let post = await transactionEntityManager.findOne(Post, {
                 where: {
                     id: postId,
@@ -307,19 +313,58 @@ export class PostResolver {
                 throw new UserInputError("Post not found");
             }
 
-            const VOTE_VALUES = {
-                userId: session.userId,
-                postId: postId,
-                value: voteType,
-            };
+            // check if use has voted
+            const existingVote = await transactionEntityManager.findOne(Vote, {
+                where: {
+                    postId: postId,
+                    userId: userId as number,
+                },
+            });
 
-            const newVote = transactionEntityManager.create(Vote, VOTE_VALUES);
+            if (existingVote && existingVote.value !== inputVoteValue) {
+                // Update vote value 1 -> -1 | -1 -> 1
+                await transactionEntityManager.save(Vote, {
+                    postId: existingVote.postId,
+                    userId: existingVote.userId,
+                    value: inputVoteValue,
+                });
 
-            await transactionEntityManager.save(newVote);
+                post = await transactionEntityManager.save(Post, {
+                    id: postId,
+                    userId: userId,
+                    title: post.title,
+                    content: post.content,
+                    createdAt: post.createdAt,
+                    updatedAt: post.updatedAt,
+                    points: post.points + 2 * inputVoteValue,
+                });
+            }
 
-            post.points = post.points + voteType;
+            if (!existingVote) {
+                const VOTE_VALUES = {
+                    userId: userId,
+                    postId: postId,
+                    value: inputVoteValue,
+                };
 
-            post = await transactionEntityManager.save(post);
+                // create new vote
+                const newVote = transactionEntityManager.create(
+                    Vote,
+                    VOTE_VALUES
+                );
+
+                await transactionEntityManager.save(newVote);
+
+                post = await transactionEntityManager.save(Post, {
+                    id: postId,
+                    userId: userId,
+                    title: post.title,
+                    content: post.content,
+                    createdAt: post.createdAt,
+                    updatedAt: post.updatedAt,
+                    points: post.points + inputVoteValue,
+                });
+            }
 
             return {
                 code: 200,
