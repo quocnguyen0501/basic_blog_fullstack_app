@@ -4,6 +4,7 @@ fragment postWithUserInfo on Post {
     title
     content
     contentSnippet
+    points
     user {
         id
         surname

@@ -62,6 +62,7 @@ export type Mutation = {
   logout: Scalars['Boolean'];
   register?: Maybe<Array<UserUnionMutationResponse>>;
   updatePost: Array<PostUnionMutationResponse>;
+  vote: PostMutationResponse;
 };
 
 
@@ -101,6 +102,12 @@ export type MutationUpdatePostArgs = {
   updatePostInput: UpdatePostInput;
 };
 
+
+export type MutationVoteArgs = {
+  inputVoteValue: VoteType;
+  postId: Scalars['Int'];
+};
+
 export type NewPasswordInput = {
   newPassword: Scalars['String'];
 };
@@ -119,6 +126,7 @@ export type Post = {
   contentSnippet: Scalars['String'];
   createdAt: Scalars['DateTime'];
   id: Scalars['ID'];
+  points: Scalars['Float'];
   title: Scalars['String'];
   updatedAt: Scalars['DateTime'];
   user: User;
@@ -193,6 +201,11 @@ export type UserMutationResponse = IMutaionResponse & {
 
 export type UserUnionMutationResponse = ErrorMutationResponse | UserMutationResponse;
 
+export enum VoteType {
+  DownVote = 'DOWN_VOTE',
+  UpVote = 'UP_VOTE'
+}
+
 type CommonState_ErrorMutationResponse_Fragment = { __typename?: 'ErrorMutationResponse', code: number, success: boolean, message?: string | null };
 
 type CommonState_PostMutationResponse_Fragment = { __typename?: 'PostMutationResponse', code: number, success: boolean, message?: string | null };
@@ -205,11 +218,11 @@ export type FieldErrorFragment = { __typename?: 'FieldError', field: string, mes
 
 type PostUnionMutationResponse_ErrorMutationResponse_Fragment = { __typename?: 'ErrorMutationResponse', code: number, success: boolean, message?: string | null, errors: Array<{ __typename?: 'FieldError', field: string, message: string }> };
 
-type PostUnionMutationResponse_PostMutationResponse_Fragment = { __typename?: 'PostMutationResponse', code: number, success: boolean, message?: string | null, post?: { __typename?: 'Post', id: string, userId: number, title: string, content: string, contentSnippet: string, updatedAt: any, createdAt: any, user: { __typename?: 'User', id: string, surname: string, firstName: string, dateOfBirth: any, gender: string, createdAt: any, updatedAt: any } } | null };
+type PostUnionMutationResponse_PostMutationResponse_Fragment = { __typename?: 'PostMutationResponse', code: number, success: boolean, message?: string | null, post?: { __typename?: 'Post', id: string, userId: number, title: string, content: string, contentSnippet: string, points: number, updatedAt: any, createdAt: any, user: { __typename?: 'User', id: string, surname: string, firstName: string, dateOfBirth: any, gender: string, createdAt: any, updatedAt: any } } | null };
 
 export type PostUnionMutationResponseFragment = PostUnionMutationResponse_ErrorMutationResponse_Fragment | PostUnionMutationResponse_PostMutationResponse_Fragment;
 
-export type PostWithUserInfoFragment = { __typename?: 'Post', id: string, userId: number, title: string, content: string, contentSnippet: string, updatedAt: any, createdAt: any, user: { __typename?: 'User', id: string, surname: string, firstName: string, dateOfBirth: any, gender: string, createdAt: any, updatedAt: any } };
+export type PostWithUserInfoFragment = { __typename?: 'Post', id: string, userId: number, title: string, content: string, contentSnippet: string, points: number, updatedAt: any, createdAt: any, user: { __typename?: 'User', id: string, surname: string, firstName: string, dateOfBirth: any, gender: string, createdAt: any, updatedAt: any } };
 
 export type UserFragment = { __typename?: 'User', id: string, firstName: string, surname: string, email: string, dateOfBirth: any, gender: string };
 
@@ -233,7 +246,7 @@ export type CreateNewPostMutationVariables = Exact<{
 }>;
 
 
-export type CreateNewPostMutation = { __typename?: 'Mutation', createPost: Array<{ __typename?: 'ErrorMutationResponse', code: number, success: boolean, message?: string | null, errors: Array<{ __typename?: 'FieldError', field: string, message: string }> } | { __typename?: 'PostMutationResponse', code: number, success: boolean, message?: string | null, post?: { __typename?: 'Post', id: string, userId: number, title: string, content: string, contentSnippet: string, updatedAt: any, createdAt: any, user: { __typename?: 'User', id: string, surname: string, firstName: string, dateOfBirth: any, gender: string, createdAt: any, updatedAt: any } } | null }> };
+export type CreateNewPostMutation = { __typename?: 'Mutation', createPost: Array<{ __typename?: 'ErrorMutationResponse', code: number, success: boolean, message?: string | null, errors: Array<{ __typename?: 'FieldError', field: string, message: string }> } | { __typename?: 'PostMutationResponse', code: number, success: boolean, message?: string | null, post?: { __typename?: 'Post', id: string, userId: number, title: string, content: string, contentSnippet: string, points: number, updatedAt: any, createdAt: any, user: { __typename?: 'User', id: string, surname: string, firstName: string, dateOfBirth: any, gender: string, createdAt: any, updatedAt: any } } | null }> };
 
 export type DeletePostMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -273,7 +286,7 @@ export type UpdatePostMutationVariables = Exact<{
 }>;
 
 
-export type UpdatePostMutation = { __typename?: 'Mutation', updatePost: Array<{ __typename?: 'ErrorMutationResponse', code: number, success: boolean, message?: string | null, errors: Array<{ __typename?: 'FieldError', field: string, message: string }> } | { __typename?: 'PostMutationResponse', code: number, success: boolean, message?: string | null, post?: { __typename?: 'Post', id: string, userId: number, title: string, content: string, contentSnippet: string, updatedAt: any, createdAt: any, user: { __typename?: 'User', id: string, surname: string, firstName: string, dateOfBirth: any, gender: string, createdAt: any, updatedAt: any } } | null }> };
+export type UpdatePostMutation = { __typename?: 'Mutation', updatePost: Array<{ __typename?: 'ErrorMutationResponse', code: number, success: boolean, message?: string | null, errors: Array<{ __typename?: 'FieldError', field: string, message: string }> } | { __typename?: 'PostMutationResponse', code: number, success: boolean, message?: string | null, post?: { __typename?: 'Post', id: string, userId: number, title: string, content: string, contentSnippet: string, points: number, updatedAt: any, createdAt: any, user: { __typename?: 'User', id: string, surname: string, firstName: string, dateOfBirth: any, gender: string, createdAt: any, updatedAt: any } } | null }> };
 
 export type LoginProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -285,7 +298,7 @@ export type PostQueryVariables = Exact<{
 }>;
 
 
-export type PostQuery = { __typename?: 'Query', post?: { __typename?: 'Post', id: string, userId: number, title: string, content: string, contentSnippet: string, updatedAt: any, createdAt: any, user: { __typename?: 'User', id: string, surname: string, firstName: string, dateOfBirth: any, gender: string, createdAt: any, updatedAt: any } } | null };
+export type PostQuery = { __typename?: 'Query', post?: { __typename?: 'Post', id: string, userId: number, title: string, content: string, contentSnippet: string, points: number, updatedAt: any, createdAt: any, user: { __typename?: 'User', id: string, surname: string, firstName: string, dateOfBirth: any, gender: string, createdAt: any, updatedAt: any } } | null };
 
 export type PostIDsQueryVariables = Exact<{
   limit: Scalars['Int'];
@@ -301,7 +314,7 @@ export type PostsQueryVariables = Exact<{
 }>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts?: { __typename?: 'PaginatedPost', totalPost: number, timeCompareCreatedAt: any, hasMore: boolean, paginatedPosts: Array<{ __typename?: 'Post', id: string, userId: number, title: string, content: string, contentSnippet: string, updatedAt: any, createdAt: any, user: { __typename?: 'User', id: string, surname: string, firstName: string, dateOfBirth: any, gender: string, createdAt: any, updatedAt: any } }> } | null };
+export type PostsQuery = { __typename?: 'Query', posts?: { __typename?: 'PaginatedPost', totalPost: number, timeCompareCreatedAt: any, hasMore: boolean, paginatedPosts: Array<{ __typename?: 'Post', id: string, userId: number, title: string, content: string, contentSnippet: string, points: number, updatedAt: any, createdAt: any, user: { __typename?: 'User', id: string, surname: string, firstName: string, dateOfBirth: any, gender: string, createdAt: any, updatedAt: any } }> } | null };
 
 export const CommonStateFragmentDoc = gql`
     fragment commonState on IMutaionResponse {
@@ -317,6 +330,7 @@ export const PostWithUserInfoFragmentDoc = gql`
   title
   content
   contentSnippet
+  points
   user {
     id
     surname
