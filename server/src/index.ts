@@ -24,7 +24,7 @@ import { Context } from "./types/graphql/Context";
 import { CORS } from "./helpers/cors/CorsConfig";
 
 const main = async () => {
-    await DATA_SOURCE.initialize();
+    const connection = await DATA_SOURCE.initialize();
 
     const app = express();
 
@@ -58,8 +58,9 @@ const main = async () => {
             ApolloServerPluginLandingPageGraphQLPlayground(),
         ],
         context: ({ req, res }: Context) => ({
-            req,
-            res,
+            req: req,
+            res: res,
+            connection: connection,
         }),
     });
 

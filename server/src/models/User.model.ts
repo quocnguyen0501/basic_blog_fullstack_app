@@ -9,6 +9,7 @@ import {
     UpdateDateColumn,
 } from "typeorm";
 import { Post } from "./Post.model";
+import { Vote } from "./Vote.model";
 
 @ObjectType()
 @Entity({
@@ -23,6 +24,7 @@ export class User extends BaseEntity {
     private _dateOfBirth!: Date;
     private _gender!: string;
     private _posts: Post[];
+    private _votes: Vote[];
     private _createdAt!: Date;
     private _updatedAt!: Date;
 
@@ -104,6 +106,15 @@ export class User extends BaseEntity {
 
     public set posts(posts: Post[]) {
         this._posts = posts;
+    }
+
+    @OneToMany((_to) => Vote, (vote) => vote.user)
+    public get votes(): Vote[] {
+        return this._votes;
+    }
+
+    public set votes(vote: Vote[]) {
+        this._votes = vote;
     }
 
     @Field((_type) => Date)
