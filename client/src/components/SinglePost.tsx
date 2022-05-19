@@ -7,7 +7,6 @@ import {
     useColorModeValue,
     Flex,
     Link,
-    IconButton,
 } from "@chakra-ui/react";
 import { MdPublic } from "react-icons/md";
 import { FC, useEffect, useState } from "react";
@@ -16,7 +15,6 @@ import { LoginProfileQuery, Post } from "../generated/graphql";
 import moment from "moment";
 import { setTimeIntervalCreatedAtDisplay } from "../helpers/singlePostHelper";
 import MoreOptionsSinglePost from "./MoreOptionsSinglePost";
-import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 import VoteSection from "./VoteSection";
 
 interface PostProp {

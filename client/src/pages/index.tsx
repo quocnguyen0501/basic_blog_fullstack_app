@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { Box, Center, Button } from "@chakra-ui/react";
-import { ImLink, ImImages } from "react-icons/im";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Navbar from "../components/Navbar";
 import {
