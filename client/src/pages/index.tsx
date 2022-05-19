@@ -44,6 +44,8 @@ const Index: FC = () => {
             },
         });
 
+    console.log(">>> POSTS : ", data.posts);
+
     return (
         <>
             {useLoginProfileLoading ? (

@@ -5,19 +5,12 @@ import React, { FC, useState } from "react";
 import {
     LoginProfileDocument,
     Post,
-    PostDocument,
-    PostMutationResponse,
-    PostQuery,
-    PostQueryResult,
-    PostsDocument,
-    PostsQuery,
-    PostUnionMutationResponseFragment,
-    PostWithUserInfoFragment,
     PostWithUserInfoFragmentDoc,
     useVoteMutation,
     VoteType,
 } from "../generated/graphql";
 import { LIMIT } from "../pages";
+import { VoteTypeValues } from "../types/enum/VoteTypeValues.enum";
 
 interface UpvoteSectionProps {
     post: Post;
@@ -61,11 +54,12 @@ const VoteSection: FC<UpvoteSectionProps> = ({ post }: UpvoteSectionProps) => {
             },
             update(cache: ApolloCache<any>) {
                 // Update field points of post in cache
-                cache.writeFragment<{ points: number }>({
+                cache.writeFragment<Post>({
                     id: `Post:${postId}`,
                     fragment: PostWithUserInfoFragmentDoc,
                     data: {
                         ...post,
+                        userLogedInVoted: post.userLogedInVoted + 1,
                         points: post.points - 1,
                     },
                 });
@@ -73,21 +67,31 @@ const VoteSection: FC<UpvoteSectionProps> = ({ post }: UpvoteSectionProps) => {
         });
         setLoadingState("not-loading");
     };
+    console.log(">>> USER LOGEDIN VOTED: ", post.userLogedInVoted);
+
     return (
         <>
             <Flex direction="column" alignItems="center" mr={5}>
                 <IconButton
                     icon={<ChevronUpIcon />}
                     aria-label="upvote"
-                    onClick={upVote.bind(this, post.id)}
-                    isLoading={loading && loadingState === 'upvote-loading'}
+                    onClick={
+                        post.userLogedInVoted === VoteTypeValues.UP_VOTE
+                            ? undefined
+                            : upVote.bind(this, post.id)
+                    }
+                    isLoading={loading && loadingState === "upvote-loading"}
                 />
                 {post.points}
                 <IconButton
                     icon={<ChevronDownIcon />}
                     aria-label="downvote"
-                    onClick={downVote.bind(this, post.id)}
-                    isLoading={loading && loadingState === 'downvote-loading'}
+                    onClick={
+                        post.userLogedInVoted === VoteTypeValues.DOWN_VOTE
+                            ? undefined
+                            : downVote.bind(this, post.id)
+                    }
+                    isLoading={loading && loadingState === "downvote-loading"}
                 />
             </Flex>
         </>
