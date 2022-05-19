@@ -15,6 +15,7 @@ import { LoginProfileQuery, Post } from "../generated/graphql";
 import moment from "moment";
 import { setTimeIntervalCreatedAtDisplay } from "../helpers/singlePostHelper";
 import MoreOptionsSinglePost from "./MoreOptionsSinglePost";
+import VoteSection from "./VoteSection";
 
 interface PostProp {
     post: Post;
@@ -48,62 +49,84 @@ const SinglePost: FC<PostProp> = ({ post, loginProfileData }: PostProp) => {
     }, [createdAtDisplay]);
 
     return (
-        <Box
-            width={"900px"}
-            minW={"900px"}
-            w={"full"}
-            bg={useColorModeValue("white", "gray.900")}
-            boxShadow={"2xl"}
-            rounded={"md"}
-            p={6}
-            my={6}
-            overflow={"hidden"}
-        >
-            <Flex justifyContent={"space-between"}>
-                <Stack mb={6} direction={"row"} spacing={4} align={"center"}>
-                    <Avatar />
-                    <Stack direction={"column"} spacing={0} fontSize={"sm"}>
-                        <Text fontWeight={600}>
-                            {`${post.user.surname} ${post.user.firstName}`}
-                        </Text>
-                        <Flex justifyContent={"center"} alignItems={"center"}>
-                            <Text color={"gray.500"} mr={"5px"}>
-                                {/* {`${getMonthName(
+        <>
+            <Box
+                width={"900px"}
+                minW={"900px"}
+                w={"full"}
+                bg={useColorModeValue("white", "gray.900")}
+                boxShadow={"2xl"}
+                rounded={"md"}
+                p={6}
+                my={6}
+                overflow={"hidden"}
+            >
+                <Flex justifyItems={"center"} alignItems={"center"}>
+                    <VoteSection post={post} />
+                    <Box w={"full"}>
+                        <Flex justifyContent={"space-between"}>
+                            <Stack
+                                mb={6}
+                                direction={"row"}
+                                spacing={4}
+                                align={"center"}
+                            >
+                                <Avatar />
+                                <Stack
+                                    direction={"column"}
+                                    spacing={0}
+                                    fontSize={"sm"}
+                                >
+                                    <Text fontWeight={600}>
+                                        {`${post.user.surname} ${post.user.firstName}`}
+                                    </Text>
+                                    <Flex
+                                        justifyContent={"center"}
+                                        alignItems={"center"}
+                                    >
+                                        <Text color={"gray.500"} mr={"5px"}>
+                                            {/* {`${getMonthName(
                                 monthPost + 1
                             )} ${dayPost}, ${yearPost}`} */}
-                                {createdAtDisplay} .
-                            </Text>
-                            <MdPublic />
+                                            {createdAtDisplay} .
+                                        </Text>
+                                        <MdPublic />
+                                    </Flex>
+                                </Stack>
+                            </Stack>
+                            <Box>
+                                {loginProfileData?.loginProfile?.id ===
+                                    post.userId.toString() && (
+                                    <MoreOptionsSinglePost postId={+post.id} />
+                                )}
+                            </Box>
                         </Flex>
-                    </Stack>
-                </Stack>
-                <Box>
-                    {loginProfileData?.loginProfile?.id ===
-                        post.userId.toString() && (
-                        <MoreOptionsSinglePost postId={+post.id} />
-                    )}
-                </Box>
-            </Flex>
-            <Stack>
-                <NextLink href={`/post/${post.id}`}>
-                    <Link>
-                        <Heading
-                            color={useColorModeValue("gray.700", "white")}
-                            fontSize={"2xl"}
-                            fontFamily={"body"}
-                        >
-                            {post.title}
-                        </Heading>
-                    </Link>
-                </NextLink>
-                <Box
-                    textColor={"gray.500"}
-                    dangerouslySetInnerHTML={{
-                        __html: post.contentSnippet,
-                    }}
-                ></Box>
-            </Stack>
-        </Box>
+                        <Stack>
+                            <NextLink href={`/post/${post.id}`}>
+                                <Link>
+                                    <Heading
+                                        color={useColorModeValue(
+                                            "gray.700",
+                                            "white"
+                                        )}
+                                        fontSize={"2xl"}
+                                        fontFamily={"body"}
+                                    >
+                                        {post.title}
+                                    </Heading>
+                                </Link>
+                            </NextLink>
+                            <Box
+                                textColor={"gray.500"}
+                                dangerouslySetInnerHTML={{
+                                    __html: post.contentSnippet,
+                                }}
+                            ></Box>
+                        </Stack>
+                    </Box>
+                </Flex>
+            </Box>
+        </>
     );
 };
 

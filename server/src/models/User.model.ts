@@ -113,8 +113,8 @@ export class User extends BaseEntity {
         return this._votes;
     }
 
-    public set votes(vote: Vote[]) {
-        this._votes = vote;
+    public set votes(votes: Vote[]) {
+        this._votes = votes;
     }
 
     @Field((_type) => Date)

@@ -24,8 +24,6 @@ import { PaginatedPost } from "../../types/graphql/PaginatedPost";
 import { LessThan } from "typeorm";
 import { Context } from "../../types/graphql/Context";
 import { VoteType } from "../../types/enum/VoteType.enum";
-import { PostMutationResponse } from "../../types/graphql/PostMutationResponse";
-import { UserInputError } from "apollo-server-core";
 import { Vote } from "../../models/Vote.model";
 
 registerEnumType(VoteType, {
@@ -286,17 +284,23 @@ export class PostResolver {
         }
     }
 
-    @Mutation((_return) => PostMutationResponse)
+    @Mutation((_return) => [PostUnionMutationResponse])
     @UseMiddleware(checkAuth)
     async vote(
         @Arg("postId", (_type) => Int)
         postId: number,
-        @Arg("voteType", (_type) => VoteType)
-        voteType: VoteType,
+        @Arg("inputVoteValue", (_type) => VoteType)
+        inputVoteValue: VoteType,
         @Ctx()
-        { req: { session }, connection }: Context
-    ): Promise<PostMutationResponse> {
+        {
+            req: {
+                session: { userId },
+            },
+            connection,
+        }: Context
+    ): Promise<Array<typeof PostUnionMutationResponse>> {
         return connection.transaction(async (transactionEntityManager) => {
+            // Check post exists
             let post = await transactionEntityManager.findOne(Post, {
                 where: {
                     id: postId,
@@ -304,29 +308,76 @@ export class PostResolver {
             });
 
             if (!post) {
-                throw new UserInputError("Post not found");
+                return [
+                    {
+                        code: HTTP_STATUS_CODE.BAD_REQUEST,
+                        success: false,
+                        message: "Post not found",
+                    },
+                ];
             }
 
-            const VOTE_VALUES = {
-                userId: session.userId,
-                postId: postId,
-                value: voteType,
-            };
+            // check if use has voted
+            const existingVote = await transactionEntityManager.findOne(Vote, {
+                where: {
+                    postId: postId,
+                    userId: userId as number,
+                },
+            });
 
-            const newVote = transactionEntityManager.create(Vote, VOTE_VALUES);
+            if (existingVote && existingVote.value !== inputVoteValue) {
+                // Update vote value 1 -> -1 | -1 -> 1
+                await transactionEntityManager.save(Vote, {
+                    postId: existingVote.postId,
+                    userId: existingVote.userId,
+                    value: inputVoteValue,
+                });
 
-            await transactionEntityManager.save(newVote);
+                post = await transactionEntityManager.save(Post, {
+                    id: postId,
+                    userId: post.userId,
+                    title: post.title,
+                    content: post.content,
+                    createdAt: post.createdAt,
+                    updatedAt: post.updatedAt,
+                    points: post.points + inputVoteValue,
+                });
+            }
 
-            post.points = post.points + voteType;
+            if (!existingVote) {
+                const VOTE_VALUES = {
+                    userId: userId,
+                    postId: postId,
+                    value: inputVoteValue,
+                };
 
-            post = await transactionEntityManager.save(post);
+                // create new vote
+                const newVote = transactionEntityManager.create(
+                    Vote,
+                    VOTE_VALUES
+                );
 
-            return {
-                code: 200,
-                success: true,
-                message: "Post voted",
-                post: post,
-            };
+                await transactionEntityManager.save(newVote);
+
+                post = await transactionEntityManager.save(Post, {
+                    id: postId,
+                    userId: post.userId,
+                    title: post.title,
+                    content: post.content,
+                    createdAt: post.createdAt,
+                    updatedAt: post.updatedAt,
+                    points: post.points + inputVoteValue,
+                });
+            }
+
+            return [
+                {
+                    code: HTTP_STATUS_CODE.SUCCESS,
+                    success: true,
+                    message: "Post voted successfully",
+                    post: post,
+                },
+            ];
         });
     }
 }
