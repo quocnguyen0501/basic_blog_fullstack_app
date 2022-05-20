@@ -71,6 +71,8 @@ export class PostResolver {
             const VOTE_TYPE = 0;
             return VOTE_TYPE;
         } else {
+            console.log(">>> ID POST: ", parent.id, " - ", "id user: ", req.session.userId);
+            
             const existingVote = await Vote.findOne({
                 where: {
                     postId: parent.id,
