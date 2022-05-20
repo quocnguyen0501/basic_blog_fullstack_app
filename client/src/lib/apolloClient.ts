@@ -1,7 +1,5 @@
 import {
-    Query,
     Post,
-    PostsQueryResult,
     PaginatedPost,
 } from "./../generated/graphql";
 import { useMemo } from "react";
@@ -9,12 +7,13 @@ import {
     ApolloClient,
     HttpLink,
     InMemoryCache,
-    NormalizedCache,
     NormalizedCacheObject,
 } from "@apollo/client";
 // import { concatPagination } from "@apollo/client/utilities";
 import merge from "deepmerge";
 import isEqual from "lodash/isEqual";
+import { IncomingHttpHeaders } from "http";
+import fetch from 'isomorphic-unfetch'
 
 export const APOLLO_STATE_PROP_NAME = "__APOLLO_STATE__";
 
@@ -24,12 +23,26 @@ interface IApolloStateProps {
     [APOLLO_STATE_PROP_NAME]?: NormalizedCacheObject;
 }
 
-function createApolloClient() {
+function createApolloClient(headers: IncomingHttpHeaders | null = null) {
+    // Config for Next SSR send cookie when send Request to Server
+    const enhancedFetch = (url: RequestInfo, init: RequestInit) => {
+        return fetch(url, {
+            ...init,
+            headers: {
+                ...init.headers,
+                "Access-Control-Allow-Origin": "*",
+                // here we pass the cookie along for each request
+                Cookie: headers?.cookie ?? "",
+            },
+        });
+    };
+
     return new ApolloClient({
         ssrMode: typeof window === "undefined",
         link: new HttpLink({
             uri: "http://localhost:4000/graphql", // Server URL (must be absolute)
             credentials: "include", // Additional fetch() options like `credentials` or `headers`
+            fetch: enhancedFetch,
         }),
         cache: new InMemoryCache({
             /**
@@ -83,18 +96,24 @@ function createApolloClient() {
 }
 
 export const initializeApollo = (
-    initialState: NormalizedCacheObject | null = null
+    options: {
+        headers?: IncomingHttpHeaders | null;
+        initialState?: NormalizedCacheObject | null;
+    } = {
+        headers: null,
+        initialState: null,
+    }
 ) => {
-    const _apolloClient = apolloClient ?? createApolloClient();
+    const _apolloClient = apolloClient ?? createApolloClient(options.headers);
 
     // If your page has Next.js data fetching methods that use Apollo Client, the initial state
     // gets hydrated here
-    if (initialState) {
+    if (options.initialState) {
         // Get existing cache, loaded during client side data fetching
         const existingCache = _apolloClient.extract();
 
         // Merge the initialState from getStaticProps/getServerSideProps in the existing cache
-        const data = merge(existingCache, initialState, {
+        const data = merge(existingCache, options.initialState, {
             // combine arrays using object equality (like in sets)
             arrayMerge: (destinationArray, sourceArray) => [
                 ...sourceArray,
@@ -130,6 +149,9 @@ export function addApolloState(
 
 export function useApollo(pageProps: IApolloStateProps) {
     const state = pageProps[APOLLO_STATE_PROP_NAME];
-    const store = useMemo(() => initializeApollo(state), [state]);
+    const store = useMemo(
+        () => initializeApollo({ initialState: state }),
+        [state]
+    );
     return store;
 }

@@ -20,7 +20,7 @@ import SinglePost from "../components/SinglePost";
 import { FC } from "react";
 import { NetworkStatus } from "@apollo/client";
 import CreatePostButton from "../components/CreatePostButton";
-import { GetStaticProps } from "next";
+import { GetServerSideProps, GetServerSidePropsContext } from "next";
 
 export const LIMIT = 5;
 
@@ -50,8 +50,6 @@ const Index: FC = () => {
                 timeCompareCreatedAt: data?.posts?.timeCompareCreatedAt,
             },
         });
-
-    console.log(">>> POSTS : ", data.posts);
 
     return (
         <>
@@ -151,8 +149,21 @@ const Index: FC = () => {
     );
 };
 
-export const getStaticProps: GetStaticProps = async () => {
-    const apolloClient = initializeApollo();
+/**
+ * getStaticProps => client save coockie sent to NextJS server
+ * => NextJS don't know what cookie do => don't sent cookie to GraphQL
+ * when SSR
+ *
+ * ===> Change getStaticProps => getServerSideProps
+ *  */
+export const getServerSideProps: GetServerSideProps = async (
+    context: GetServerSidePropsContext
+) => {
+    const HEADERS = context.req.headers;
+
+    const apolloClient = initializeApollo({
+        headers: HEADERS,
+    });
 
     await apolloClient.query({
         query: PostsDocument,

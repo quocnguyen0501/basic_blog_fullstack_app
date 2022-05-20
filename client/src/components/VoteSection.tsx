@@ -83,7 +83,11 @@ const VoteSection: FC<UpvoteSectionProps> = ({ post }: UpvoteSectionProps) => {
                             ? undefined
                             : upVote.bind(this, post.id)
                     }
+                    colorScheme={
+                        post.userLogedInVoted === VoteTypeValues.UP_VOTE ? 'blue' : undefined
+                    }
                     isLoading={loading && loadingState === "upvote-loading"}
+                    
                 />
                 {post.points}
                 <IconButton
@@ -93,6 +97,9 @@ const VoteSection: FC<UpvoteSectionProps> = ({ post }: UpvoteSectionProps) => {
                         post.userLogedInVoted === VoteTypeValues.DOWN_VOTE
                             ? undefined
                             : downVote.bind(this, post.id)
+                    }
+                    colorScheme={
+                        post.userLogedInVoted === VoteTypeValues.DOWN_VOTE ? 'red' : undefined
                     }
                     isLoading={loading && loadingState === "downvote-loading"}
                 />
