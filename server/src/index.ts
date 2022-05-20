@@ -22,6 +22,7 @@ import { __prod__ } from "./utils/constants/constants";
 import { SESSION_OPTION } from "./helpers/storage/SessionCookieHelper";
 import { Context } from "./types/graphql/Context";
 import { CORS } from "./helpers/cors/CorsConfig";
+import { buildDataLoaders } from "./utils/data-loader/dataLoaders";
 
 const main = async () => {
     const connection = await DATA_SOURCE.initialize();
@@ -61,6 +62,7 @@ const main = async () => {
             req: req,
             res: res,
             connection: connection,
+            dataLoaders: buildDataLoaders(),
         }),
     });
 
