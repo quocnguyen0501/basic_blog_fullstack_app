@@ -1,6 +1,12 @@
 import DataLoader from "dataloader";
+import { Vote } from "../../models/Vote.model";
 import { In } from "typeorm";
 import { User } from "../../models/User.model";
+
+interface UserLogedInVotedCondition {
+    postId: number;
+    userId: number;
+}
 
 /**
  *
@@ -17,8 +23,31 @@ const batchGetUsers = async (userIds: number[]) => {
     return userIds.map((userId) => users.find((user) => user.id === userId));
 };
 
+// SELECT * FROM Upvote WHERE [postId, userId] IN ([[19, 1], [18, 1], [17, 1]])
+const batchGetVoteTypes = async (
+    userLogedInVotedConditions: UserLogedInVotedCondition[]
+) => {
+    const userLogedInVoteds = await Vote.findByIds(userLogedInVotedConditions)
+    return userLogedInVotedConditions.map((userLogedInVotedCondition) =>
+        userLogedInVoteds.find(
+            (userLogedInVoted) =>
+                userLogedInVoted.postId === userLogedInVotedCondition.postId &&
+                userLogedInVoted.userId === userLogedInVotedCondition.userId
+        )
+    );
+};
+
 export const buildDataLoaders = () => ({
-	userLoader: new DataLoader<number, User | undefined>(userIds =>
-		batchGetUsers(userIds as number[])
-	),
-})
+    userLoader: new DataLoader<number, User | undefined>((userIds) =>
+        batchGetUsers(userIds as number[])
+    ),
+
+    userLogedInVotedLoader: new DataLoader<
+        UserLogedInVotedCondition,
+        Vote | undefined
+    >((userLogedInVotedConditions) =>
+        batchGetVoteTypes(
+            userLogedInVotedConditions as UserLogedInVotedCondition[]
+        )
+    ),
+});

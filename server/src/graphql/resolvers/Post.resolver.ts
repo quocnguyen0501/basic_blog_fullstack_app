@@ -65,18 +65,21 @@ export class PostResolver {
         @Root()
         parent: Post,
         @Ctx()
-        { req }: Context
+        { req, dataLoaders: { userLogedInVotedLoader } }: Context
     ) {
         if (!req.session.userId) {
             const VOTE_TYPE = 0;
             return VOTE_TYPE;
         } else {
-
-            const existingVote = await Vote.findOne({
-                where: {
-                    postId: parent.id,
-                    userId: req.session.userId,
-                },
+            // const existingVote = await Vote.findOne({
+            //     where: {
+            //         postId: parent.id,
+            //         userId: req.session.userId,
+            //     },
+            // });
+            const existingVote = await userLogedInVotedLoader.load({
+                postId: parent.id,
+                userId: req.session.userId,
             });
 
             return existingVote ? existingVote.value : 0;
