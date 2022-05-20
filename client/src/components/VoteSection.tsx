@@ -75,7 +75,6 @@ const VoteSection: FC<UpvoteSectionProps> = ({ post }: UpvoteSectionProps) => {
         });
         setLoadingState("not-loading");
     };
-    console.log(">>> USER LOGEDIN VOTED: ", post.userLogedInVoted);
 
     return (
         <>
