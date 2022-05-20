@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { Session, SessionData } from "express-session";
-import { buildDataLoaders } from "src/utils/data-loader/dataLoaders";
+import { buildDataLoaders } from "../../utils/data-loader/dataLoaders";
 import { DataSource } from "typeorm";
 
 export type Context = {
