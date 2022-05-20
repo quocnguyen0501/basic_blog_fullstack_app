@@ -62,7 +62,10 @@ const SinglePost: FC<PostProp> = ({ post, loginProfileData }: PostProp) => {
                 overflow={"hidden"}
             >
                 <Flex justifyItems={"center"} alignItems={"center"}>
-                    <VoteSection post={post} />
+                    <VoteSection
+                        post={post}
+                        loginProfileData={loginProfileData}
+                    />
                     <Box w={"full"}>
                         <Flex justifyContent={"space-between"}>
                             <Stack
