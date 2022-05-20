@@ -40,3 +40,6 @@ Set up forgot password:
 Express Handlebars plugin for Nodemailer
     yarn add nodemailer-express-handlebars --save
     yarn add -D @types/nodemailer-express-handlebars
+
+Performance load data in GraphQL using DataLoader:
+    yarn add dataloader --save
