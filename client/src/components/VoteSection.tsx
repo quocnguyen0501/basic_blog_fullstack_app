@@ -32,12 +32,14 @@ const VoteSection: FC<UpvoteSectionProps> = ({ post }: UpvoteSectionProps) => {
             },
             update(cache: ApolloCache<any>) {
                 // Update field points of post in cache
-                cache.writeFragment<{ points: number }>({
+                cache.writeFragment<Post>({
                     id: `Post:${postId}`,
                     fragment: PostWithUserInfoFragmentDoc,
                     data: {
                         ...post,
-                        points: post.points + 1,
+                        userLogedInVoted:
+                            post.userLogedInVoted + VoteTypeValues.UP_VOTE,
+                        points: post.points + VoteTypeValues.UP_VOTE,
                     },
                 });
             },
@@ -59,8 +61,9 @@ const VoteSection: FC<UpvoteSectionProps> = ({ post }: UpvoteSectionProps) => {
                     fragment: PostWithUserInfoFragmentDoc,
                     data: {
                         ...post,
-                        userLogedInVoted: post.userLogedInVoted + 1,
-                        points: post.points - 1,
+                        userLogedInVoted:
+                            post.userLogedInVoted + VoteTypeValues.DOWN_VOTE,
+                        points: post.points + VoteTypeValues.DOWN_VOTE,
                     },
                 });
             },
