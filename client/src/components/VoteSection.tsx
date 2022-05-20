@@ -1,9 +1,11 @@
 import { ApolloCache } from "@apollo/client";
 import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 import { Flex, IconButton } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 import React, { FC, useState } from "react";
 import {
     LoginProfileDocument,
+    LoginProfileQuery,
     Post,
     PostWithUserInfoFragmentDoc,
     UserLogedInVotedAndPointsFragmentDoc,
@@ -15,9 +17,15 @@ import { VoteTypeValues } from "../types/enum/VoteTypeValues.enum";
 
 interface UpvoteSectionProps {
     post: Post;
+    loginProfileData: LoginProfileQuery;
 }
 
-const VoteSection: FC<UpvoteSectionProps> = ({ post }: UpvoteSectionProps) => {
+const VoteSection: FC<UpvoteSectionProps> = ({
+    post,
+    loginProfileData,
+}: UpvoteSectionProps) => {
+    const router = useRouter();
+
     const [vote, { loading }] = useVoteMutation();
 
     const [loadingState, setLoadingState] = useState<
@@ -25,55 +33,64 @@ const VoteSection: FC<UpvoteSectionProps> = ({ post }: UpvoteSectionProps) => {
     >("not-loading");
 
     const upVote = async (postId: string) => {
-        setLoadingState("upvote-loading");
-        await vote({
-            variables: {
-                postId: +postId,
-                inputVoteValue: VoteType.UpVote,
-            },
-            update(cache: ApolloCache<any>) {
-                // Update field points of post in cache
-                cache.writeFragment<{
-                    userLogedInVoted: number;
-                    points: number;
-                }>({
-                    id: `Post:${postId}`,
-                    fragment: UserLogedInVotedAndPointsFragmentDoc,
-                    data: {
-                        userLogedInVoted:
-                            post.userLogedInVoted + VoteTypeValues.UP_VOTE,
-                        points: post.points + VoteTypeValues.UP_VOTE,
-                    },
-                });
-            },
-        });
-        setLoadingState("not-loading");
+        if (loginProfileData.loginProfile === null) {
+            router.replace("/login");
+        } else {
+            setLoadingState("upvote-loading");
+            await vote({
+                variables: {
+                    postId: +postId,
+                    inputVoteValue: VoteType.UpVote,
+                },
+                update(cache: ApolloCache<any>) {
+                    // Update field points of post in cache
+                    cache.writeFragment<{
+                        userLogedInVoted: number;
+                        points: number;
+                    }>({
+                        id: `Post:${postId}`,
+                        fragment: UserLogedInVotedAndPointsFragmentDoc,
+                        data: {
+                            userLogedInVoted:
+                                post.userLogedInVoted + VoteTypeValues.UP_VOTE,
+                            points: post.points + VoteTypeValues.UP_VOTE,
+                        },
+                    });
+                },
+            });
+            setLoadingState("not-loading");
+        }
     };
 
     const downVote = async (postId: string) => {
-        setLoadingState("downvote-loading");
-        await vote({
-            variables: {
-                postId: +postId,
-                inputVoteValue: VoteType.DownVote,
-            },
-            update(cache: ApolloCache<any>) {
-                // Update field points of post in cache
-                cache.writeFragment<{
-                    userLogedInVoted: number;
-                    points: number;
-                }>({
-                    id: `Post:${postId}`,
-                    fragment: UserLogedInVotedAndPointsFragmentDoc,
-                    data: {
-                        userLogedInVoted:
-                            post.userLogedInVoted + VoteTypeValues.DOWN_VOTE,
-                        points: post.points + VoteTypeValues.DOWN_VOTE,
-                    },
-                });
-            },
-        });
-        setLoadingState("not-loading");
+        if (loginProfileData.loginProfile === null) {
+            router.replace("/login");
+        } else {
+            setLoadingState("downvote-loading");
+            await vote({
+                variables: {
+                    postId: +postId,
+                    inputVoteValue: VoteType.DownVote,
+                },
+                update(cache: ApolloCache<any>) {
+                    // Update field points of post in cache
+                    cache.writeFragment<{
+                        userLogedInVoted: number;
+                        points: number;
+                    }>({
+                        id: `Post:${postId}`,
+                        fragment: UserLogedInVotedAndPointsFragmentDoc,
+                        data: {
+                            userLogedInVoted:
+                                post.userLogedInVoted +
+                                VoteTypeValues.DOWN_VOTE,
+                            points: post.points + VoteTypeValues.DOWN_VOTE,
+                        },
+                    });
+                },
+            });
+            setLoadingState("not-loading");
+        }
     };
 
     return (
