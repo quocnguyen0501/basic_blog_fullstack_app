@@ -1,5 +1,12 @@
 import Image from "next/image";
-import { Box, Center, Button } from "@chakra-ui/react";
+import {
+    Box,
+    Center,
+    Button,
+    Heading,
+    Text,
+    useColorModeValue,
+} from "@chakra-ui/react";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Navbar from "../components/Navbar";
 import {
@@ -13,7 +20,7 @@ import SinglePost from "../components/SinglePost";
 import { FC } from "react";
 import { NetworkStatus } from "@apollo/client";
 import CreatePostButton from "../components/CreatePostButton";
-import { GetStaticProps } from "next";
+import { GetServerSideProps, GetServerSidePropsContext } from "next";
 
 export const LIMIT = 5;
 
@@ -67,13 +74,48 @@ const Index: FC = () => {
                                 />
                             )}
 
-                            {data?.posts.paginatedPosts.map((post: Post) => (
-                                <SinglePost
-                                    key={post.id}
-                                    post={post}
-                                    loginProfileData={loginProfileData}
-                                />
-                            ))}
+                            {data.posts.totalPost !== 0 ? (
+                                <>
+                                    {data?.posts.paginatedPosts.map(
+                                        (post: Post) => (
+                                            <SinglePost
+                                                key={post.id}
+                                                post={post}
+                                                loginProfileData={
+                                                    loginProfileData
+                                                }
+                                            />
+                                        )
+                                    )}
+                                </>
+                            ) : (
+                                <>
+                                    <Box
+                                        mt={4}
+                                        w={"full"}
+                                        bg={useColorModeValue(
+                                            "white",
+                                            "gray.900"
+                                        )}
+                                        boxShadow={"2xl"}
+                                        rounded={"md"}
+                                        p={6}
+                                        overflow={"hidden"}
+                                    >
+                                        <Box textAlign="center" py={10} px={6}>
+                                            <Heading
+                                                display="inline-block"
+                                                as="h2"
+                                                size="2xl"
+                                                bgGradient="linear(to-r, teal.400, teal.600)"
+                                                backgroundClip="text"
+                                            >
+                                                DON'T HAVE ANY POST YET
+                                            </Heading>
+                                        </Box>
+                                    </Box>
+                                </>
+                            )}
                             <Center>
                                 {data.posts.hasMore && (
                                     <Button
@@ -107,8 +149,21 @@ const Index: FC = () => {
     );
 };
 
-export const getStaticProps: GetStaticProps = async () => {
-    const apolloClient = initializeApollo();
+/**
+ * getStaticProps => client save coockie sent to NextJS server
+ * => NextJS don't know what cookie do => don't sent cookie to GraphQL
+ * when SSR
+ *
+ * ===> Change getStaticProps => getServerSideProps
+ *  */
+export const getServerSideProps: GetServerSideProps = async (
+    context: GetServerSidePropsContext
+) => {
+    const HEADERS = context.req.headers;
+
+    const apolloClient = initializeApollo({
+        headers: HEADERS,
+    });
 
     await apolloClient.query({
         query: PostsDocument,

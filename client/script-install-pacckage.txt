@@ -33,6 +33,9 @@ install pakage for text editor:
     yarn add deepmerge --save
     yarn add lodash --save
 
+    fetch for SSR send Cookie:
+    yarn add isomorphic-unfetch --save
+
 - Utils:
     Moment js: set time display a post
     yarn add moment --save

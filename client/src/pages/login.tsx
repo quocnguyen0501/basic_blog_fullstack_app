@@ -28,6 +28,7 @@ import { mapFieldErrors } from "../helpers/mapFieldErrors";
 import { useCheckAuth } from "../utils/useCheckAuth";
 import { validateSignInSchema } from "../validation/LoginValidationSchema";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { initializeApollo } from "../lib/apolloClient";
 
 const login = () => {
     const { data: dataCheckAuth, loading: loadingCheckAuth } = useCheckAuth();
@@ -74,6 +75,10 @@ const login = () => {
                 duration: 3000,
                 isClosable: true,
             });
+
+            // Reset Cache save before login
+            const apolloClient = initializeApollo();
+            apolloClient.resetStore();
 
             router.replace("/");
         }

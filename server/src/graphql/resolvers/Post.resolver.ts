@@ -60,6 +60,30 @@ export class PostResolver {
         });
     }
 
+    @FieldResolver((_return) => Int)
+    async userLogedInVoted(
+        @Root()
+        parent: Post,
+        @Ctx()
+        { req }: Context
+    ) {
+        if (!req.session.userId) {
+            const VOTE_TYPE = 0;
+            return VOTE_TYPE;
+        } else {
+            console.log(">>> ID POST: ", parent.id, " - ", "id user: ", req.session.userId);
+            
+            const existingVote = await Vote.findOne({
+                where: {
+                    postId: parent.id,
+                    userId: req.session.userId,
+                },
+            });
+
+            return existingVote ? existingVote.value : 0;
+        }
+    }
+
     @Mutation((_return) => [PostUnionMutationResponse])
     @UseMiddleware(checkAuth)
     async createPost(
@@ -198,23 +222,33 @@ export class PostResolver {
 
             const totalPost = await Post.count();
 
-            const paginatedPosts = await Post.find(findOptions);
+            if (totalPost === 0) {
+                return {
+                    totalPost: totalPost,
+                    timeCompareCreatedAt: new Date(),
+                    hasMore: false,
+                    paginatedPosts: [],
+                };
+            } else {
+                const paginatedPosts = await Post.find(findOptions);
 
-            const hasMore: boolean = timeCompareCreatedAt
-                ? paginatedPosts[
-                      paginatedPosts.length - 1
-                  ].createdAt.toString() !== lastPostArr[0].createdAt.toString()
-                : paginatedPosts.length !== totalPost;
+                const hasMore: boolean = timeCompareCreatedAt
+                    ? paginatedPosts[
+                          paginatedPosts.length - 1
+                      ].createdAt.toString() !==
+                      lastPostArr[0].createdAt.toString()
+                    : paginatedPosts.length !== totalPost;
 
-            const timeCompareCreatedAtResult =
-                paginatedPosts[paginatedPosts.length - 1].createdAt;
+                const timeCompareCreatedAtResult =
+                    paginatedPosts[paginatedPosts.length - 1].createdAt;
 
-            return {
-                totalPost: totalPost,
-                timeCompareCreatedAt: timeCompareCreatedAtResult,
-                hasMore: hasMore,
-                paginatedPosts: paginatedPosts,
-            };
+                return {
+                    totalPost: totalPost,
+                    timeCompareCreatedAt: timeCompareCreatedAtResult,
+                    hasMore: hasMore,
+                    paginatedPosts: paginatedPosts,
+                };
+            }
         } catch (error) {
             console.log(error);
             return null;

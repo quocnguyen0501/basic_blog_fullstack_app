@@ -5,19 +5,13 @@ import React, { FC, useState } from "react";
 import {
     LoginProfileDocument,
     Post,
-    PostDocument,
-    PostMutationResponse,
-    PostQuery,
-    PostQueryResult,
-    PostsDocument,
-    PostsQuery,
-    PostUnionMutationResponseFragment,
-    PostWithUserInfoFragment,
     PostWithUserInfoFragmentDoc,
+    UserLogedInVotedAndPointsFragmentDoc,
     useVoteMutation,
     VoteType,
 } from "../generated/graphql";
 import { LIMIT } from "../pages";
+import { VoteTypeValues } from "../types/enum/VoteTypeValues.enum";
 
 interface UpvoteSectionProps {
     post: Post;
@@ -39,12 +33,16 @@ const VoteSection: FC<UpvoteSectionProps> = ({ post }: UpvoteSectionProps) => {
             },
             update(cache: ApolloCache<any>) {
                 // Update field points of post in cache
-                cache.writeFragment<{ points: number }>({
+                cache.writeFragment<{
+                    userLogedInVoted: number;
+                    points: number;
+                }>({
                     id: `Post:${postId}`,
-                    fragment: PostWithUserInfoFragmentDoc,
+                    fragment: UserLogedInVotedAndPointsFragmentDoc,
                     data: {
-                        ...post,
-                        points: post.points + 1,
+                        userLogedInVoted:
+                            post.userLogedInVoted + VoteTypeValues.UP_VOTE,
+                        points: post.points + VoteTypeValues.UP_VOTE,
                     },
                 });
             },
@@ -61,33 +59,56 @@ const VoteSection: FC<UpvoteSectionProps> = ({ post }: UpvoteSectionProps) => {
             },
             update(cache: ApolloCache<any>) {
                 // Update field points of post in cache
-                cache.writeFragment<{ points: number }>({
+                cache.writeFragment<{
+                    userLogedInVoted: number;
+                    points: number;
+                }>({
                     id: `Post:${postId}`,
-                    fragment: PostWithUserInfoFragmentDoc,
+                    fragment: UserLogedInVotedAndPointsFragmentDoc,
                     data: {
-                        ...post,
-                        points: post.points - 1,
+                        userLogedInVoted:
+                            post.userLogedInVoted + VoteTypeValues.DOWN_VOTE,
+                        points: post.points + VoteTypeValues.DOWN_VOTE,
                     },
                 });
             },
         });
         setLoadingState("not-loading");
     };
+
     return (
         <>
             <Flex direction="column" alignItems="center" mr={5}>
                 <IconButton
                     icon={<ChevronUpIcon />}
                     aria-label="upvote"
-                    onClick={upVote.bind(this, post.id)}
-                    isLoading={loading && loadingState === 'upvote-loading'}
+                    onClick={
+                        post.userLogedInVoted === VoteTypeValues.UP_VOTE
+                            ? undefined
+                            : upVote.bind(this, post.id)
+                    }
+                    colorScheme={
+                        post.userLogedInVoted === VoteTypeValues.UP_VOTE
+                            ? "blue"
+                            : undefined
+                    }
+                    isLoading={loading && loadingState === "upvote-loading"}
                 />
                 {post.points}
                 <IconButton
                     icon={<ChevronDownIcon />}
                     aria-label="downvote"
-                    onClick={downVote.bind(this, post.id)}
-                    isLoading={loading && loadingState === 'downvote-loading'}
+                    onClick={
+                        post.userLogedInVoted === VoteTypeValues.DOWN_VOTE
+                            ? undefined
+                            : downVote.bind(this, post.id)
+                    }
+                    colorScheme={
+                        post.userLogedInVoted === VoteTypeValues.DOWN_VOTE
+                            ? "red"
+                            : undefined
+                    }
+                    isLoading={loading && loadingState === "downvote-loading"}
                 />
             </Flex>
         </>

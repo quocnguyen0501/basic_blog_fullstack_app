@@ -1,0 +1,4 @@
+fragment userLogedInVotedAndPoints on Post {
+    userLogedInVoted
+    points
+}
