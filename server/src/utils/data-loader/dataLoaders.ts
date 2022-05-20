@@ -1,7 +1,7 @@
 import DataLoader from "dataloader";
-import { Vote } from "../../models/Vote.model";
+import { Vote } from "../../models/postgres/Vote.model";
 import { In } from "typeorm";
-import { User } from "../../models/User.model";
+import { User } from "../../models/postgres/User.model";
 
 interface UserLogedInVotedCondition {
     postId: number;

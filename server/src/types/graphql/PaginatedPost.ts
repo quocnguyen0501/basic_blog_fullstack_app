@@ -1,4 +1,4 @@
-import { Post } from "./../../models/Post.model";
+import { Post } from "../../models/postgres/Post.model";
 import { Field, ObjectType } from "type-graphql";
 
 @ObjectType()

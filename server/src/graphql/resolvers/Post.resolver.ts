@@ -13,18 +13,18 @@ import {
     UseMiddleware,
 } from "type-graphql";
 import { CreatePostInput } from "../../types/input/CreatePostInput";
-import { Post } from "../../models/Post.model";
+import { Post } from "../../models/postgres/Post.model";
 import { UpdatePostInput } from "../../types/input/UpdatePostInput";
 import { getErrorMutationResponse } from "../../helpers/resolvers/ErrorMutationResponseHelper";
 import { checkAuth } from "../../middleware/auth/checkAuth";
 import { DATA_SOURCE } from "../../helpers/database/DatabaseHelper";
 import { PostUnionMutationResponse } from "../../types/graphql/unions/PostUnionMutationResponse";
-import { User } from "../../models/User.model";
+import { User } from "../../models/postgres/User.model";
 import { PaginatedPost } from "../../types/graphql/PaginatedPost";
 import { LessThan } from "typeorm";
 import { Context } from "../../types/graphql/Context";
 import { VoteType } from "../../types/enum/VoteType.enum";
-import { Vote } from "../../models/Vote.model";
+import { Vote } from "../../models/postgres/Vote.model";
 
 registerEnumType(VoteType, {
     name: "VoteType", // this one is mandatory
