@@ -227,6 +227,10 @@ export type PostWithUserInfoFragment = { __typename?: 'Post', id: string, userId
 
 export type UserFragment = { __typename?: 'User', id: string, firstName: string, surname: string, email: string, dateOfBirth: any, gender: string };
 
+export type UserLogedInVotedFragment = { __typename?: 'Post', userLogedInVoted: number };
+
+export type UserLogedInVotedAndPointsFragment = { __typename?: 'Post', userLogedInVoted: number, points: number };
+
 type UserUnionMutationResponse_ErrorMutationResponse_Fragment = { __typename?: 'ErrorMutationResponse', code: number, success: boolean, message?: string | null, errors: Array<{ __typename?: 'FieldError', field: string, message: string }> };
 
 type UserUnionMutationResponse_UserMutationResponse_Fragment = { __typename?: 'UserMutationResponse', code: number, success: boolean, message?: string | null, user?: { __typename?: 'User', id: string, firstName: string, surname: string, email: string, dateOfBirth: any, gender: string } | null };
@@ -378,6 +382,17 @@ export const PostUnionMutationResponseFragmentDoc = gql`
     ${CommonStateFragmentDoc}
 ${PostWithUserInfoFragmentDoc}
 ${FieldErrorFragmentDoc}`;
+export const UserLogedInVotedFragmentDoc = gql`
+    fragment userLogedInVoted on Post {
+  userLogedInVoted
+}
+    `;
+export const UserLogedInVotedAndPointsFragmentDoc = gql`
+    fragment userLogedInVotedAndPoints on Post {
+  userLogedInVoted
+  points
+}
+    `;
 export const UserFragmentDoc = gql`
     fragment user on User {
   id

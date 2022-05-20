@@ -33,8 +33,10 @@ import {
     LoginProfileQuery,
     useLoginProfileQuery,
     useLogoutMutation,
+    UserLogedInVotedFragmentDoc,
 } from "../generated/graphql";
 import { Formik } from "formik";
+import { Reference } from "@apollo/client";
 
 export const Navbar: FC<{
     data: LoginProfileQuery;
@@ -53,6 +55,28 @@ export const Navbar: FC<{
                         query: LoginProfileDocument,
                         data: {
                             loginProfile: null,
+                        },
+                    });
+                    cache.modify({
+                        fields: {
+                            posts(existing) {
+                                existing.paginatedPosts.forEach(
+                                    (post: Reference) => {
+                                        cache.writeFragment<{
+                                            userLogedInVoted: number;
+                                        }>({
+                                            id: post.__ref, // `Post:17`
+                                            fragment:
+                                                UserLogedInVotedFragmentDoc,
+                                            data: {
+                                                userLogedInVoted: 0,
+                                            },
+                                        });
+                                    }
+                                );
+
+                                return existing;
+                            },
                         },
                     });
                 }

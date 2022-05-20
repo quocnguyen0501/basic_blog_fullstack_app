@@ -1,0 +1,3 @@
+fragment userLogedInVoted on Post {
+    userLogedInVoted
+}

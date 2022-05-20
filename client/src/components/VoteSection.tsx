@@ -6,6 +6,7 @@ import {
     LoginProfileDocument,
     Post,
     PostWithUserInfoFragmentDoc,
+    UserLogedInVotedAndPointsFragmentDoc,
     useVoteMutation,
     VoteType,
 } from "../generated/graphql";
@@ -32,11 +33,13 @@ const VoteSection: FC<UpvoteSectionProps> = ({ post }: UpvoteSectionProps) => {
             },
             update(cache: ApolloCache<any>) {
                 // Update field points of post in cache
-                cache.writeFragment<Post>({
+                cache.writeFragment<{
+                    userLogedInVoted: number;
+                    points: number;
+                }>({
                     id: `Post:${postId}`,
-                    fragment: PostWithUserInfoFragmentDoc,
+                    fragment: UserLogedInVotedAndPointsFragmentDoc,
                     data: {
-                        ...post,
                         userLogedInVoted:
                             post.userLogedInVoted + VoteTypeValues.UP_VOTE,
                         points: post.points + VoteTypeValues.UP_VOTE,
@@ -56,11 +59,13 @@ const VoteSection: FC<UpvoteSectionProps> = ({ post }: UpvoteSectionProps) => {
             },
             update(cache: ApolloCache<any>) {
                 // Update field points of post in cache
-                cache.writeFragment<Post>({
+                cache.writeFragment<{
+                    userLogedInVoted: number;
+                    points: number;
+                }>({
                     id: `Post:${postId}`,
-                    fragment: PostWithUserInfoFragmentDoc,
+                    fragment: UserLogedInVotedAndPointsFragmentDoc,
                     data: {
-                        ...post,
                         userLogedInVoted:
                             post.userLogedInVoted + VoteTypeValues.DOWN_VOTE,
                         points: post.points + VoteTypeValues.DOWN_VOTE,
@@ -84,10 +89,11 @@ const VoteSection: FC<UpvoteSectionProps> = ({ post }: UpvoteSectionProps) => {
                             : upVote.bind(this, post.id)
                     }
                     colorScheme={
-                        post.userLogedInVoted === VoteTypeValues.UP_VOTE ? 'blue' : undefined
+                        post.userLogedInVoted === VoteTypeValues.UP_VOTE
+                            ? "blue"
+                            : undefined
                     }
                     isLoading={loading && loadingState === "upvote-loading"}
-                    
                 />
                 {post.points}
                 <IconButton
@@ -99,7 +105,9 @@ const VoteSection: FC<UpvoteSectionProps> = ({ post }: UpvoteSectionProps) => {
                             : downVote.bind(this, post.id)
                     }
                     colorScheme={
-                        post.userLogedInVoted === VoteTypeValues.DOWN_VOTE ? 'red' : undefined
+                        post.userLogedInVoted === VoteTypeValues.DOWN_VOTE
+                            ? "red"
+                            : undefined
                     }
                     isLoading={loading && loadingState === "downvote-loading"}
                 />
