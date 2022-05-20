@@ -1,10 +1,8 @@
-import {
-    Post,
-    PaginatedPost,
-} from "./../generated/graphql";
+import { Post, PaginatedPost } from "./../generated/graphql";
 import { useMemo } from "react";
 import {
     ApolloClient,
+    from,
     HttpLink,
     InMemoryCache,
     NormalizedCacheObject,
@@ -13,7 +11,10 @@ import {
 import merge from "deepmerge";
 import isEqual from "lodash/isEqual";
 import { IncomingHttpHeaders } from "http";
-import fetch from 'isomorphic-unfetch'
+import fetch from "isomorphic-unfetch";
+import { onError } from "@apollo/client/link/error";
+import Router from "next/router";
+import { Errors } from "../types/enum/Errors.enum";
 
 export const APOLLO_STATE_PROP_NAME = "__APOLLO_STATE__";
 
@@ -22,6 +23,18 @@ let apolloClient: ApolloClient<NormalizedCacheObject>;
 interface IApolloStateProps {
     [APOLLO_STATE_PROP_NAME]?: NormalizedCacheObject;
 }
+
+// Global handle error for login
+const errorLink = onError((errors) => {
+    if (
+        errors.graphQLErrors &&
+        errors.graphQLErrors[0].extensions?.code === Errors.UNAUTHENTICATED &&
+        errors.response
+    ) {
+        errors.response.errors = undefined;
+        Router.replace("/login");
+    }
+});
 
 function createApolloClient(headers: IncomingHttpHeaders | null = null) {
     // Config for Next SSR send cookie when send Request to Server
@@ -37,13 +50,15 @@ function createApolloClient(headers: IncomingHttpHeaders | null = null) {
         });
     };
 
+    const httpLink = new HttpLink({
+        uri: "http://localhost:4000/graphql", // Server URL (must be absolute)
+        credentials: "include", // Additional fetch() options like `credentials` or `headers`
+        fetch: enhancedFetch,
+    });
+
     return new ApolloClient({
         ssrMode: typeof window === "undefined",
-        link: new HttpLink({
-            uri: "http://localhost:4000/graphql", // Server URL (must be absolute)
-            credentials: "include", // Additional fetch() options like `credentials` or `headers`
-            fetch: enhancedFetch,
-        }),
+        link: from([errorLink, httpLink]),
         cache: new InMemoryCache({
             /**
              * typePolicies: use for change the cache base on (base on: dựa trên) field in Type
