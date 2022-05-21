@@ -1,4 +1,4 @@
-import { ENTITIES } from "../../models/Entities";
+import { ENTITIES } from "../../graphql/schemas/Entities";
 import { DataSource } from "typeorm";
 import { DATABASE_CONFIGS } from "./DatabaseConfig";
 

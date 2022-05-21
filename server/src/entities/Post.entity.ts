@@ -9,8 +9,8 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
-import { User } from "./User.model";
-import { Vote } from "./Vote.model";
+import { User } from "./User.entity";
+import { Vote } from "./Vote.entity";
 
 @ObjectType()
 @Entity()

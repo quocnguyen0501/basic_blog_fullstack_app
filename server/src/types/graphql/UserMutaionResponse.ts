@@ -1,7 +1,6 @@
+import { User } from "../../entities/User.entity";
 import { Field, ObjectType } from "type-graphql";
 import { IMutaionResponse } from "./MutationResponse";
-
-import { User } from "../../models/postgres/User.model";
 
 @ObjectType({
     implements: IMutaionResponse,
