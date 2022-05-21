@@ -10,7 +10,7 @@ import {
 import * as argon2 from "argon2";
 import { v4 as uuidv4 } from "uuid";
 
-import { User } from "../../models/postgres/User.model";
+import { User } from "../../entities/User.entity";
 import { RegisterInput } from "../../types/input/RegisterInput";
 import { LoginInput } from "../../types/input/LoginInput";
 import { ValidateRegisterInput } from "../../utils/validates/RegisterInput.validate";
@@ -23,7 +23,7 @@ import { HTTP_STATUS_CODE } from "../../utils/constants/constants";
 import { UserUnionMutationResponse } from "../../types/graphql/unions/UserUnionMutationResponse";
 import { ForgotPasswordInput } from "../../types/input/ForgotPasswordInput";
 import { sendEmail } from "../../utils/email/SendEmail.email";
-import { TokenModel } from "../../models/mongo/Token.model";
+import { TokenModel } from "../../models/Token.model";
 import { NewPasswordInput } from "../../types/input/NewPasswordInput";
 
 @Resolver(_of => User)
