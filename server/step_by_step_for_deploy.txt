@@ -10,3 +10,18 @@
         "entities": ["dist/.../..."],
         "migrations": ["dist/migrations/..."]
     }
+
+- heroku create
+- check exist postgres on heroku: 
+    heroku addons
+
+- heroku addons:create heroku-postgresql:hobby-dev -a
+
+https://nameless-beyond-24432.herokuapp.com/
+
+nameless-beyond-24432
+
+copy url project in heroky:
+ postgres://lihqkkefpxeaak:9fb26c091e4b3d117d721461989ca70778ad17241c90530372749e06debf9262@e
+
+Change for connection => don't need  username and password

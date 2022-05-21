@@ -1,16 +1,4 @@
-import { ENTITIES } from "../../graphql/schemas/Entities";
 import { DATABASE_CONFIGS } from "./DatabaseConfig";
-
-export const CONNECTION = {
-    host: DATABASE_CONFIGS.HOST,
-    port: DATABASE_CONFIGS.PORT,
-    database: DATABASE_CONFIGS.DATABASE,
-    username: DATABASE_CONFIGS.USERNAME,
-    password: DATABASE_CONFIGS.PASSWORD,
-    logging: true,
-    synchronize: true,
-    entities: ENTITIES,
-};
 
 export const URI = `mongodb+srv://${DATABASE_CONFIGS.USERNAME_MONGO}:${DATABASE_CONFIGS.PASSWORD_MONGO}@blog.iihsp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 
