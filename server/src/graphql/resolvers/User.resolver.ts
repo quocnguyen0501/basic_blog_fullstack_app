@@ -26,7 +26,7 @@ import { sendEmail } from "../../utils/email/SendEmail.email";
 import { TokenModel } from "../../models/Token.model";
 import { NewPasswordInput } from "../../types/input/NewPasswordInput";
 
-@Resolver(_of => User)
+@Resolver((_of) => User)
 export class UserResolver {
     @FieldResolver((_return) => String)
     email(@Root() user: User, @Ctx() { req }: Context) {
@@ -44,7 +44,7 @@ export class UserResolver {
             return null;
         }
 
-        const user = await User.findOneBy({
+        const user = await User.findOne({
             id: req.session.userId,
         });
 
@@ -86,7 +86,11 @@ export class UserResolver {
              */
             let dateOfBirth = new Date(+year, +month - 1, +day + 1);
 
-            const existingUser = await User.findOneBy({ email });
+            const existingUser = await User.findOne({
+                where: {
+                    email: email,
+                },
+            });
 
             if (existingUser) {
                 const error: ErrorMutationResponse = {
@@ -156,7 +160,7 @@ export class UserResolver {
             try {
                 const { email, password } = loginInput;
 
-                const existingUser = await User.findOneBy({ email });
+                const existingUser = await User.findOne({ email });
 
                 if (!existingUser) {
                     return [
@@ -239,7 +243,7 @@ export class UserResolver {
         @Arg("forgotPasswordInput")
         forgotPasswordInput: ForgotPasswordInput
     ): Promise<boolean> {
-        const user = await User.findOneBy({
+        const user = await User.findOne({
             email: forgotPasswordInput.email,
         });
 
@@ -344,7 +348,7 @@ export class UserResolver {
                         ];
                     } else {
                         const userIdNum = parseInt(userId);
-                        const user = await User.findOneBy({
+                        const user = await User.findOne({
                             id: userIdNum,
                         });
 

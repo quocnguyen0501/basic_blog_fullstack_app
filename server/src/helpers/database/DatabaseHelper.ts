@@ -1,9 +1,7 @@
 import { ENTITIES } from "../../graphql/schemas/Entities";
-import { DataSource } from "typeorm";
 import { DATABASE_CONFIGS } from "./DatabaseConfig";
 
-export const DATA_SOURCE = new DataSource({
-    type: "postgres",
+export const CONNECTION = {
     host: DATABASE_CONFIGS.HOST,
     port: DATABASE_CONFIGS.PORT,
     database: DATABASE_CONFIGS.DATABASE,
@@ -12,7 +10,7 @@ export const DATA_SOURCE = new DataSource({
     logging: true,
     synchronize: true,
     entities: ENTITIES,
-});
+};
 
 export const URI = `mongodb+srv://${DATABASE_CONFIGS.USERNAME_MONGO}:${DATABASE_CONFIGS.PASSWORD_MONGO}@blog.iihsp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 

@@ -13,7 +13,7 @@ import mongoose from "mongoose";
 import session from "express-session";
 
 import {
-    DATA_SOURCE,
+    CONNECTION,
     OPTIONS_CONNECT_MONGO,
     URI,
 } from "./helpers/database/DatabaseHelper";
@@ -23,9 +23,13 @@ import { SESSION_OPTION } from "./helpers/storage/SessionCookieHelper";
 import { Context } from "./types/graphql/Context";
 import { CORS } from "./helpers/cors/CorsConfig";
 import { buildDataLoaders } from "./utils/data-loader/dataLoaders";
+import { createConnection } from "typeorm";
 
 const main = async () => {
-    const connection = await DATA_SOURCE.initialize();
+    const connection = await createConnection({
+        type: "postgres",
+        ...CONNECTION,
+    });
 
     const app = express();
 
