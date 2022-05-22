@@ -2,6 +2,7 @@ import nodemailer from "nodemailer";
 import hbs from "nodemailer-express-handlebars";
 import { HBS_CONFIGS } from "../../helpers/nodemailer-express-handlebars/HbsConfig";
 import { SMTP_TRANSPORT_OPTIONS } from "../../helpers/email/SMTPTransportOptions";
+import { __prod__ } from "../constants/constants";
 
 // async..await is not allowed in global scope, must use a wrapper
 export const sendEmail = async (
@@ -22,6 +23,9 @@ export const sendEmail = async (
             subject: "Change Password",
             template: "ForgotPassword",
             context: {
+                url: __prod__
+                    ? "https://basic-blog-fullstack-app.vercel.app"
+                    : "http://localhost:3000",
                 resetToken: resetToken,
                 userId: userId,
             },
