@@ -6,7 +6,7 @@ import { getMigrationsURL } from "../../utils/migrations/handleURLMigration";
 
 export const CONNECTION = {
     ...(__prod__
-        ? { url: process.env.DATABASE_URL }
+        ? { url: DATABASE_CONFIGS.URL_POSTGRES_DATABASE_HEROKU }
         : {
               host: DATABASE_CONFIGS.HOST,
               port: DATABASE_CONFIGS.PORT,

@@ -14,8 +14,7 @@ export const SESSION_OPTION: SessionOptions = {
         maxAge: 1000 * 60 * 60, //1hours
         httpOnly: true, //JS in front end can not read cookie
         secure: __prod__, //cookie only work in https
-        sameSite: "lax", //protect CSRF
-        domain: __prod__ ? ".vercel.app" : undefined,
+        sameSite: "none", //protect CSRF
     },
     secret: SESSION_COOKIE_CONFIGS.SESSION_SECRET,
     saveUninitialized: false, //don't set empty session when start app
