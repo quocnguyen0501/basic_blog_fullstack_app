@@ -23,7 +23,7 @@ export const sendEmail = async (
             subject: "Change Password",
             template: "ForgotPassword",
             context: {
-                url: __prod__
+                urlClient: __prod__
                     ? "https://basic-blog-fullstack-app.vercel.app"
                     : "http://localhost:3000",
                 resetToken: resetToken,
