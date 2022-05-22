@@ -1,33 +1,31 @@
 import path from "path";
-import { __prod__ } from "src/utils/constants/constants";
+import { __prod__ } from "../../utils/constants/constants";
 import { ENTITIES } from "../../graphql/schemas/Entities";
 import { DATABASE_CONFIGS } from "./DatabaseConfig";
+import { getMigrationsURL } from "../../utils/migrations/handleURLMigration";
 
-const CONNECTION_DEV = {
-    host: DATABASE_CONFIGS.HOST,
-    port: DATABASE_CONFIGS.PORT,
-    database: DATABASE_CONFIGS.DATABASE,
-    username: DATABASE_CONFIGS.USERNAME,
-    password: DATABASE_CONFIGS.PASSWORD,
+export const CONNECTION = {
+    ...(__prod__
+        ? { url: process.env.DATABASE_URL }
+        : {
+              host: DATABASE_CONFIGS.HOST,
+              port: DATABASE_CONFIGS.PORT,
+              database: DATABASE_CONFIGS.DATABASE,
+              username: DATABASE_CONFIGS.USERNAME,
+              password: DATABASE_CONFIGS.PASSWORD,
+          }),
     logging: true,
-    synchronize: true,
+    ...(__prod__
+        ? {
+              extra: {
+                  ssl: {
+                      rejectUnauthorized: false,
+                  },
+              },
+              ssl: true,
+          }
+        : {}),
+    ...(__prod__ ? {} : { synchronize: true }),
     entities: ENTITIES,
-    migrations: [path.join(__dirname, "/migrations/*")],
+    migrations: [path.join(getMigrationsURL(__dirname), "/migrations/*")],
 };
-
-const CONNECTION_PUBLIC = {
-    url: DATABASE_CONFIGS.URL_POSTGRES_DATABASE_HEROKU,
-    logging: true,
-    extra: {
-        extra: {
-            ssl: {
-                rejectUnauthorized: false,
-            },
-        },
-        ssl: true,
-    },
-    entities: ENTITIES,
-    migrations: [path.join(__dirname, "/migrations/*")],
-};
-
-export const CONNECTION = () => (__prod__ ? CONNECTION_PUBLIC : CONNECTION_DEV);

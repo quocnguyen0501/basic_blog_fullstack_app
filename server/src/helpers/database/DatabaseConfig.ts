@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { DatabaseInfo } from "src/types/database/DatabaseInfo";
+import { DatabaseInfo } from "../../types/database/DatabaseInfo";
 
 dotenv.config();
 

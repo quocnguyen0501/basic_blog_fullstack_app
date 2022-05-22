@@ -31,3 +31,9 @@ host: choose after @ -> .com
 username: choose after // -> :
 password: ...
 database: ...
+
+genarate dockerfile and .dockerignore
+
+-> add Reveal Config Vars in heroku Setting
+
+-> Seen docs in deploy container
