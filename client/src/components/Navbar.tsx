@@ -1,22 +1,18 @@
-import { FC, ReactNode } from "react";
+import { FC } from "react";
 import {
     Box,
     Flex,
     Avatar,
-    Link,
     Button,
     Menu,
     MenuButton,
     MenuList,
     MenuItem,
     MenuDivider,
-    useDisclosure,
     useColorModeValue,
     Stack,
     useColorMode,
-    Center,
     Image,
-    Input,
     Heading,
     HStack,
     VStack,
@@ -31,7 +27,6 @@ import InputSearchField from "./InputSearchField";
 import {
     LoginProfileDocument,
     LoginProfileQuery,
-    useLoginProfileQuery,
     useLogoutMutation,
     UserLogedInVotedFragmentDoc,
 } from "../generated/graphql";
@@ -43,9 +38,8 @@ export const Navbar: FC<{
     useLoginProfileLoading: boolean;
 }> = ({ data, useLoginProfileLoading }) => {
     const { colorMode, toggleColorMode } = useColorMode();
-    const { isOpen, onOpen, onClose } = useDisclosure();
 
-    const [logout, { loading: useLogoutMutationLoading }] = useLogoutMutation();
+    const [logout, _] = useLogoutMutation();
 
     const logoutUser = async () => {
         await logout({

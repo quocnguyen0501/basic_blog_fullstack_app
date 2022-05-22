@@ -10,7 +10,6 @@ import {
     Flex,
     Heading,
     Text,
-    useQuery,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
@@ -38,7 +37,6 @@ import { ImListNumbered } from "react-icons/im";
 import { HiOutlineMicrophone } from "react-icons/hi";
 import InputTextCountWord from "../../../components/InputTextCountWord";
 import InputContentRTE from "../../../components/InputContentRTE";
-import { title } from "process";
 import draftToHtml from "draftjs-to-html";
 const EditPost = () => {
     const router = useRouter();

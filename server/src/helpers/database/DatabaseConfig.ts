@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { DatabaseInfo } from "src/types/database/DatabaseInfo";
+import { DatabaseInfo } from "../../types/database/DatabaseInfo";
 
 dotenv.config();
 
@@ -10,6 +10,7 @@ export const DATABASE_CONFIGS: DatabaseInfo = {
     DATABASE: process.env.DB_NAME as string,
     USERNAME: process.env.DB_USERNAME as string,
     PASSWORD: process.env.DB_PASSWORD as string,
+    URL_POSTGRES_DATABASE_HEROKU: process.env.URL_POSTGRES_DATABASE as string,
 
     USERNAME_MONGO: process.env.SESSION_DB_USERNAME_DEV_PROD as string,
     PASSWORD_MONGO: process.env.SESSION_DB_UPASSWORD_DEV_PROD as string,

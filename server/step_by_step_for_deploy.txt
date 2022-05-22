@@ -10,3 +10,30 @@
         "entities": ["dist/.../..."],
         "migrations": ["dist/migrations/..."]
     }
+
+- heroku create
+- check exist postgres on heroku: 
+    heroku addons
+
+- heroku addons:create heroku-postgresql:hobby-dev -a
+
+https://nameless-beyond-24432.herokuapp.com/
+
+nameless-beyond-24432
+
+copy url project in heroky
+
+Change for connection => don't need  username and password
+
+URL HEROKU: postgres://username:password@host:port/database_name
+Change host in ormconfig: 
+host: choose after @ -> .com
+username: choose after // -> :
+password: ...
+database: ...
+
+genarate dockerfile and .dockerignore
+
+-> add Reveal Config Vars in heroku Setting
+
+-> Seen docs in deploy container

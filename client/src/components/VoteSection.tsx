@@ -4,15 +4,12 @@ import { Flex, IconButton } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import React, { FC, useState } from "react";
 import {
-    LoginProfileDocument,
     LoginProfileQuery,
     Post,
-    PostWithUserInfoFragmentDoc,
     UserLogedInVotedAndPointsFragmentDoc,
     useVoteMutation,
     VoteType,
 } from "../generated/graphql";
-import { LIMIT } from "../pages";
 import { VoteTypeValues } from "../types/enum/VoteTypeValues.enum";
 
 interface UpvoteSectionProps {

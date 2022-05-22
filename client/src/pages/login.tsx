@@ -32,7 +32,7 @@ import { initializeApollo } from "../lib/apolloClient";
 
 const login = () => {
     const { data: dataCheckAuth, loading: loadingCheckAuth } = useCheckAuth();
-    const [loginUser, { loading: _loginUserLogin, data, error }] =
+    const [loginUser, { loading: _loginUserLogin }] =
         useLoginMutation();
     const [showPassword, setShowPassword] = useState(false);
     const toast = useToast();
@@ -112,10 +112,8 @@ const login = () => {
                             onSubmit={onLoginSubmit}
                         >
                             {({
-                                values,
                                 touched,
                                 errors,
-                                handleChange,
                                 isSubmitting,
                             }: FormikProps<LoginInput>) => (
                                 <Form>

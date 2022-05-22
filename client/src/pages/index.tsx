@@ -1,10 +1,8 @@
-import Image from "next/image";
 import {
     Box,
     Center,
     Button,
     Heading,
-    Text,
     useColorModeValue,
 } from "@chakra-ui/react";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -30,7 +28,7 @@ const Index: FC = () => {
     /**
      * Call in Cache Apollo not send request to server
      */
-    const { data, loading, error, fetchMore, networkStatus } = usePostsQuery({
+    const { data, loading, fetchMore, networkStatus } = usePostsQuery({
         variables: {
             limit: LIMIT,
         },

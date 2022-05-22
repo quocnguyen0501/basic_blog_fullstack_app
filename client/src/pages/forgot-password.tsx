@@ -1,16 +1,13 @@
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import {
     Button,
-    FormControl,
     Flex,
     Heading,
-    Input,
     Stack,
     Text,
     useColorModeValue,
     FormErrorMessage,
     Box,
-    Spinner,
 } from "@chakra-ui/react";
 import { Form, Formik, FormikProps } from "formik";
 import NextLink from "next/link";
@@ -58,10 +55,8 @@ const ForgotPassword = () => {
                     onSubmit={onForgotPasswordSubmit}
                 >
                     {({
-                        values,
                         touched,
                         errors,
-                        handleChange,
                         isSubmitting,
                     }: FormikProps<ForgotPasswordInput>) =>
                         !loading && data ? (

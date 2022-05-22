@@ -12,7 +12,7 @@ import { useApollo } from "../lib/apolloClient";
 //     credentials: "include",
 // });
 
-const MyApp = ({ Component, pageProps }: AppProps) => {
+const MyApp = ({ Component, pageProps }: AppProps | any) => {
     // SSR
     const apolloClient = useApollo(pageProps);
 

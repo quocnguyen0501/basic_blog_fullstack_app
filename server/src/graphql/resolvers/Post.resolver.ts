@@ -17,7 +17,6 @@ import { Post } from "../../entities/Post.entity";
 import { UpdatePostInput } from "../../types/input/UpdatePostInput";
 import { getErrorMutationResponse } from "../../helpers/resolvers/ErrorMutationResponseHelper";
 import { checkAuth } from "../../middleware/auth/checkAuth";
-import { DATA_SOURCE } from "../../helpers/database/DatabaseHelper";
 import { PostUnionMutationResponse } from "../../types/graphql/unions/PostUnionMutationResponse";
 import { User } from "../../entities/User.entity";
 import { PaginatedPost } from "../../types/graphql/PaginatedPost";
@@ -132,7 +131,7 @@ export class PostResolver {
         { req }: Context
     ): Promise<Array<typeof PostUnionMutationResponse>> {
         try {
-            const existingPost = await Post.findOneBy({ id });
+            const existingPost = await Post.findOne({ id });
 
             if (!existingPost) {
                 return [
@@ -151,21 +150,17 @@ export class PostResolver {
                     },
                 ];
             } else {
-                await DATA_SOURCE.createQueryBuilder()
-                    .update(Post)
-                    .set({
-                        title: title,
-                        content: content,
-                    })
-                    .where("id = :id", { id: id })
-                    .execute();
+                existingPost.title = title;
+                existingPost.content = content;
+
+                await existingPost.save();
 
                 return [
                     {
                         code: HTTP_STATUS_CODE.SUCCESS,
                         success: true,
                         message: "Post updated successfully",
-                        post: (await Post.findOneBy({ id })) as Post,
+                        post: existingPost,
                     },
                 ];
             }
@@ -263,11 +258,11 @@ export class PostResolver {
     async post(
         @Arg("id", (_type) => ID)
         id: number
-    ): Promise<Post | null> {
+    ): Promise<Post | undefined> {
         try {
-            return await Post.findOneBy({ id: id });
+            return await Post.findOne({ id: id });
         } catch (error) {
-            return null;
+            return undefined;
         }
     }
 
@@ -280,7 +275,7 @@ export class PostResolver {
         { req }: Context
     ): Promise<Array<typeof PostUnionMutationResponse>> {
         try {
-            const existingPost = await Post.findOneBy({ id });
+            const existingPost = await Post.findOne({ id });
             if (!existingPost) {
                 return [
                     {
@@ -335,7 +330,7 @@ export class PostResolver {
             connection,
         }: Context
     ): Promise<Array<typeof PostUnionMutationResponse>> {
-        return connection.transaction(async (transactionEntityManager) => {
+        return connection.transaction(async (transactionEntityManager: any) => {
             // Check post exists
             let post = await transactionEntityManager.findOne(Post, {
                 where: {

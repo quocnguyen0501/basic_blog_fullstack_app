@@ -12,20 +12,23 @@ import cors from "cors";
 import mongoose from "mongoose";
 import session from "express-session";
 
-import {
-    DATA_SOURCE,
-    OPTIONS_CONNECT_MONGO,
-    URI,
-} from "./helpers/database/DatabaseHelper";
+import { OPTIONS_CONNECT_MONGO, URI } from "./helpers/database/DatabaseHelper";
 import { RESOLVERS } from "./graphql/resolvers/Resolvers";
 import { __prod__ } from "./utils/constants/constants";
 import { SESSION_OPTION } from "./helpers/storage/SessionCookieHelper";
 import { Context } from "./types/graphql/Context";
 import { CORS } from "./helpers/cors/CorsConfig";
 import { buildDataLoaders } from "./utils/data-loader/dataLoaders";
+import { createConnection } from "typeorm";
+import { CONNECTION } from "./helpers/database/Connection";
 
 const main = async () => {
-    const connection = await DATA_SOURCE.initialize();
+    const connection = await createConnection({
+        type: "postgres",
+        ...CONNECTION,
+    });
+
+    if (__prod__) await connection.runMigrations();
 
     const app = express();
 

@@ -1,12 +1,7 @@
 import {
-    Flex,
     Box,
-    FormControl,
     FormLabel,
-    Input,
-    InputGroup,
     HStack,
-    InputRightElement,
     Stack,
     Button,
     Heading,
@@ -17,7 +12,6 @@ import {
     Radio,
     Select,
     FormErrorMessage,
-    Spinner,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import NextLink from "next/link";
@@ -51,7 +45,7 @@ const Register = () => {
         gender: "male",
     };
 
-    const [registerUser, { loading: _registerUserLoading, data, error }] =
+    const [registerUser, { loading: _registerUserLoading }] =
         useRegisterMutation();
 
     const [showPassword, setShowPassword] = useState(false);
