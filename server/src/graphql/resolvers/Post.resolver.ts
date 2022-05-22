@@ -293,6 +293,10 @@ export class PostResolver {
                     },
                 ];
             } else {
+                await Vote.delete({
+                    postId: id,
+                });
+
                 await Post.delete({ id });
 
                 return [
