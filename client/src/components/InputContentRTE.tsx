@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { convertToRaw, EditorState } from "draft-js";
+import { EditorState } from "draft-js";
 import dynamic from "next/dynamic";
 import { EditorProps } from "react-draft-wysiwyg";
 

@@ -8,7 +8,6 @@ import {
     InputRightElement,
 } from "@chakra-ui/react";
 import { useField } from "formik";
-import error from "next/error";
 import React from "react";
 import { IInputField } from "../types/form/InputField";
 

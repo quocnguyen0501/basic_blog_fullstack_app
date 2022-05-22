@@ -7,7 +7,6 @@ import {
     IconButton,
     Button,
     Stack,
-    Flex,
 } from "@chakra-ui/react";
 
 import NextLink from "next/link";

@@ -1,5 +1,5 @@
 import { Flex, FormControl, Input, Text } from "@chakra-ui/react";
-import { ChangeEvent, Dispatch, FC, SetStateAction, useState } from "react";
+import { ChangeEvent, Dispatch, FC, SetStateAction} from "react";
 
 interface IInputTitle {
     word: string;
@@ -11,9 +11,7 @@ interface IInputTitle {
 
 const InputTextCountWord: FC<IInputTitle> = ({
     word,
-    setWord,
     numberWords,
-    setNumberWords,
     onWordChange,
 }) => {
     return (

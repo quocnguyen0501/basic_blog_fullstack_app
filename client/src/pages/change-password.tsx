@@ -1,4 +1,4 @@
-import { CloseIcon, WarningTwoIcon } from "@chakra-ui/icons";
+import { CloseIcon } from "@chakra-ui/icons";
 import {
     Box,
     Button,

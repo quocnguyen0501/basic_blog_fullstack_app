@@ -5,7 +5,6 @@ import {
     Center,
     Flex,
     Heading,
-    Link,
     Stack,
     Text,
     useColorModeValue,
@@ -17,7 +16,6 @@ import {
     PostIDsQuery,
     PostQuery,
     useLoginProfileQuery,
-    usePostIDsQuery,
     usePostQuery,
 } from "../../generated/graphql";
 import { CloseIcon } from "@chakra-ui/icons";

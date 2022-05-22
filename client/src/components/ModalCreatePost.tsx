@@ -20,7 +20,6 @@ import InputTextCountWord from "./InputTextCountWord";
 import InputContentRTE from "./InputContentRTE";
 import { ChangeEvent, useState } from "react";
 
-import { useRouter } from "next/router";
 import { convertToRaw, EditorState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
@@ -53,8 +52,6 @@ const ModalCreatePost = ({
     const onWordChange = (event: ChangeEvent<HTMLInputElement>) => {
         let input = event.target.value;
         const MAX_WORDS = 300;
-
-        let number = numberWords;
 
         if (input.length > MAX_WORDS) {
             input = input.toString().slice(0, 300);
